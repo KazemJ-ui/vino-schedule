@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вино&Хинкали · График апрель</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --wine:        #6B1A30;
+    --wine-dark:   #3E0D1C;
+    --gold:        #C9963A;
+    --cream:       #FBF6EE;
+    --z16-bg:      #E8EEF8;
+    --z16-txt:     #1A3566;
+    --z16-badge:   #2C4E9A;
+    --zct-bg:      #E8F5EC;
+    --zct-txt:     #1B5E2E;
+    --zct-badge:   #2E7D45;
+    --zka-bg:      #F5EDE2;
+    --zka-txt:     #5A3210;
+    --zka-badge:   #8B4E18;
+    --zor-bg:      #FFF0E0;
+    --zor-txt:     #7A3D00;
+    --zor-badge:   #C06010;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    background: var(--cream);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  header {
+    background: var(--wine-dark);
+    padding: 18px 20px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.35);
+  }
+  .logo-wrap { display:flex; flex-direction:column; gap:2px; }
+  .logo-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--gold);
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    line-height: 1;
+  }
+  .logo-sub {
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .period-tag {
+    background: var(--gold);
+    color: var(--wine-dark);
+    font-size: 12px;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 8px;
+    padding: 11px 16px;
+    background: var(--wine-dark);
+    border-bottom: 2px solid rgba(201,150,58,0.35);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .leg {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; color: #fff; font-weight: 700;
+    background: rgba(255,255,255,0.08);
+    padding: 4px 10px; border-radius: 20px;
+  }
+  .leg-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+  .tabs-wrap {
+    position: sticky;
+    top: 90px;
+    z-index: 90;
+    background: var(--cream);
+    border-bottom: 2px solid rgba(107,26,48,0.15);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .tabs {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display:none; }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 10px 14px 8px;
+    text-align: center;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s;
+    min-width: 52px;
+  }
+  .tab-num { font-size:18px; font-weight:800; color:#bbb; line-height:1; font-family:'Playfair Display',serif; }
+  .tab-day { font-size:9px; color:#ccc; text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-top:2px; }
+  .tab.weekend .tab-num { color:#c09070; }
+  .tab.weekend .tab-day { color:#c09070; }
+  .tab.active .tab-num { color: var(--wine); }
+  .tab.active .tab-day { color: var(--wine); }
+  .tab.active { border-bottom-color: var(--wine); }
+
+  .content { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
+
+  .day-panel { display:none; animation: fadeUp 0.22s ease; }
+  .day-panel.active { display:block; }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(8px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* Hero */
+  .day-hero {
+    background: var(--wine);
+    border-radius: 18px;
+    padding: 18px 20px 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 6px 20px rgba(107,26,48,0.28);
+    position: relative;
+    overflow: hidden;
+  }
+  .day-hero::before {
+    content:'';
+    position:absolute;
+    right:-24px; top:-24px;
+    width:110px; height:110px;
+    border-radius:50%;
+    background: rgba(255,255,255,0.05);
+    pointer-events:none;
+  }
+  .hero-top { display:flex; align-items:flex-start; justify-content:space-between; }
+  .hero-date-wrap { display:flex; align-items:baseline; gap:10px; }
+  .hero-date {
+    font-family: 'Playfair Display', serif;
+    font-size: 54px;
+    color: #fff;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .hero-dayname { font-size:20px; color: var(--gold); font-weight:800; }
+  .hero-count {
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    margin-top: 4px;
+  }
+
+  /* Manager block inside hero */
+  .manager-block {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .manager-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.55);
+    font-weight: 700;
+  }
+  .manager-chip {
+    background: var(--gold);
+    color: var(--wine-dark);
+    font-size: 13px;
+    font-weight: 800;
+    padding: 5px 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* Zone cards */
+  .zone-card {
+    border-radius: 14px;
+    padding: 13px 15px;
+    margin-bottom: 11px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .zone-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .zone-icon { font-size: 16px; }
+  .zone-name {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 3px 10px;
+    border-radius: 8px;
+    color: #fff;
+  }
+  .zone-pcount {
+    font-size: 11px;
+    color: #999;
+    font-weight: 600;
+    margin-left: auto;
+  }
+
+  .person-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    background: rgba(255,255,255,0.65);
+  }
+  .person-row:last-child { margin-bottom: 0; }
+  .person-avatar {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+    flex-shrink: 0;
+    color: #fff;
+  }
+  .person-info { flex:1; }
+  .person-name { font-size: 14px; font-weight: 700; color: #1a1a1a; line-height: 1; }
+  .person-time { font-size: 11px; color: #888; font-weight: 600; margin-top: 2px; }
+  .time-badge {
+    font-size: 12px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+
+  /* Zone specific */
+  .z16   { background: var(--z16-bg); }
+  .z16   .zone-name   { background: var(--z16-badge); }
+  .z16   .person-avatar { background: var(--z16-badge); }
+  .z16   .time-badge  { background: rgba(44,78,154,0.15); color: var(--z16-txt); }
+
+  .zct   { background: var(--zct-bg); }
+  .zct   .zone-name   { background: var(--zct-badge); }
+  .zct   .person-avatar { background: var(--zct-badge); }
+  .zct   .time-badge  { background: rgba(46,125,69,0.15); color: var(--zct-txt); }
+
+  .zka   { background: var(--zka-bg); }
+  .zka   .zone-name   { background: var(--zka-badge); }
+  .zka   .person-avatar { background: var(--zka-badge); }
+  .zka   .time-badge  { background: rgba(139,78,24,0.15); color: var(--zka-txt); }
+
+  .zor   { background: var(--zor-bg); }
+  .zor   .zone-name   { background: var(--zor-badge); }
+  .zor   .person-avatar { background: var(--zor-badge); }
+  .zor   .time-badge  { background: rgba(192,96,16,0.15); color: var(--zor-txt); }
+
+  footer {
+    text-align:center;
+    font-size:10px;
+    color:#ccc;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    padding: 24px 0 0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-wrap">
+    <div class="logo-name">Вино &amp; Хинкали</div>
+    <div class="logo-sub">Зональный график</div>
+  </div>
+  <div class="period-tag">Апрель · 16–30</div>
+</header>
+
+<div class="legend">
+  <div class="leg"><div class="leg-dot" style="background:#2C4E9A"></div>1–16</div>
+  <div class="leg"><div class="leg-dot" style="background:#2E7D45"></div>Центр</div>
+  <div class="leg"><div class="leg-dot" style="background:#8B4E18"></div>Кальянка</div>
+  <div class="leg"><div class="leg-dot" style="background:#C06010"></div>Оранжевые</div>
+</div>
+
+<div class="tabs-wrap"><div class="tabs" id="tabs"></div></div>
+<div class="content" id="content"></div>
+
+<script>
+const zonesDef = [
+  { key:"z16", label:"1–16",      icon:"🪑", cls:"z16" },
+  { key:"zct", label:"Центр",     icon:"⭐", cls:"zct" },
+  { key:"zka", label:"Кальянка",  icon:"💨", cls:"zka" },
+  { key:"zor", label:"Оранжевые", icon:"🍊", cls:"zor" }
+];
+
+// staff: name → start time (from table)
+const data = {
+  16: {
+    name:"Чт", manager:"Антонова Алена",
+    staff:[
+      {n:"Казем Яра",    t:"10:00"},
+      {n:"Шакиров Темур",t:"10:00"},
+      {n:"Сурен",        t:"12:00"},
+      {n:"Г. Карина",    t:"12:00"},
+      {n:"Евгений",      t:"12:00"},
+      {n:"Бабкина Олеся",t:"12:00"}
+    ]
+  },
+  17: {
+    name:"Пт", manager:"Игорь",
+    staff:[
+      {n:"Казем Яра",    t:"10:00"},
+      {n:"Сурен",        t:"12:00"},
+      {n:"Г. Карина",    t:"12:00"},
+      {n:"Карина",       t:"10:00"},
+      {n:"Евгений",      t:"12:00"}
+    ]
+  },
+  18: {
+    name:"Сб", manager:"Игорь",
+    staff:[
+      {n:"Шакиров Темур",t:"10:00"},
+      {n:"Сурен",        t:"12:00"},
+      {n:"Г. Карина",    t:"10:00"},
+      {n:"Вероника",     t:"13:00"},
+      {n:"Евгений",      t:"12:00"},
+      {n:"Бабкина Олеся",t:"12:00"}
+    ]
+  },
+  19: {
+    name:"Вс", manager:"Антонова Алена",
+    staff:[
+      {n:"Казем Яра",    t:"12:00"},
+      {n:"Шакиров Темур",t:"10:00"},
+      {n:"Г. Карина",    t:"10:00"},
+      {n:"Вероника",     t:"10:00"},
+      {n:"Бабкина Олеся",t:"12:00"}
+    ]
+  },
+  20: {
+    name:"Пн", manager:"Антонова Алена",
+    staff:[
+      {n:"Казем Яра",    t:"12:00"},
+      {n:"Шакиров Темур",t:"10:00"},
+      {n:"Карина",       t:"10:00"},
+      {n:"Сп. Виктория", t:"10:00"}
+    ]
+  },
+  21: {
+    name:"Вт", manager:"Игорь",
+    staff:[
+      {n:"Казем Яра",    t:"12:00"},
+      {n:"Сурен",        t:"12:00"},
+      {n:"Карина",       t:"10:00"},
+      {n:"Евгений",      t:"12:00"}
+    ]
+  },
+  22: {
+    name:"Ср", manager:null,
+    staff:[
+      {n:"Арсений",      t:"16:00"},
+      {n:"Сурен",        t:"12:00"},
+      {n:"Г. Карина",    t:"12:00"},
+      {n:"Вероника",     t:"15:00"},
+      {n:"Евгений",      t:"12:00"},
+      {n:"Бабкина Олеся",t:"12:00"}
+    ]
+  },
+  23: {
+    name:"Чт", manager:"Антонова Алена",
+    staff:[
+      {n:"Казем Яра",    t:"10:00"},
+      {n:"Шакиров Темур",t:"10:00"},
+      {n:"Сурен",        t:"12:00"},
+      {n:"Г. Карина",    t:"12:00"},
+      {n:"Бабкина Олеся",t:"12:00"}
+    ]
+  },
+  24: {
+    name:"Пт", manager:"Антонова Алена",
+    staff:[
+      {n:"Казем Яра",    t:"10:00"},
+      {n:"Сурен",        t:"12:00"},
+      {n:"Г. Карина",    t:"12:00"},
+      {n:"Вероника",     t:"15:00"},
+      {n:"Евгений",      t:"12:00"}
+    ]
+  },
+  25: {
+    name:"Сб", manager:"Игорь",
+    staff:[
+      {n:"Сурен",        t:"12:00"},
+      {n:"Г. Карина",    t:"12:00"},
+      {n:"Алексей",      t:"12:00"},
+      {n:"Евгений",      t:"12:00"},
+      {n:"Бабкина Олеся",t:"12:00"},
+      {n:"Карина",       t:"10:00"}
+    ]
+  },
+  26: {
+    name:"Вс", manager:"Игорь",
+    staff:[
+      {n:"Казем Яра",    t:"15:00"},
+      {n:"Шакиров Темур",t:"10:00"},
+      {n:"Сурен",        t:"12:00"},
+      {n:"Г. Карина",    t:"12:00"},
+      {n:"Алексей",      t:"12:00"},
+      {n:"Сп. Виктория", t:"10:00"}
+    ]
+  },
+  27: {
+    name:"Пн", manager:"Антонова Алена + Игорь",
+    staff:[
+      {n:"Казем Яра",    t:"12:00"},
+      {n:"Г. Карина",    t:"10:00"},
+      {n:"Алексей",      t:"12:00"},
+      {n:"Евгений",      t:"12:00"}
+    ]
+  },
+  28: {
+    name:"Вт", manager:"Антонова Алена",
+    staff:[
+      {n:"Казем Яра",    t:"12:00"},
+      {n:"Шакиров Темур",t:"10:00"},
+      {n:"Сурен",        t:"12:00"},
+      {n:"Г. Карина",    t:"10:00"},
+      {n:"Алексей",      t:"12:00"}
+    ]
+  },
+  29: {
+    name:"Ср", manager:"Антонова Алена",
+    staff:[
+      {n:"Сурен",        t:"12:00"},
+      {n:"Г. Карина",    t:"10:00"},
+      {n:"Алексей",      t:"12:00"},
+      {n:"Вероника",     t:"15:00"},
+      {n:"Евгений",      t:"12:00"}
+    ]
+  },
+  30: {
+    name:"Чт", manager:"Игорь",
+    staff:[
+      {n:"Казем Яра",    t:"12:00"},
+      {n:"Шакиров Темур",t:"10:00"},
+      {n:"Г. Карина",    t:"10:00"},
+      {n:"Алексей",      t:"12:00"},
+      {n:"Евгений",      t:"12:00"}
+    ]
+  }
+};
+
+const weekends = ["Сб","Вс"];
+
+function initials(name) {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function assign(staff) {
+  // shuffle the staff objects, then extract names for zone keys
+  const s = shuffle(staff);
+  const n = s.length;
+  const nm = s.map(x => x.n);
+  if (n === 4) return { z16:[nm[0]], zct:[nm[1]], zka:[nm[2]], zor:[nm[3]] };
+  if (n === 5) return { z16:[nm[0],nm[1]], zct:[nm[2]], zka:[nm[3]], zor:[nm[4]] };
+  if (n === 6) return { z16:[nm[0],nm[1]], zct:[nm[2]], zka:[nm[3]], zor:[nm[4],nm[5]] };
+  if (n >= 7) return { z16:[nm[0],nm[1]], zct:[nm[2],nm[3]], zka:[nm[4]], zor:[nm[5],nm[6]] };
+  return { z16:[], zct:[], zka:[], zor:[] };
+}
+
+// Pre-assign zones once (fixed, no shuffle button)
+const assignments = {};
+Object.keys(data).forEach(d => {
+  assignments[d] = assign(data[d].staff);
+});
+
+// Build tabs & panels
+const tabsEl = document.getElementById('tabs');
+const contentEl = document.getElementById('content');
+
+Object.keys(data).forEach((d, i) => {
+  const info = data[d];
+  const isWE = weekends.includes(info.name);
+  const isFirst = i === 0;
+
+  // Tab
+  const tab = document.createElement('div');
+  tab.className = 'tab' + (isWE?' weekend':'') + (isFirst?' active':'');
+  tab.dataset.day = d;
+  tab.innerHTML = `<div class="tab-num">${d}</div><div class="tab-day">${info.name}</div>`;
+  tab.addEventListener('click', () => switchDay(+d));
+  tabsEl.appendChild(tab);
+
+  // Panel
+  const panel = document.createElement('div');
+  panel.className = 'day-panel' + (isFirst?' active':'');
+  panel.id = 'panel-' + d;
+  panel.innerHTML = buildPanel(+d);
+  contentEl.appendChild(panel);
+});
+
+function buildPanel(d) {
+  const info = data[d];
+  const z = assignments[d];
+  const n = info.staff.length;
+
+  // Manager row
+  const managerHtml = info.manager
+    ? `<div class="manager-block">
+        <span class="manager-label">Менеджер</span>
+        <span class="manager-chip">👔 ${info.manager}</span>
+       </div>`
+    : `<div class="manager-block">
+        <span class="manager-label">Менеджер</span>
+        <span style="color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;">— выходной</span>
+       </div>`;
+
+  // Zones
+  const zonesHtml = zonesDef.map(zn => {
+    const people = z[zn.key];
+    if (!people || !people.length) return '';
+
+    const staffObjs = people.map(name => info.staff.find(s => s.n === name)).filter(Boolean);
+
+    return `<div class="zone-card ${zn.cls}">
+      <div class="zone-header">
+        <span class="zone-icon">${zn.icon}</span>
+        <span class="zone-name">${zn.label}</span>
+        <span class="zone-pcount">${staffObjs.length} чел.</span>
+      </div>
+      ${staffObjs.map(s => `
+        <div class="person-row">
+          <div class="person-avatar">${initials(s.n)}</div>
+          <div class="person-info">
+            <div class="person-name">${s.n}</div>
+            <div class="person-time">начало смены</div>
+          </div>
+          <div class="time-badge">${s.t}</div>
+        </div>
+      `).join('')}
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="day-hero">
+      <div class="hero-top">
+        <div class="hero-date-wrap">
+          <div class="hero-date">${d}</div>
+          <div class="hero-dayname">${info.name}</div>
+        </div>
+        <div class="hero-count">👥 ${n} чел.</div>
+      </div>
+      ${managerHtml}
+    </div>
+    ${zonesHtml}
+    <footer>Вино &amp; Хинкали · Апрель ${d}</footer>
+  `;
+}
+
+function switchDay(d) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', +t.dataset.day === d));
+  document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-'+d).classList.add('active');
+  document.querySelector(`.tab[data-day="${d}"]`).scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+}
+</script>
+</body>
+</html>
