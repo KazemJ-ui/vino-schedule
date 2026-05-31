@@ -1650,7 +1650,7 @@ async function publishSchedule(){
   console.log('confirmed');
 
   // Берём последний период из БД
-  const periodRows=await sf('schedule_periods?select=*&order=created_at.desc&limit=1');
+  const periodRows=await sf('schedule_periods?is_open=eq.true&select=*&limit=1');
   console.log('periodRows:', periodRows);
   if(!Array.isArray(periodRows)||periodRows.length===0){showToast('❌ Нет периода');return;}
   const period=periodRows[0].period;
