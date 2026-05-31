@@ -1835,15 +1835,8 @@ async function publishSchedule(){
 
 async function loadPublishedSchedule(fromCache=false){
   // Показываем кэш мгновенно
-  if(!fromCache){
-    const cached=localStorage.getItem('vino_schedule_cache');
-    if(cached){
-      try{
-        const data=JSON.parse(cached);
-        applyScheduleData(data.rows, data.hist, data.assignments);
-      }catch(e){}
-    }
-  }
+  // Cache disabled to prevent duplicates
+
 
   // Всегда грузим свежие данные с сервера
   // Определяем последний опубликованный период
@@ -1875,7 +1868,11 @@ function applyScheduleData(rows, hist, assignments){
   const DAY_NAMES=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
   rows.forEach(r=>{
     if(!schedule[r.day]){
-      const dow=new Date(2026,4,+r.day).getDay();
+      const periodMonthName2=rows[0]?.period?.match(/[а-яё]+/i)?.[0]?.toLowerCase();
+      const RU_MONTHS2={'января':0,'февраля':1,'марта':2,'апреля':3,'мая':4,'июня':5,'июля':6,'августа':7,'сентября':8,'октября':9,'ноября':10,'декабря':11};
+      const periodMonth2=periodMonthName2?(RU_MONTHS2[periodMonthName2]??4):4;
+      const periodYear2=new Date().getFullYear();
+      const dow=new Date(periodYear2,periodMonth2,+r.day).getDay();
       schedule[r.day]={name:DAY_NAMES[dow],manager:'',hostess:null,bartender:null,staff:{}};
     }
     if(!schedule[r.day].staff[r.zone]) schedule[r.day].staff[r.zone]=[];
