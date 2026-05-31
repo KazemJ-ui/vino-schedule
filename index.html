@@ -1716,7 +1716,12 @@ async function publishSchedule(){
   });
 
   // Удаляем старый график
-  await sf('published_schedule?id=neq.00000000-0000-0000-0000-000000000000','DELETE'); // Удаляем весь старый график
+  await sf(`published_schedule?period=eq.${encodeURIComponent(period)}`,'DELETE'); // Удаляем старый график этого периода
+  // Также удаляем любые другие периоды
+  const otherRows=await sf('published_schedule?select=period&limit=1');
+  if(Array.isArray(otherRows)&&otherRows.length>0&&otherRows[0].period!==period){
+    await sf(`published_schedule?period=eq.${encodeURIComponent(otherRows[0].period)}`,'DELETE');
+  }
   await sf(`zone_history?period=eq.${encodeURIComponent(period)}`,'DELETE');
 
   const toInsert=[];
