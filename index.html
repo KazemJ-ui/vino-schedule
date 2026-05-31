@@ -1546,7 +1546,7 @@ function buildPanel(d){
   </div>
   ${zonesHtml}
   <div id="swap-section-${d}">${buildSwapSection(d)}</div>
-  <footer>Вино &amp; Хинкали · Май ${d}</footer>`;
+  <footer>Вино &amp; Хинкали · ${schedule[d]?.period||""}</footer>`;
 }
 
 // ── TABS ──
