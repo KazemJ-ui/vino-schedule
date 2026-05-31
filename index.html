@@ -1806,13 +1806,22 @@ async function publishSchedule(){
   const managers=['Игорь','Алена'];
   const hostesses=['Карина','Аня'];
   const bartenders=['Арсений','Алексей'];
+
+  // Загружаем ручные назначения менеджера
+  const existingAssignments=await sf(`day_assignments?period=eq.${encodeURIComponent(period)}&select=*`);
+  const assignMap={};
+  if(Array.isArray(existingAssignments)) existingAssignments.forEach(a=>assignMap[a.day]=a);
+
+  // Удаляем старые и создаём новые — сохраняя ручные назначения
   await sf(`day_assignments?period=eq.${encodeURIComponent(period)}`,'DELETE');
   for(let i=0;i<sortedDays.length;i++){
+    const d=+sortedDays[i];
+    const existing=assignMap[d];
     await sf('day_assignments','POST',{
-      period,day:+sortedDays[i],
-      manager:managers[i%2],
-      hostess:hostesses[i%2],
-      bartender:bartenders[i%2]
+      period,day:d,
+      manager: existing?.manager || managers[i%2],
+      hostess: existing?.hostess || hostesses[i%2],
+      bartender: existing?.bartender || bartenders[i%2]
     });
   }
 
