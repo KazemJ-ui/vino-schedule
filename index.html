@@ -1852,7 +1852,7 @@ async function loadPublishedSchedule(fromCache=false){
 
   const [rows, hist, assignments] = await Promise.all([
     sf(`published_schedule?period=eq.${encodeURIComponent(latestPeriodName)}&select=*&order=day`),
-    sf('swap_history?select=*'),
+    sf(`swap_history?period=eq.${encodeURIComponent(latestPeriodName)}&select=*`),
     sf('day_assignments?select=*')
   ]);
 
