@@ -1680,6 +1680,8 @@ async function publishSchedule(){
     byDay[r.day].push(r);
   });
 
+  console.log('byDay keys:', Object.keys(byDay));
+  console.log('byDay[6]:', byDay['6']?.map(w=>w.staff_name));
   const sortedDays=Object.keys(byDay).sort((a,b)=>+a-+b);
 
   // ── ПРЕДВАРИТЕЛЬНОЕ ПЛАНИРОВАНИЕ ЗОН ──
