@@ -1449,7 +1449,8 @@ async function acceptSwap(swapId,fromName,day){
 
 // Сохраняем обмен в Supabase
 async function saveSwapToHistory(day,zone,idx,newName){
-  await sf('swap_history','POST',{day:+day,zone:zone,idx:+idx,new_name:newName});
+  const swapPeriod=(await sf('published_schedule?select=period&limit=1'))?.[0]?.period||'';
+  await sf('swap_history','POST',{day:+day,zone:zone,idx:+idx,new_name:newName,period:swapPeriod});
 }
 
 // Загружаем историю обменов и применяем к liveSchedule
@@ -1680,8 +1681,6 @@ async function publishSchedule(){
     byDay[r.day].push(r);
   });
 
-  console.log('byDay keys:', Object.keys(byDay));
-  console.log('byDay[6]:', byDay['6']?.map(w=>w.staff_name));
   const sortedDays=Object.keys(byDay).sort((a,b)=>+a-+b);
 
   // ── ПРЕДВАРИТЕЛЬНОЕ ПЛАНИРОВАНИЕ ЗОН ──
@@ -1795,7 +1794,6 @@ async function publishSchedule(){
 
     ZONES.forEach(zone=>{
       assigned[zone].forEach(w=>{
-        if(day==='6') console.log('day 6 inserting:', w.staff_name, '->', zone);
         toInsert.push({period,day:String(day),zone,staff_name:w.staff_name,start_time:w.preference});
         zoneHistInsert.push({period,staff_name:w.staff_name,zone,day:+day});
         if(!zoneCount[w.staff_name]) zoneCount[w.staff_name]={};
@@ -1898,8 +1896,10 @@ function applyScheduleData(rows, hist, assignments){
 
   initLiveSchedule();
 
-  // Применяем историю обменов
+  // Применяем историю обменов только для дней текущего периода
+  const scheduleDays=new Set(Object.keys(schedule).map(Number));
   if(Array.isArray(hist)) hist.forEach(r=>{
+    if(!scheduleDays.has(+r.day)) return; // Пропускаем обмены из других периодов
     if(liveSchedule[r.day]&&liveSchedule[r.day][r.zone]&&liveSchedule[r.day][r.zone][r.idx]!==undefined){
       const time=liveSchedule[r.day][r.zone][r.idx].split('|')[1];
       liveSchedule[r.day][r.zone][r.idx]=r.new_name+'|'+time;
