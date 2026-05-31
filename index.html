@@ -1819,9 +1819,9 @@ async function publishSchedule(){
     const existing=assignMap[d];
     await sf('day_assignments','POST',{
       period,day:d,
-      manager: existing?.manager || managers[i%2],
-      hostess: existing?.hostess || hostesses[i%2],
-      bartender: existing?.bartender || bartenders[i%2]
+      manager: existing?.manager || null,
+      hostess: existing?.hostess || null,
+      bartender: existing?.bartender || null
     });
   }
 
