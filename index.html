@@ -1716,7 +1716,7 @@ async function publishSchedule(){
   });
 
   // Удаляем старый график
-  await sf(`published_schedule?period=eq.${encodeURIComponent(period)}`,'DELETE');
+  await sf('published_schedule?id=neq.00000000-0000-0000-0000-000000000000','DELETE'); // Удаляем весь старый график
   await sf(`zone_history?period=eq.${encodeURIComponent(period)}`,'DELETE');
 
   const toInsert=[];
@@ -1846,8 +1846,13 @@ async function loadPublishedSchedule(fromCache=false){
   }
 
   // Всегда грузим свежие данные с сервера
+  // Определяем последний опубликованный период
+  const latestPeriod=await sf('published_schedule?select=period&order=created_at.desc&limit=1');
+  const latestPeriodName=(Array.isArray(latestPeriod)&&latestPeriod.length>0)?latestPeriod[0].period:null;
+  if(!latestPeriodName) return;
+
   const [rows, hist, assignments] = await Promise.all([
-    sf('published_schedule?select=*&order=day'),
+    sf(`published_schedule?period=eq.${encodeURIComponent(latestPeriodName)}&select=*&order=day`),
     sf('swap_history?select=*'),
     sf('day_assignments?select=*')
   ]);
