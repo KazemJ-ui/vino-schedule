@@ -1795,6 +1795,7 @@ async function publishSchedule(){
 
     ZONES.forEach(zone=>{
       assigned[zone].forEach(w=>{
+        if(day==='6') console.log('day 6 inserting:', w.staff_name, '->', zone);
         toInsert.push({period,day:String(day),zone,staff_name:w.staff_name,start_time:w.preference});
         zoneHistInsert.push({period,staff_name:w.staff_name,zone,day:+day});
         if(!zoneCount[w.staff_name]) zoneCount[w.staff_name]={};
