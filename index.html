@@ -1729,18 +1729,25 @@ async function publishSchedule(){
     const workers=byDay[day];
     const count=workers.length;
     
-    // Считаем слоты
+    // Считаем слоты по правилу:
+    // 4 чел → 1-1-1-1
+    // 5 чел → 2 на 1-16, по 1 на остальные
+    // 6 чел → 2 на 1-16, 2 на Оранжевые, по 1 на Центр и Кальянку
+    // 7+ → добавляем по одному равномерно
     const slots={};
-    ZONES.forEach(z=>slots[z]=1);
-    if(count>4){
-      let extra=count-4;
-      let zi=0;
-      // Лишние слоты — в зоны куда больше людей запланировано
-      const want={};
-      ZONES.forEach(z=>want[z]=0);
-      workers.forEach(w=>{ const z=globalPlan[day][w.staff_name]; if(z) want[z]++; });
-      const sorted=[...ZONES].sort((a,b)=>want[b]-want[a]);
-      while(extra-->0) slots[sorted[zi++%4]]++;
+    if(count<=3){
+      ZONES.slice(0,count).forEach(z=>slots[z]=1);
+      ZONES.slice(count).forEach(z=>slots[z]=0);
+    } else if(count===4){
+      ZONES.forEach(z=>slots[z]=1);
+    } else if(count===5){
+      slots={'1-16':2,'Центр':1,'Кальянка':1,'Оранжевые':1};
+    } else {
+      slots={'1-16':2,'Центр':1,'Кальянка':1,'Оранжевые':2};
+      let extra=count-6;
+      const extraZones=['1-16','Оранжевые','Центр','Кальянка'];
+      let ei=0;
+      while(extra-->0){ slots[extraZones[ei%4]]++; ei++; }
     }
 
     // Считаем сколько занято каждой зоны
