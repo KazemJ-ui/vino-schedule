@@ -1732,19 +1732,22 @@ async function publishSchedule(){
     const workers=[...byDay[day]];
     const count=workers.length;
 
+    // Базово — по 1 слоту на зону, лишних распределяем равномерно
     let slots={};
-    if(count<=3){
+    ZONES.forEach(z=>slots[z]=0);
+    if(count<=4){
+      // До 4 человек — по одному на зону
       ZONES.slice(0,count).forEach(z=>slots[z]=1);
-    } else if(count===4){
-      ZONES.forEach(z=>slots[z]=1);
-    } else if(count===5){
-      slots={'1-16':2,'Центр':1,'Кальянка':1,'Оранжевые':1};
     } else {
-      slots={'1-16':2,'Центр':1,'Кальянка':1,'Оранжевые':2};
-      let extra=count-6;
-      const extraZones=['1-16','Оранжевые','Центр','Кальянка'];
-      let ei=0;
-      while(extra-->0){ slots[extraZones[ei%extraZones.length]]++; ei++; }
+      // 5+ — сначала по 1 на каждую зону
+      ZONES.forEach(z=>slots[z]=1);
+      // Лишних распределяем по всем зонам равномерно
+      let extra=count-4;
+      let zi=0;
+      while(extra-->0){
+        slots[ZONES[zi%ZONES.length]]++;
+        zi++;
+      }
     }
 
     const assigned={};
