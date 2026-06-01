@@ -1750,47 +1750,36 @@ async function publishSchedule(){
     const assigned={};
     ZONES.forEach(z=>assigned[z]=[]);
 
-    // Назначаем всех сразу оптимально:
-    // Для каждого человека считаем приоритет зоны = счётчик + штраф за повтор вчера
-    // Назначаем слот за слотом — каждый раз берём пару (человек, зона) с минимальным счётчиком
-
+    // Назначаем по плану — каждый получает свою плановую зону
+    // Если занята — берём ту зону которую он посещал реже всего недавно
     const unassigned=[...workers];
-    const prevDay=String(+day-1);
 
-    // Строим матрицу приоритетов: для каждого человека — лучшая зона
-    // Назначаем итеративно пока есть слоты и люди
-    while(unassigned.length>0){
-      let bestWorker=null, bestZone=null, bestScore=Infinity;
-
-      for(const w of unassigned){
-        const freeZones=ZONES.filter(z=>(slots[z]||0)>assigned[z].length);
-        if(!freeZones.length) break;
-
-        for(const zone of freeZones){
-          const count=(zoneCount[w.staff_name]||{})[zone]||0;
-          // Штраф за последние 3 рабочих дня этого человека
-          const recentDays=personDays[w.staff_name]
-            .filter(d=>+d<+day)
-            .slice(-3);
-          let penalty=0;
-          recentDays.forEach((d,i)=>{
-            const z=(toInsert.find(r=>r.staff_name===w.staff_name&&r.day===d)||{}).zone;
-            // Чем свежее — тем выше штраф: 3 дня назад=300, 2=600, вчера=1000
-            if(z===zone) penalty+=[300,600,1000][i];
-          });
-          const score=count+penalty;
-          if(score<bestScore){
-            bestScore=score;
-            bestWorker=w;
-            bestZone=zone;
-          }
-        }
+    // Сначала все по плану
+    unassigned.slice().forEach(w=>{
+      const plannedZone=zonePlan[w.staff_name]&&zonePlan[w.staff_name][String(day)];
+      if(plannedZone&&(slots[plannedZone]||0)>assigned[plannedZone].length){
+        assigned[plannedZone].push(w);
+        unassigned.splice(unassigned.indexOf(w),1);
       }
+    });
 
-      if(!bestWorker) break;
-      assigned[bestZone].push(bestWorker);
-      unassigned.splice(unassigned.indexOf(bestWorker),1);
-    }
+    // Остальных — по наименее посещаемой зоне недавно
+    [...unassigned].forEach(w=>{
+      const myDays=personDays[w.staff_name]||[];
+      const recentZones=myDays
+        .filter(d=>+d<+day).slice(-4)
+        .map(d=>(toInsert.find(r=>r.staff_name===w.staff_name&&r.day===d)||{}).zone)
+        .filter(Boolean);
+      const freeZones=ZONES.filter(z=>(slots[z]||0)>assigned[z].length);
+      if(!freeZones.length) return;
+      freeZones.sort((a,b)=>{
+        const pa=recentZones.filter(z=>z===a).length;
+        const pb=recentZones.filter(z=>z===b).length;
+        return pa-pb;
+      });
+      assigned[freeZones[0]].push(w);
+      unassigned.splice(unassigned.indexOf(w),1);
+    });
 
     ZONES.forEach(zone=>{
       assigned[zone].forEach(w=>{
