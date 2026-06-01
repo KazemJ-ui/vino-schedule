@@ -1734,7 +1734,7 @@ async function publishSchedule(){
     // 5 чел → 2 на 1-16, по 1 на остальные
     // 6 чел → 2 на 1-16, 2 на Оранжевые, по 1 на Центр и Кальянку
     // 7+ → добавляем по одному равномерно
-    const slots={};
+    let slots={};
     if(count<=3){
       ZONES.slice(0,count).forEach(z=>slots[z]=1);
       ZONES.slice(count).forEach(z=>slots[z]=0);
