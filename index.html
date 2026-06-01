@@ -1712,8 +1712,15 @@ async function publishSchedule(){
   
   Object.keys(personDays).forEach(name=>{
     const cycle=personZoneCycle[name];
+    let lastZone=null;
     personDays[name].forEach((day,i)=>{
-      globalPlan[day][name]=cycle[i%cycle.length];
+      let zone=cycle[i%cycle.length];
+      // Если зона совпадает с вчерашней — берём следующую в цикле
+      if(zone===lastZone){
+        zone=cycle[(i+1)%cycle.length];
+      }
+      globalPlan[day][name]=zone;
+      lastZone=zone;
     });
   });
 
@@ -1754,7 +1761,12 @@ async function publishSchedule(){
           // Считаем сколько раз каждый уже стоял в underZone в этом периоде
           const ca=sortedDays.filter(d=>+d<+day&&globalPlan[d][a.staff_name]===underZone).length;
           const cb=sortedDays.filter(d=>+d<+day&&globalPlan[d][b.staff_name]===underZone).length;
-          return ca-cb;
+          // Штраф если вчера стоял в underZone (не хотим повторять подряд)
+          const prevDayIdx=sortedDays.indexOf(String(day))-1;
+          const prevDay=prevDayIdx>=0?sortedDays[prevDayIdx]:null;
+          const pa=prevDay&&globalPlan[prevDay][a.staff_name]===underZone?100:0;
+          const pb=prevDay&&globalPlan[prevDay][b.staff_name]===underZone?100:0;
+          return (ca+pa)-(cb+pb);
         });
         if(candidates.length>0){
           globalPlan[day][candidates[0].staff_name]=underZone;
