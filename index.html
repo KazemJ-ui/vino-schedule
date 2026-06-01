@@ -1683,7 +1683,12 @@ async function publishSchedule(){
 
   const sortedDays=Object.keys(byDay).sort((a,b)=>+a-+b);
 
-  // ── ПРЕДВАРИТЕЛЬНОЕ ПЛАНИРОВАНИЕ ЗОН ──
+  // ── ГЛОБАЛЬНОЕ ПЛАНИРОВАНИЕ ЗОН ──
+  // 1. Для каждого человека строим личный цикл зон
+  // 2. Назначаем зоны на весь период сразу
+  // 3. Разрешаем конфликты свопами
+
+  // Собираем рабочие дни каждого человека
   const personDays={};
   sortedDays.forEach(day=>{
     byDay[day].forEach(w=>{
@@ -1692,27 +1697,72 @@ async function publishSchedule(){
     });
   });
 
-  // Строим план: каждый человек проходит все 4 зоны по кругу
-  // Порядок зон перемешивается для каждого человека индивидуально
-  const zonePlan={};
+  // Строим личный цикл зон для каждого (случайный старт)
+  const personZoneCycle={};
   Object.keys(personDays).forEach(name=>{
-    const days=personDays[name];
-    zonePlan[name]={};
+    const hash=name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+    const shift=hash%ZONES.length;
+    personZoneCycle[name]=[...ZONES.slice(shift),...ZONES.slice(0,shift)];
+  });
 
-    // Начальный порядок зон — перемешиваем индивидуально на основе имени
-    // чтобы у разных людей были разные стартовые зоны
-    const nameHash=name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-    let rotation=[...ZONES];
-    // Сдвигаем порядок на основе хэша имени
-    const shift=nameHash%ZONES.length;
-    rotation=[...rotation.slice(shift),...rotation.slice(0,shift)];
+  // Предварительное назначение — каждый по своему циклу
+  // globalPlan[day][staffName] = zone
+  const globalPlan={};
+  sortedDays.forEach(day=>globalPlan[day]={});
+  
+  Object.keys(personDays).forEach(name=>{
+    const cycle=personZoneCycle[name];
+    personDays[name].forEach((day,i)=>{
+      globalPlan[day][name]=cycle[i%cycle.length];
+    });
+  });
 
-    // Назначаем зоны по кругу, никогда не повторяя до тех пор
-    // пока не пройдём все 4
-    let cyclePos=0;
-    days.forEach(day=>{
-      zonePlan[name][day]=rotation[cyclePos%rotation.length];
-      cyclePos++;
+  // Разрешаем конфликты — если в день слотов не хватает, меняем с кем-то
+  sortedDays.forEach(day=>{
+    const workers=byDay[day];
+    const count=workers.length;
+    
+    // Считаем слоты
+    const slots={};
+    ZONES.forEach(z=>slots[z]=1);
+    if(count>4){
+      let extra=count-4;
+      let zi=0;
+      // Лишние слоты — в зоны куда больше людей запланировано
+      const want={};
+      ZONES.forEach(z=>want[z]=0);
+      workers.forEach(w=>{ const z=globalPlan[day][w.staff_name]; if(z) want[z]++; });
+      const sorted=[...ZONES].sort((a,b)=>want[b]-want[a]);
+      while(extra-->0) slots[sorted[zi++%4]]++;
+    }
+
+    // Считаем сколько занято каждой зоны
+    const assigned={};
+    ZONES.forEach(z=>assigned[z]=0);
+    workers.forEach(w=>assigned[globalPlan[day][w.staff_name]]=(assigned[globalPlan[day][w.staff_name]]||0)+1);
+
+    // Находим переполненные зоны и меняем лишних на недозаполненные
+    const overfull=ZONES.filter(z=>assigned[z]>(slots[z]||1));
+    const underfull=ZONES.filter(z=>(assigned[z]||0)<(slots[z]||1));
+
+    overfull.forEach(overZone=>{
+      while((assigned[overZone]||0)>(slots[overZone]||1)&&underfull.length>0){
+        const underZone=underfull[0];
+        // Найти кого перевести — того кто реже всего бывал в underZone
+        const candidates=workers.filter(w=>globalPlan[day][w.staff_name]===overZone);
+        candidates.sort((a,b)=>{
+          // Считаем сколько раз каждый уже стоял в underZone в этом периоде
+          const ca=sortedDays.filter(d=>+d<+day&&globalPlan[d][a.staff_name]===underZone).length;
+          const cb=sortedDays.filter(d=>+d<+day&&globalPlan[d][b.staff_name]===underZone).length;
+          return ca-cb;
+        });
+        if(candidates.length>0){
+          globalPlan[day][candidates[0].staff_name]=underZone;
+          assigned[overZone]--;
+          assigned[underZone]=(assigned[underZone]||0)+1;
+          if((assigned[underZone]||0)>=(slots[underZone]||1)) underfull.shift();
+        } else break;
+      }
     });
   });
 
@@ -1732,55 +1782,12 @@ async function publishSchedule(){
     const workers=[...byDay[day]];
     const count=workers.length;
 
-    // ── РАСПРЕДЕЛЕНИЕ ──
-    // Каждый человек идёт на свою плановую зону
-    // Если слот занят — меняемся с тем кто стоит там но у кого план другой
-
+    // Используем глобальный план
     const assigned={};
     ZONES.forEach(z=>assigned[z]=[]);
-
-    // Определяем количество слотов
-    let slots={};
-    ZONES.forEach(z=>slots[z]=1);
-    if(count>4){
-      let extra=count-4;
-      // Лишние слоты — в зоны где план больше всего людей хочет попасть
-      const zoneWant={};
-      ZONES.forEach(z=>zoneWant[z]=0);
-      workers.forEach(w=>{
-        const pz=zonePlan[w.staff_name]&&zonePlan[w.staff_name][String(day)];
-        if(pz) zoneWant[pz]++;
-      });
-      // Добавляем слоты туда где больше всего хотят
-      const sorted=[...ZONES].sort((a,b)=>zoneWant[b]-zoneWant[a]);
-      for(let i=0;i<extra;i++) slots[sorted[i%4]]++;
-    }
-
-    // Назначаем по плану
-    const unassigned=[...workers];
-    unassigned.slice().forEach(w=>{
-      const pz=zonePlan[w.staff_name]&&zonePlan[w.staff_name][String(day)];
-      if(pz&&slots[pz]>assigned[pz].length){
-        assigned[pz].push(w);
-        unassigned.splice(unassigned.indexOf(w),1);
-      }
-    });
-
-    // Остальных — в зону которую они посещали реже всего
-    [...unassigned].forEach(w=>{
-      const myPrev=toInsert
-        .filter(r=>r.staff_name===w.staff_name)
-        .map(r=>r.zone);
-      const freeZones=ZONES.filter(z=>slots[z]>assigned[z].length);
-      if(!freeZones.length) return;
-      // Сортируем по частоте посещений (редкие зоны — приоритет)
-      freeZones.sort((a,b)=>{
-        const ca=myPrev.filter(z=>z===a).length;
-        const cb=myPrev.filter(z=>z===b).length;
-        return ca-cb;
-      });
-      assigned[freeZones[0]].push(w);
-      unassigned.splice(unassigned.indexOf(w),1);
+    workers.forEach(w=>{
+      const zone=globalPlan[String(day)][w.staff_name]||ZONES[0];
+      assigned[zone].push(w);
     });
 
     ZONES.forEach(zone=>{
