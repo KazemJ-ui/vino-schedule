@@ -1753,9 +1753,8 @@ async function publishSchedule(){
     
     // Считаем слоты по правилу:
     // 4 чел → 1-1-1-1
-    // 5 чел → 2 на 1-16, по 1 на остальные
+    // 5 чел → 2 на 1-16, по 1 на остальные  
     // 6 чел → 2 на 1-16, 2 на Оранжевые, по 1 на Центр и Кальянку
-    // 7+ → добавляем по одному равномерно
     let slots={};
     if(count<=3){
       ZONES.slice(0,count).forEach(z=>slots[z]=1);
@@ -1768,88 +1767,35 @@ async function publishSchedule(){
       slots={'1-16':2,'Центр':1,'Кальянка':1,'Оранжевые':2};
       let extra=count-6;
       const extraZones=['1-16','Оранжевые','Центр','Кальянка'];
-      let ei=0;
-      while(extra-->0){ slots[extraZones[ei%4]]++; ei++; }
+      for(let ei=0;extra>0;extra--,ei++) slots[extraZones[ei%4]]++;
     }
 
-    // Считаем сколько занято каждой зоны
-    const assigned={};
-    ZONES.forEach(z=>assigned[z]=0);
-    workers.forEach(w=>assigned[globalPlan[day][w.staff_name]]=(assigned[globalPlan[day][w.staff_name]]||0)+1);
-
-    // Находим переполненные зоны и меняем лишних на недозаполненные
-    const overfull=ZONES.filter(z=>assigned[z]>(slots[z]||1));
-    const underfull=ZONES.filter(z=>(assigned[z]||0)<(slots[z]||1));
-
-    overfull.forEach(overZone=>{
-      while((assigned[overZone]||0)>(slots[overZone]||1)&&underfull.length>0){
-        const underZone=underfull[0];
-        // Найти кого перевести — того кто реже всего бывал в underZone
-        const candidates=workers.filter(w=>globalPlan[day][w.staff_name]===overZone);
-        // Исключаем кандидатов у кого вчера была underZone (жёсткий запрет повтора)
-        const prevDayIdx=sortedDays.indexOf(String(day))-1;
-        const prevDay=prevDayIdx>=0?sortedDays[prevDayIdx]:null;
-        const preferredCandidates=candidates.filter(w=>
-          !prevDay||globalPlan[prevDay][w.staff_name]!==underZone
-        );
-        const finalCandidates=preferredCandidates.length>0?preferredCandidates:candidates;
-        finalCandidates.sort((a,b)=>{
-          const ca=sortedDays.filter(d=>+d<+day&&globalPlan[d][a.staff_name]===underZone).length;
-          const cb=sortedDays.filter(d=>+d<+day&&globalPlan[d][b.staff_name]===underZone).length;
-          return ca-cb;
-        });
-        const candidates_=finalCandidates;
-        if(candidates_.length>0){
-          globalPlan[day][candidates_[0].staff_name]=underZone;
-          assigned[overZone]--;
-          assigned[underZone]=(assigned[underZone]||0)+1;
-          if((assigned[underZone]||0)>=(slots[underZone]||1)) underfull.shift();
-        } else break;
-      }
-    });
-  });
-
-  // Проверяем и исправляем повторы подряд в globalPlan
-  Object.keys(personDays).forEach(name=>{
-    const days=personDays[name].sort((a,b)=>+a-+b);
-    for(let i=1;i<days.length;i++){
-      const prevDay=days[i-1];
-      const curDay=days[i];
-      if(globalPlan[curDay][name]===globalPlan[prevDay][name]){
-        // Найти другую зону — ту что человек посещал реже всего
-        const curZone=globalPlan[curDay][name];
-        const allZones=ZONES.filter(z=>z!==curZone);
-        const counts={};
-        allZones.forEach(z=>counts[z]=days.filter(d=>+d<+curDay&&globalPlan[d][name]===z).length);
-        allZones.sort((a,b)=>counts[a]-counts[b]);
-        // Меняем на зону с наименьшим счётчиком (не совпадающую с текущей)
-        globalPlan[curDay][name]=allZones[0];
-      }
-    }
-  });
-
-  // Удаляем старый график
-  await sf(`published_schedule?period=eq.${encodeURIComponent(period)}`,'DELETE'); // Удаляем старый график этого периода
-  // Также удаляем любые другие периоды
-  const otherRows=await sf('published_schedule?select=period&limit=1');
-  if(Array.isArray(otherRows)&&otherRows.length>0&&otherRows[0].period!==period){
-    await sf(`published_schedule?period=eq.${encodeURIComponent(otherRows[0].period)}`,'DELETE');
-  }
-  await sf(`zone_history?period=eq.${encodeURIComponent(period)}`,'DELETE');
-
-  const toInsert=[];
-  const zoneHistInsert=[];
-
-  sortedDays.forEach(day=>{
-    const workers=[...byDay[day]];
-    const count=workers.length;
-
-    // Используем глобальный план
+    // Назначаем из глобального плана — но строго в рамках слотов
     const assigned={};
     ZONES.forEach(z=>assigned[z]=[]);
-    workers.forEach(w=>{
-      const zone=globalPlan[String(day)][w.staff_name]||ZONES[0];
-      assigned[zone].push(w);
+    const unassigned=[...workers];
+
+    // Сначала по плану если слот свободен
+    unassigned.slice().forEach(w=>{
+      const pz=globalPlan[String(day)]&&globalPlan[String(day)][w.staff_name];
+      if(pz&&(slots[pz]||0)>assigned[pz].length){
+        assigned[pz].push(w);
+        unassigned.splice(unassigned.indexOf(w),1);
+      }
+    });
+
+    // Остальных — в зону с наименьшим числом посещений среди СВОБОДНЫХ слотов
+    [...unassigned].forEach(w=>{
+      const freeZones=ZONES.filter(z=>(slots[z]||0)>assigned[z].length);
+      if(!freeZones.length) return;
+      const myHistory=toInsert.filter(r=>r.staff_name===w.staff_name).map(r=>r.zone);
+      freeZones.sort((a,b)=>{
+        const ca=myHistory.filter(z=>z===a).length;
+        const cb=myHistory.filter(z=>z===b).length;
+        return ca-cb;
+      });
+      assigned[freeZones[0]].push(w);
+      unassigned.splice(unassigned.indexOf(w),1);
     });
 
     ZONES.forEach(zone=>{
