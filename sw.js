@@ -1,24 +1,14 @@
-const CACHE = 'vino-v14';
-const FILES = [
-  './icon.png',
-  './manifest.json',
-];
+const CACHE = 'vino-v15';
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)));
   self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.map(k => caches.delete(k))) // Удаляем ВСЕ кэши
-    ).then(() => {
-      // Принудительно перезагружаем все вкладки
-      return self.clients.matchAll({type:'window'}).then(clients => {
-        clients.forEach(client => client.navigate(client.url));
-      });
-    })
+      Promise.all(keys.map(k => caches.delete(k)))
+    )
   );
   self.clients.claim();
 });
@@ -35,18 +25,20 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // index.html — НИКОГДА не кэшируем
-  if (e.request.url.includes('vino-schedule') && !e.request.url.match(/\.[a-z]{2,4}(\?.*)?$/)) {
-    e.respondWith(fetch(e.request, {cache: 'no-store'}));
-    return;
-  }
-  if (e.request.url.endsWith('/') || e.request.url.includes('index.html')) {
-    e.respondWith(fetch(e.request, {cache: 'no-store'}));
+  // Перенаправляем index.html на app.html
+  if (e.request.url.endsWith('/vino-schedule/') || 
+      e.request.url.endsWith('/vino-schedule') ||
+      e.request.url.includes('index.html')) {
+    e.respondWith(
+      fetch(e.request.url.replace('index.html', 'app.html').replace(/\/vino-schedule\/?$/, '/vino-schedule/app.html'), {cache: 'no-store'})
+    );
     return;
   }
 
-  // Остальное — сеть, без кэша
-  e.respondWith(fetch(e.request, {cache: 'no-store'}).catch(() => new Response('')));
+  // Всё остальное — из сети без кэша
+  e.respondWith(
+    fetch(e.request, {cache: 'no-store'}).catch(() => new Response(''))
+  );
 });
 
 self.addEventListener('push', e => {
@@ -63,7 +55,7 @@ self.addEventListener('push', e => {
 
 self.addEventListener('notificationclick', e => {
   e.notification.close();
-  e.waitUntil(clients.openWindow('./'));
+  e.waitUntil(clients.openWindow('./app.html'));
 });
 
 self.addEventListener('message', e => {
