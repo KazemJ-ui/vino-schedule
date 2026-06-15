@@ -1,4 +1,4 @@
-const CACHE = 'vino-v15';
+const CACHE = 'vino-v16';
 
 self.addEventListener('install', e => {
   self.skipWaiting();
@@ -14,31 +14,12 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') {
-    e.respondWith(fetch(e.request));
-    return;
-  }
-
-  // API — всегда сеть
+  // Ничего не кэшируем — всё из сети
   if (e.request.url.includes('vinokhinkali.mooo.com')) {
     e.respondWith(fetch(e.request).catch(() => new Response('[]')));
     return;
   }
-
-  // Перенаправляем index.html на app.html
-  if (e.request.url.endsWith('/vino-schedule/') || 
-      e.request.url.endsWith('/vino-schedule') ||
-      e.request.url.includes('index.html')) {
-    e.respondWith(
-      fetch(e.request.url.replace('index.html', 'app.html').replace(/\/vino-schedule\/?$/, '/vino-schedule/app.html'), {cache: 'no-store'})
-    );
-    return;
-  }
-
-  // Всё остальное — из сети без кэша
-  e.respondWith(
-    fetch(e.request, {cache: 'no-store'}).catch(() => new Response(''))
-  );
+  e.respondWith(fetch(e.request, {cache: 'no-store'}).catch(() => caches.match(e.request)));
 });
 
 self.addEventListener('push', e => {
