@@ -1922,6 +1922,7 @@ async function loadPublishedSchedule(fromCache=false){
   }catch(e){}
 
   applyScheduleData(rows, hist, assignments);
+  buildScheduleUI();
 }
 
 function applyScheduleData(rows, hist, assignments){
