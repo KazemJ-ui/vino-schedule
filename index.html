@@ -2,8 +2,25 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0;url=./app.html">
-<script>window.location.replace('./app.html');</script>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script>
+// Unregister all service workers then redirect
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    var unregs = regs.map(function(r){ return r.unregister(); });
+    return Promise.all(unregs);
+  }).then(function(){
+    window.location.replace('./app.html');
+  });
+} else {
+  window.location.replace('./app.html');
+}
+</script>
 </head>
-<body></body>
+<body style="background:#1a0a0f;color:#C9963A;font-family:sans-serif;text-align:center;padding:50px">
+<h2>Вино &amp; Хинкали</h2>
+<p>Загрузка...</p>
+</body>
 </html>
