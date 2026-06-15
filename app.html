@@ -1948,6 +1948,24 @@ function applyScheduleData(rows, hist, assignments){
 
 
 async function init(){
+  // Очищаем кэш если там старый период
+  try{
+    const cached=localStorage.getItem('vino_schedule_cache');
+    if(cached){
+      const data=JSON.parse(cached);
+      const period=data?.rows?.[0]?.period||'';
+      const now=new Date();
+      const currentMonth=now.getMonth(); // 0-11
+      const RUM={'января':0,'февраля':1,'марта':2,'апреля':3,'мая':4,'июня':5,'июля':6,'августа':7,'сентября':8,'октября':9,'ноября':10,'декабря':11};
+      const m=period.match(/[а-яё]+/i)?.[0]?.toLowerCase();
+      const cachedMonth=m?(RUM[m]??-1):-1;
+      // Если месяц в кэше не совпадает с текущим или следующим — очищаем
+      if(cachedMonth!==-1&&cachedMonth!==currentMonth&&cachedMonth!==(currentMonth+1)%12){
+        localStorage.removeItem('vino_schedule_cache');
+        console.log('Cleared old cache for period:', period);
+      }
+    }
+  }catch(e){}
   await loadPublishedSchedule();
   await Promise.all([
     loadSwapHistory(),
