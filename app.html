@@ -1856,18 +1856,7 @@ async function publishSchedule(){
 
 async function loadPublishedSchedule(fromCache=false){
   // Показываем кэш мгновенно
-  // Проверяем кэш — если период не совпадает, очищаем
-  const cached=localStorage.getItem('vino_schedule_cache');
-  if(cached){
-    try{
-      const data=JSON.parse(cached);
-      if(data.rows&&data.rows[0]&&data.rows[0].period===latestPeriodName){
-        applyScheduleData(data.rows, data.hist, data.assignments);
-      } else {
-        localStorage.removeItem('vino_schedule_cache');
-      }
-    }catch(e){ localStorage.removeItem('vino_schedule_cache'); }
-  }
+  // Кэш отключён — всегда загружаем с сервера
 
 
   // Всегда грузим свежие данные с сервера
