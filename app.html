@@ -2109,7 +2109,7 @@ if('serviceWorker' in navigator){
           await reg.unregister();
         }
       }
-      const reg=await navigator.serviceWorker.register('./sw.js?v=8');
+      const reg=await navigator.serviceWorker.register('./sw.js?v=15');
       await reg.update();
       if(myName&&'Notification' in window&&Notification.permission==='granted'){
         subscribeToPush(myName);
