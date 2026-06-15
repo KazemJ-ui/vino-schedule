@@ -458,29 +458,6 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 <script>/* v6.1 */
 // Принудительно удаляем старые SW при обнаружении
 if('serviceWorker' in navigator){
-    // Принудительно проверяем обновление SW при каждом открытии
-    navigator.serviceWorker.register('./sw.js').then(reg=>{
-      reg.update();
-      // Если новый SW ожидает — активируем его сразу
-      if(reg.waiting){
-        reg.waiting.postMessage({type:'SKIP_WAITING'});
-        window.location.reload();
-      }
-      reg.addEventListener('updatefound',()=>{
-        const newSW=reg.installing;
-        newSW.addEventListener('statechange',()=>{
-          if(newSW.state==='installed'&&navigator.serviceWorker.controller){
-            newSW.postMessage({type:'SKIP_WAITING'});
-            window.location.reload();
-          }
-        });
-      });
-    });
-    // Перезагружаем когда новый SW берёт контроль
-    navigator.serviceWorker.addEventListener('controllerchange',()=>{
-      window.location.reload();
-    });
-  } else if(false && 'serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(regs=>{
     regs.forEach(reg=>reg.update());
   });
