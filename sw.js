@@ -1,4 +1,4 @@
-const CACHE = 'vino-v12';
+const CACHE = 'vino-v13';
 const FILES = [
   './icon.png',
   './manifest.json',
