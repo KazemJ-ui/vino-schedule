@@ -1,4 +1,4 @@
-const CACHE = 'vino-v13';
+const CACHE = 'vino-v14';
 const FILES = [
   './icon.png',
   './manifest.json',
@@ -12,8 +12,13 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    )
+      Promise.all(keys.map(k => caches.delete(k))) // Удаляем ВСЕ кэши
+    ).then(() => {
+      // Принудительно перезагружаем все вкладки
+      return self.clients.matchAll({type:'window'}).then(clients => {
+        clients.forEach(client => client.navigate(client.url));
+      });
+    })
   );
   self.clients.claim();
 });
@@ -30,8 +35,8 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // index.html — НИКОГДА не кэшируем, всегда из сети
-  if (e.request.url.includes('vino-schedule') && !e.request.url.match(/\.[a-z]{2,4}$/)) {
+  // index.html — НИКОГДА не кэшируем
+  if (e.request.url.includes('vino-schedule') && !e.request.url.match(/\.[a-z]{2,4}(\?.*)?$/)) {
     e.respondWith(fetch(e.request, {cache: 'no-store'}));
     return;
   }
@@ -40,19 +45,8 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Шрифты и иконки — кэш
-  e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(response => {
-        if (response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE).then(cache => cache.put(e.request, clone));
-        }
-        return response;
-      });
-    })
-  );
+  // Остальное — сеть, без кэша
+  e.respondWith(fetch(e.request, {cache: 'no-store'}).catch(() => new Response('')));
 });
 
 self.addEventListener('push', e => {
@@ -72,7 +66,6 @@ self.addEventListener('notificationclick', e => {
   e.waitUntil(clients.openWindow('./'));
 });
 
-// Принудительная активация по команде из страницы
 self.addEventListener('message', e => {
   if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
