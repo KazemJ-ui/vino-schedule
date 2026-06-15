@@ -1764,25 +1764,46 @@ async function publishSchedule(){
         const underZone=underfull[0];
         // Найти кого перевести — того кто реже всего бывал в underZone
         const candidates=workers.filter(w=>globalPlan[day][w.staff_name]===overZone);
-        candidates.sort((a,b)=>{
-          // Считаем сколько раз каждый уже стоял в underZone в этом периоде
+        // Исключаем кандидатов у кого вчера была underZone (жёсткий запрет повтора)
+        const prevDayIdx=sortedDays.indexOf(String(day))-1;
+        const prevDay=prevDayIdx>=0?sortedDays[prevDayIdx]:null;
+        const preferredCandidates=candidates.filter(w=>
+          !prevDay||globalPlan[prevDay][w.staff_name]!==underZone
+        );
+        const finalCandidates=preferredCandidates.length>0?preferredCandidates:candidates;
+        finalCandidates.sort((a,b)=>{
           const ca=sortedDays.filter(d=>+d<+day&&globalPlan[d][a.staff_name]===underZone).length;
           const cb=sortedDays.filter(d=>+d<+day&&globalPlan[d][b.staff_name]===underZone).length;
-          // Штраф если вчера стоял в underZone (не хотим повторять подряд)
-          const prevDayIdx=sortedDays.indexOf(String(day))-1;
-          const prevDay=prevDayIdx>=0?sortedDays[prevDayIdx]:null;
-          const pa=prevDay&&globalPlan[prevDay][a.staff_name]===underZone?100:0;
-          const pb=prevDay&&globalPlan[prevDay][b.staff_name]===underZone?100:0;
-          return (ca+pa)-(cb+pb);
+          return ca-cb;
         });
-        if(candidates.length>0){
-          globalPlan[day][candidates[0].staff_name]=underZone;
+        const candidates_=finalCandidates;
+        if(candidates_.length>0){
+          globalPlan[day][candidates_[0].staff_name]=underZone;
           assigned[overZone]--;
           assigned[underZone]=(assigned[underZone]||0)+1;
           if((assigned[underZone]||0)>=(slots[underZone]||1)) underfull.shift();
         } else break;
       }
     });
+  });
+
+  // Проверяем и исправляем повторы подряд в globalPlan
+  Object.keys(personDays).forEach(name=>{
+    const days=personDays[name].sort((a,b)=>+a-+b);
+    for(let i=1;i<days.length;i++){
+      const prevDay=days[i-1];
+      const curDay=days[i];
+      if(globalPlan[curDay][name]===globalPlan[prevDay][name]){
+        // Найти другую зону — ту что человек посещал реже всего
+        const curZone=globalPlan[curDay][name];
+        const allZones=ZONES.filter(z=>z!==curZone);
+        const counts={};
+        allZones.forEach(z=>counts[z]=days.filter(d=>+d<+curDay&&globalPlan[d][name]===z).length);
+        allZones.sort((a,b)=>counts[a]-counts[b]);
+        // Меняем на зону с наименьшим счётчиком (не совпадающую с текущей)
+        globalPlan[curDay][name]=allZones[0];
+      }
+    }
   });
 
   // Удаляем старый график
@@ -1867,7 +1888,18 @@ async function publishSchedule(){
 
 async function loadPublishedSchedule(fromCache=false){
   // Показываем кэш мгновенно
-  // Cache disabled to prevent duplicates
+  // Проверяем кэш — если период не совпадает, очищаем
+  const cached=localStorage.getItem('vino_schedule_cache');
+  if(cached){
+    try{
+      const data=JSON.parse(cached);
+      if(data.rows&&data.rows[0]&&data.rows[0].period===latestPeriodName){
+        applyScheduleData(data.rows, data.hist, data.assignments);
+      } else {
+        localStorage.removeItem('vino_schedule_cache');
+      }
+    }catch(e){ localStorage.removeItem('vino_schedule_cache'); }
+  }
 
 
   // Всегда грузим свежие данные с сервера
