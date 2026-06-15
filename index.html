@@ -1596,6 +1596,17 @@ function buildScheduleUI(){
     contentEl.appendChild(panel);
   });
   if(days.length) currentDay=+days[0];
+
+  // Переходим на текущий день
+  const today=new Date().getDate();
+  if(schedule[today]){
+    switchDay(today, null);
+    document.querySelector(`.tab[data-day="${today}"]`)?.classList.add('today');
+  } else {
+    const days2=Object.keys(schedule).map(Number).sort((a,b)=>a-b);
+    const future=days2.find(d=>d>=today)||days2[0];
+    if(future) switchDay(future, null);
+  }
 }
 
 function switchDay(d,dir){
@@ -1976,17 +1987,6 @@ function applyScheduleData(rows, hist, assignments){
     Object.keys(schedule).forEach(d=>{const p=document.getElementById('panel-'+d);if(p)p.innerHTML=buildPanel(+d);});
   }
 
-  // Переходим на текущий день если он есть в графике
-  const today=new Date().getDate();
-  if(schedule[today]){
-    switchDay(today, null);
-    document.querySelector(`.tab[data-day="${today}"]`)?.classList.add('today');
-  } else {
-    // Ищем ближайший будущий день
-    const days=Object.keys(schedule).map(Number).sort((a,b)=>a-b);
-    const future=days.find(d=>d>=today)||days[0];
-    if(future) switchDay(future, null);
-  }
 }
 
 
