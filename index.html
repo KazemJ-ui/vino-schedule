@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="app-version" content="8">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -458,6 +461,13 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 <script>/* v6.1 */
 // Принудительно удаляем старые SW при обнаружении
 if('serviceWorker' in navigator){
+    // Удаляем все старые SW и регистрируем заново
+    navigator.serviceWorker.getRegistrations().then(regs=>{
+      const hasNew=regs.some(r=>r.active&&r.active.scriptURL.includes('sw.js'));
+      regs.forEach(r=>{
+        if(r.active&&!r.active.scriptURL.includes('sw.js?')) r.unregister();
+      });
+    });
   navigator.serviceWorker.getRegistrations().then(regs=>{
     regs.forEach(reg=>reg.update());
   });
