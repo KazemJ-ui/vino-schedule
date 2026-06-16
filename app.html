@@ -1747,6 +1747,9 @@ async function publishSchedule(){
   });
 
   // Разрешаем конфликты — если в день слотов не хватает, меняем с кем-то
+  const toInsert=[];
+  const zoneHistInsert=[];
+
   sortedDays.forEach(day=>{
     const workers=byDay[day];
     const count=workers.length;
