@@ -1618,6 +1618,7 @@ if(savedName!==null){
 
 // Строим UI из загруженного schedule
 function buildScheduleUI(){
+  const wasViewingDay=currentDay; // Запоминаем какой день был открыт
   tabsEl.innerHTML='';
   contentEl.innerHTML='';
   const days=Object.keys(schedule);
@@ -1641,15 +1642,20 @@ function buildScheduleUI(){
   });
   if(days.length) currentDay=+days[0];
 
-  // Переходим на текущий день
-  const today=new Date().getDate();
-  if(schedule[today]){
-    switchDay(today, null);
-    document.querySelector(`.tab[data-day="${today}"]`)?.classList.add('today');
+  // Если пользователь уже смотрел день и он есть в новых данных — остаёмся там
+  if(wasViewingDay&&schedule[wasViewingDay]){
+    switchDay(wasViewingDay, null);
   } else {
-    const days2=Object.keys(schedule).map(Number).sort((a,b)=>a-b);
-    const future=days2.find(d=>d>=today)||days2[0];
-    if(future) switchDay(future, null);
+    // Переходим на текущий день
+    const today=new Date().getDate();
+    if(schedule[today]){
+      switchDay(today, null);
+      document.querySelector(`.tab[data-day="${today}"]`)?.classList.add('today');
+    } else {
+      const days2=Object.keys(schedule).map(Number).sort((a,b)=>a-b);
+      const future=days2.find(d=>d>=today)||days2[0];
+      if(future) switchDay(future, null);
+    }
   }
 }
 
@@ -1881,7 +1887,7 @@ async function publishSchedule(){
   }
 
   showToast('✅ График опубликован!');
-  localStorage.removeItem('vino_schedule_cache');
+  localStorage.removeItem('vino_schedule_cache_v2');
   await sf('schedule_periods?is_open=eq.true','PATCH',{is_open:false});
   document.getElementById('schedBanner').classList.remove('show');
   document.querySelector('.tabs-wrap').style.top='78px';
@@ -1905,11 +1911,19 @@ async function loadPublishedSchedule(fromCache=false){
       <div class="skel skel-block"></div>
     </div>`;
   }
-  // Показываем кэш мгновенно
-  // Кэш отключён — всегда загружаем с сервера
+  // Показываем кэш мгновенно (без видимого мигания)
+  try{
+    const cached=localStorage.getItem('vino_schedule_cache_v2');
+    if(cached){
+      const data=JSON.parse(cached);
+      if(data.rows&&data.rows.length){
+        applyScheduleData(data.rows, data.hist, data.assignments);
+        buildScheduleUI();
+      }
+    }
+  }catch(e){}
 
-
-  // Всегда грузим свежие данные с сервера
+  // В фоне всегда грузим свежие данные с сервера
   // Определяем последний опубликованный период
   const latestPeriod=await sf('published_schedule?select=period&order=created_at.desc&limit=1');
   const latestPeriodName=(Array.isArray(latestPeriod)&&latestPeriod.length>0)?latestPeriod[0].period:null;
@@ -1925,7 +1939,7 @@ async function loadPublishedSchedule(fromCache=false){
 
   // Сохраняем в кэш
   try{
-    localStorage.setItem('vino_schedule_cache', JSON.stringify({rows,hist,assignments,ts:Date.now()}));
+    localStorage.setItem('vino_schedule_cache_v2', JSON.stringify({rows,hist,assignments,ts:Date.now()}));
   }catch(e){}
 
   applyScheduleData(rows, hist, assignments);
@@ -1989,21 +2003,7 @@ function applyScheduleData(rows, hist, assignments){
 async function init(){
   // Очищаем кэш если там старый период
   try{
-    const cached=localStorage.getItem('vino_schedule_cache');
-    if(cached){
-      const data=JSON.parse(cached);
-      const period=data?.rows?.[0]?.period||'';
-      const now=new Date();
-      const currentMonth=now.getMonth(); // 0-11
-      const RUM={'января':0,'февраля':1,'марта':2,'апреля':3,'мая':4,'июня':5,'июля':6,'августа':7,'сентября':8,'октября':9,'ноября':10,'декабря':11};
-      const m=period.match(/[а-яё]+/i)?.[0]?.toLowerCase();
-      const cachedMonth=m?(RUM[m]??-1):-1;
-      // Если месяц в кэше не совпадает с текущим или следующим — очищаем
-      if(cachedMonth!==-1&&cachedMonth!==currentMonth&&cachedMonth!==(currentMonth+1)%12){
-        localStorage.removeItem('vino_schedule_cache');
-        console.log('Cleared old cache for period:', period);
-      }
-    }
+    // Кэш v2 не требует проверки месяца — сервер всегда перезаписывает свежими данными
   }catch(e){}
   await loadPublishedSchedule();
   await Promise.all([
