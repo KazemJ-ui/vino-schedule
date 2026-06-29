@@ -2645,7 +2645,7 @@ async function submitNewsPost(){
   btn.disabled=true;btn.textContent='✍️ Редакция думает...';
   let headline=generateHeadline(text);
   try{
-    const r=await fetch('https://vinokhinkali.mooo.com:8443/api/ai-headline',{
+    const r=await fetch('https://api.vino-hinkali.online/api/ai-headline',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({text})
     });
@@ -2794,7 +2794,7 @@ function toggleNewsComments(postId,toggleEl){
 
 async function _newsAiEditorComment(postId,text,headline){
   try{
-    const r=await fetch('https://vinokhinkali.mooo.com:8443/api/ai-editor-comment',{
+    const r=await fetch('https://api.vino-hinkali.online/api/ai-editor-comment',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({text,headline})
