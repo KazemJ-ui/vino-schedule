@@ -338,23 +338,27 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 .news-post-sheet{background:#faf7ee;width:100%;max-width:480px;border-radius:0;padding:20px 18px;padding-bottom:max(24px,env(safe-area-inset-bottom));max-height:92vh;overflow-y:auto;border-top:4px double #111}
 .news-post-sheet-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:#111;text-align:center;margin-bottom:4px;text-transform:uppercase;letter-spacing:2px}
 .news-post-sheet-sub{font-size:9px;color:#aaa;text-align:center;letter-spacing:2px;text-transform:uppercase;font-family:'Nunito',sans-serif;margin-bottom:16px}
-/* Photo picker — точный превью как в статье */
+/* Photo picker — кроппер с перетаскиванием */
 .news-photo-label{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:2px;font-family:'Nunito',sans-serif;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .news-photo-label::after{content:'';flex:1;height:1px;background:#ccc}
-.news-photo-preview{width:100%;height:190px;border:2px solid #111;overflow:hidden;position:relative;cursor:pointer;margin-bottom:0;background:#f0ece0}
-.news-photo-preview img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%) contrast(1.15) brightness(0.92);display:block}
+.news-photo-preview{width:100%;height:190px;border:2px solid #111;overflow:hidden;position:relative;cursor:pointer;margin-bottom:0;background:#f0ece0;user-select:none}
+.news-photo-preview.has-photo{cursor:grab}
+.news-photo-preview.has-photo:active{cursor:grabbing}
+.news-photo-preview .crop-img{position:absolute;filter:grayscale(100%) contrast(1.15) brightness(0.92);pointer-events:none;will-change:transform}
 .news-photo-preview::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:2;
   background:
-    linear-gradient(to right,#111 2px,transparent 2px) 0 0/14px 14px no-repeat,
-    linear-gradient(to bottom,#111 2px,transparent 2px) 0 0/14px 14px no-repeat,
-    linear-gradient(to left,#111 2px,transparent 2px) 100% 0/14px 14px no-repeat,
-    linear-gradient(to bottom,#111 2px,transparent 2px) 100% 0/14px 14px no-repeat,
-    linear-gradient(to right,#111 2px,transparent 2px) 0 100%/14px 14px no-repeat,
-    linear-gradient(to top,#111 2px,transparent 2px) 0 100%/14px 14px no-repeat,
-    linear-gradient(to left,#111 2px,transparent 2px) 100% 100%/14px 14px no-repeat,
-    linear-gradient(to top,#111 2px,transparent 2px) 100% 100%/14px 14px no-repeat;
+    linear-gradient(to right,#fff 2px,transparent 2px) 0 0/18px 18px no-repeat,
+    linear-gradient(to bottom,#fff 2px,transparent 2px) 0 0/18px 18px no-repeat,
+    linear-gradient(to left,#fff 2px,transparent 2px) 100% 0/18px 18px no-repeat,
+    linear-gradient(to bottom,#fff 2px,transparent 2px) 100% 0/18px 18px no-repeat,
+    linear-gradient(to right,#fff 2px,transparent 2px) 0 100%/18px 18px no-repeat,
+    linear-gradient(to top,#fff 2px,transparent 2px) 0 100%/18px 18px no-repeat,
+    linear-gradient(to left,#fff 2px,transparent 2px) 100% 100%/18px 18px no-repeat,
+    linear-gradient(to top,#fff 2px,transparent 2px) 100% 100%/18px 18px no-repeat;
 }
-.news-photo-preview::after{content:'КАДР СТАТЬИ';position:absolute;top:6px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.55);color:#fff;font-size:8px;padding:2px 8px;letter-spacing:2px;font-family:'Nunito',sans-serif;pointer-events:none;z-index:3}
+.news-photo-preview::after{content:'ДВИГАЙ ФОТО';position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);color:#fff;font-size:8px;padding:3px 10px;letter-spacing:2px;font-family:'Nunito',sans-serif;pointer-events:none;z-index:3;opacity:0;transition:opacity 0.3s}
+.news-photo-preview.has-photo::after{opacity:1}
+.news-photo-change{position:absolute;top:7px;right:7px;z-index:10;background:rgba(0,0,0,0.6);color:#fff;font-size:9px;padding:3px 9px;font-family:'Nunito',sans-serif;border:none;cursor:pointer;letter-spacing:1px;text-transform:uppercase}
 .news-photo-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#bbb;font-family:'Nunito',sans-serif;font-size:12px}
 .news-photo-placeholder-icon{font-size:32px;opacity:0.5}
 .news-photo-hint{font-size:10px;color:#888;text-align:center;font-family:'Nunito',sans-serif;margin:6px 0 14px;font-style:italic;display:flex;align-items:center;gap:4px;justify-content:center}
@@ -515,14 +519,14 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
     <div class="news-post-sheet-title">Редакция</div>
     <div class="news-post-sheet-sub">Новая статья в выпуск</div>
     <div class="news-photo-label">Фото для статьи</div>
-    <div class="news-photo-preview" id="newsPhotoPreview" onclick="document.getElementById('newsPhotoInput').click()">
+    <div class="news-photo-preview" id="newsPhotoPreview" onclick="newsPreviewClick()">
       <div class="news-photo-placeholder" id="newsPhotoPlaceholder">
         <div class="news-photo-placeholder-icon">📷</div>
         <span>Нажми чтобы выбрать фото</span>
         <span style="font-size:10px;opacity:0.6">необязательно</span>
       </div>
     </div>
-    <div class="news-photo-hint" id="newsPhotoHint">↑ Всё что видишь в рамке — именно так появится в статье</div>
+    <div class="news-photo-hint" id="newsPhotoHint">Выбери фото и двигай пальцем чтобы выбрать нужную область</div>
     <input type="file" accept="image/*" class="news-photo-input" id="newsPhotoInput" onchange="onNewsPhotoSelected(this)">
     <textarea class="news-post-textarea" id="newsPostText" placeholder="Что случилось? Расскажи подробно — чем смешнее, тем лучше" maxlength="600"></textarea>
     <div class="news-post-hint">ИИ придумает заголовок автоматически</div>
@@ -2467,10 +2471,28 @@ function openPostSheet(){
 function closePostSheet(){
   document.getElementById('newsPostOverlay').classList.remove('active');
   document.getElementById('newsPostText').value='';
-  newsSelectedImage=null;
+  newsSelectedImage=null;_newsRawImg=null;
   const prev=document.getElementById('newsPhotoPreview');
+  prev.classList.remove('has-photo');
   prev.innerHTML='<div class="news-photo-placeholder" id="newsPhotoPlaceholder"><div class="news-photo-placeholder-icon">📷</div><span>Нажми чтобы выбрать фото</span><span style="font-size:10px;opacity:0.6">необязательно</span></div>';
-  document.getElementById('newsPhotoHint').textContent='Область выше — точно то, что будет видно в газете';
+  document.getElementById('newsPhotoHint').textContent='Выбери фото и двигай пальцем чтобы выбрать нужную область';
+}
+
+let _newsRawImg=null, _newsCropPx=0, _newsCropPy=0;
+let _newsImgW=0, _newsImgH=0;
+let _newsDragStartX=0, _newsDragStartY=0, _newsDragCropPx=0, _newsDragCropPy=0, _newsDragging=false;
+
+function newsPreviewClick(){
+  if(!_newsRawImg) document.getElementById('newsPhotoInput').click();
+}
+
+function _newsClampCrop(cW,cH){
+  _newsCropPx=Math.min(0,Math.max(cW-_newsImgW,_newsCropPx));
+  _newsCropPy=Math.min(0,Math.max(cH-_newsImgH,_newsCropPy));
+}
+function _newsUpdateCropImg(){
+  const el=document.querySelector('#newsPhotoPreview .crop-img');
+  if(el) el.style.transform=`translate(${_newsCropPx}px,${_newsCropPy}px)`;
 }
 
 function onNewsPhotoSelected(input){
@@ -2480,21 +2502,81 @@ function onNewsPhotoSelected(input){
   reader.onload=function(e){
     const img=new Image();
     img.onload=function(){
-      const canvas=document.createElement('canvas');
-      const MAX=800;
-      let w=img.width,h=img.height;
-      if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
-      canvas.width=w;canvas.height=h;
-      canvas.getContext('2d').drawImage(img,0,0,w,h);
-      newsSelectedImage=canvas.toDataURL('image/jpeg',0.72);
-      // Показываем точный превью — такой же как будет в статье
+      _newsRawImg=img;
       const prev=document.getElementById('newsPhotoPreview');
-      prev.innerHTML=`<img src="${newsSelectedImage}" style="width:100%;height:100%;object-fit:cover;filter:grayscale(100%) contrast(1.15) brightness(0.92);display:block;">`;
-      document.getElementById('newsPhotoHint').textContent='✓ Фото выбрано — именно эта область попадёт в статью';
+      const cW=prev.offsetWidth||300, cH=190;
+      const scale=Math.max(cW/img.width, cH/img.height);
+      _newsImgW=Math.round(img.width*scale);
+      _newsImgH=Math.round(img.height*scale);
+      _newsCropPx=Math.round((cW-_newsImgW)/2);
+      _newsCropPy=Math.round((cH-_newsImgH)/2);
+      _newsClampCrop(cW,cH);
+
+      prev.innerHTML='';
+      prev.classList.add('has-photo');
+      const imgEl=document.createElement('img');
+      imgEl.className='crop-img';
+      imgEl.src=e.target.result;
+      imgEl.style.width=_newsImgW+'px';
+      imgEl.style.height=_newsImgH+'px';
+      imgEl.style.transform=`translate(${_newsCropPx}px,${_newsCropPy}px)`;
+      prev.appendChild(imgEl);
+
+      const btn=document.createElement('button');
+      btn.className='news-photo-change';
+      btn.textContent='изменить';
+      btn.onclick=ev=>{ev.stopPropagation();document.getElementById('newsPhotoInput').click();};
+      prev.appendChild(btn);
+
+      // touch drag
+      prev.addEventListener('touchstart',ev=>{
+        _newsDragging=true;
+        _newsDragStartX=ev.touches[0].clientX;_newsDragStartY=ev.touches[0].clientY;
+        _newsDragCropPx=_newsCropPx;_newsDragCropPy=_newsCropPy;
+      },{passive:true});
+      prev.addEventListener('touchmove',ev=>{
+        if(!_newsDragging)return;
+        _newsCropPx=_newsDragCropPx+ev.touches[0].clientX-_newsDragStartX;
+        _newsCropPy=_newsDragCropPy+ev.touches[0].clientY-_newsDragStartY;
+        _newsClampCrop(prev.offsetWidth||300,190);
+        _newsUpdateCropImg();
+      },{passive:true});
+      prev.addEventListener('touchend',()=>{_newsDragging=false;},{passive:true});
+      // mouse drag
+      prev.addEventListener('mousedown',ev=>{
+        _newsDragging=true;
+        _newsDragStartX=ev.clientX;_newsDragStartY=ev.clientY;
+        _newsDragCropPx=_newsCropPx;_newsDragCropPy=_newsCropPy;
+        ev.preventDefault();
+      });
+      window.addEventListener('mousemove',ev=>{
+        if(!_newsDragging)return;
+        _newsCropPx=_newsDragCropPx+ev.clientX-_newsDragStartX;
+        _newsCropPy=_newsDragCropPy+ev.clientY-_newsDragStartY;
+        _newsClampCrop(prev.offsetWidth||300,190);
+        _newsUpdateCropImg();
+      });
+      window.addEventListener('mouseup',()=>{_newsDragging=false;});
+
+      document.getElementById('newsPhotoHint').textContent='✦ Двигай фото пальцем — выбери нужную часть';
     };
     img.src=e.target.result;
   };
   reader.readAsDataURL(file);
+}
+
+async function _newsGetCroppedImage(){
+  if(!_newsRawImg) return null;
+  const prev=document.getElementById('newsPhotoPreview');
+  const cW=prev.offsetWidth||300, cH=190;
+  const scale=Math.max(cW/_newsRawImg.width, cH/_newsRawImg.height);
+  const srcX=-_newsCropPx/scale, srcY=-_newsCropPy/scale;
+  const srcW=cW/scale, srcH=cH/scale;
+  const OUT_W=800, OUT_H=Math.round(OUT_W*cH/cW);
+  const canvas=document.createElement('canvas');
+  canvas.width=OUT_W;canvas.height=OUT_H;
+  canvas.getContext('2d').drawImage(_newsRawImg,srcX,srcY,srcW,srcH,0,0,OUT_W,OUT_H);
+  return canvas.toDataURL('image/jpeg',0.72);
 }
 
 function generateHeadline(text){
@@ -2545,7 +2627,7 @@ async function submitNewsPost(){
   btn.disabled=true;btn.textContent='⏳ Публикуем...';
   const headline=generateHeadline(text);
   const payload={author:myName,text,headline};
-  if(newsSelectedImage) payload.image=newsSelectedImage;
+  if(_newsRawImg) payload.image=await _newsGetCroppedImage();
   const res=await sf('newspaper_posts','POST',payload);
   btn.disabled=false;btn.textContent='📰 Опубликовать';
   if(res&&!res.error){
