@@ -390,10 +390,8 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 /* Dark mode */
 body.dark .news-screen{background:#111}
 body.dark .news-body{background:#111}
-body.dark .na-feature{background:#111}
-body.dark .na-grid{background:#111}
-body.dark .na-wide{background:#111}
-body.dark .na-small{background:#111}
+body.dark .na-feature,body.dark .na-grid,body.dark .na-wide,body.dark .na-small{background:#111 !important}
+body.dark .na-feature *,body.dark .na-wide *,body.dark .na-grid *{background-color:transparent}
 body.dark .na-headline-feature{color:#eee}
 body.dark .na-headline-small{color:#eee}
 body.dark .na-headline-wide{color:#eee}
@@ -401,6 +399,8 @@ body.dark .na-body-cols{color:#ccc}
 body.dark .na-body-single{color:#ccc}
 body.dark .na-body-small{color:#ccc}
 body.dark .na-body-wide{color:#ccc}
+body.dark .na-body-cols::first-letter{color:#eee}
+body.dark .na-body-single::first-letter{color:#eee}
 body.dark .na-subhead{color:#888;border-color:#333}
 body.dark .na-byline{color:#555}
 body.dark .na-byline-small{color:#555}
