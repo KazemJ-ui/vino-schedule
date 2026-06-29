@@ -296,27 +296,45 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 .news-meta-item{font-size:8px;color:#555;letter-spacing:1px;text-transform:uppercase;font-family:'Nunito',sans-serif}
 .news-meta-center{font-size:9px;color:#888;font-family:'Playfair Display',serif;font-style:italic}
 /* Body */
-.news-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 12px 90px}
-.news-section-rule{display:flex;align-items:center;gap:8px;margin:0 0 12px}
-.news-section-rule::before,.news-section-rule::after{content:'';flex:1;height:1px;background:#999}
-.news-section-label{font-size:8px;color:#777;letter-spacing:3px;text-transform:uppercase;font-family:'Nunito',sans-serif;white-space:nowrap}
-/* Article */
-.news-article{background:#faf7ee;border:1px solid #bbb;margin-bottom:16px;overflow:hidden;box-shadow:3px 4px 0 rgba(0,0,0,0.12)}
-.news-article-img-wrap{position:relative;width:100%;height:190px;overflow:hidden;border-bottom:2px solid #aaa}
-.news-article-img{width:100%;height:100%;object-fit:cover;display:block}
-.news-article-img-caption{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.55);color:#ddd;font-size:9px;padding:3px 8px;font-family:'Nunito',sans-serif;font-style:italic}
-.news-article-inner{padding:12px 14px 6px}
-.news-article-num{font-size:8px;color:#aaa;letter-spacing:2px;font-family:'Nunito',sans-serif;margin-bottom:6px;text-transform:uppercase}
-.news-headline{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:#111;line-height:1.2;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px;border-bottom:3px solid #111;padding-bottom:6px}
-.news-subheadline{font-family:'Georgia',serif;font-size:11px;color:#555;font-style:italic;margin-bottom:8px;line-height:1.4}
-.news-byline{font-size:9px;color:#999;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #ccc;font-family:'Nunito',sans-serif;display:flex;justify-content:space-between;text-transform:uppercase;letter-spacing:1px}
-.news-text{font-size:13px;color:#1a1a1a;line-height:1.7;font-family:'Georgia',serif;text-align:justify}
-.news-text::first-letter{font-size:42px;font-weight:900;float:left;line-height:0.75;margin:4px 6px 0 0;font-family:'Playfair Display',serif;color:#111}
-.news-article-footer{padding:6px 14px 0;font-size:9px;color:#aaa;font-style:italic;font-family:'Nunito',sans-serif;text-align:right;border-top:1px solid #eee;margin-top:10px}
+.news-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 90px;background:#f0ece0}
+/* Section rule */
+.news-section-rule{display:flex;align-items:center;gap:0;margin:0;border:none;background:#f0ece0}
+.news-section-rule span{flex:1;height:1px;background:#111}
+.news-section-label{font-size:7px;color:#555;letter-spacing:3px;text-transform:uppercase;font-family:'Nunito',sans-serif;white-space:nowrap;padding:7px 8px}
+/* FEATURE article — full width, main story */
+.na-feature{padding:12px 12px 0;border-bottom:3px double #111;background:#f0ece0}
+.na-kicker{font-family:'Nunito',sans-serif;font-size:7px;letter-spacing:3px;text-transform:uppercase;color:#666;margin-bottom:4px}
+.na-num{font-family:'Nunito',sans-serif;font-size:7px;color:#bbb;letter-spacing:2px;margin-bottom:2px;text-transform:uppercase}
+.na-headline-feature{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;line-height:1.1;color:#111;text-transform:uppercase;margin-bottom:6px;letter-spacing:0.2px}
+.na-subhead{font-family:'Georgia',serif;font-size:10.5px;font-style:italic;color:#555;border-top:1px solid #bbb;border-bottom:1px solid #bbb;padding:5px 0;margin-bottom:8px;line-height:1.4}
+.na-byline{font-family:'Nunito',sans-serif;font-size:8px;color:#888;text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between;margin-bottom:8px}
+.na-photo{width:100%;height:170px;overflow:hidden;margin-bottom:8px;border-top:2px solid #111;border-bottom:2px solid #111}
+.na-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.na-caption{font-family:'Nunito',sans-serif;font-size:8px;color:#777;font-style:italic;margin-bottom:8px}
+.na-body-cols{font-family:'Georgia',serif;font-size:11.5px;line-height:1.7;text-align:justify;color:#1a1a1a;columns:2;column-gap:14px;column-rule:1px solid #ccc;margin-bottom:12px}
+.na-body-cols::first-letter{font-size:48px;font-weight:900;float:left;line-height:0.8;margin:4px 6px 0 0;font-family:'Playfair Display',serif;color:#111}
+.na-body-single{font-family:'Georgia',serif;font-size:11.5px;line-height:1.7;text-align:justify;color:#1a1a1a;margin-bottom:12px}
+.na-body-single::first-letter{font-size:48px;font-weight:900;float:left;line-height:0.8;margin:4px 6px 0 0;font-family:'Playfair Display',serif;color:#111}
+/* GRID — two small side-by-side */
+.na-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #bbb;background:#f0ece0}
+.na-small{padding:10px 10px 10px;border-right:1px solid #bbb}
+.na-small:last-child{border-right:none}
+.na-headline-small{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;line-height:1.2;color:#111;margin-bottom:5px;text-transform:uppercase}
+.na-body-small{font-family:'Georgia',serif;font-size:9.5px;line-height:1.55;text-align:justify;color:#333}
+.na-byline-small{font-family:'Nunito',sans-serif;font-size:7.5px;color:#999;margin-top:5px;font-style:italic}
+/* WIDE — image floated */
+.na-wide{padding:10px 12px;border-bottom:1px solid #bbb;background:#f0ece0;overflow:hidden}
+.na-wide-photo{float:right;width:110px;height:75px;overflow:hidden;margin:0 0 6px 10px;border:1px solid #bbb;flex-shrink:0}
+.na-wide-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.na-headline-wide{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;line-height:1.2;color:#111;margin-bottom:4px;text-transform:uppercase}
+.na-body-wide{font-family:'Georgia',serif;font-size:10px;line-height:1.6;text-align:justify;color:#333}
+.na-byline-wide{font-family:'Nunito',sans-serif;font-size:7.5px;color:#999;margin-top:4px;font-style:italic;clear:both}
+/* Footer strip */
+.na-footer{text-align:right;font-size:8px;color:#bbb;font-family:'Nunito',sans-serif;padding:2px 12px 6px;font-style:italic}
 /* Comments */
-.news-comments-toggle{padding:8px 14px;border-top:1px solid #ddd;font-size:10px;color:#888;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;gap:5px;user-select:none;text-transform:uppercase;letter-spacing:1px}
+.news-comments-toggle{padding:7px 12px;border-top:1px solid #ddd;font-size:9px;color:#888;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;gap:5px;user-select:none;text-transform:uppercase;letter-spacing:1px;background:#f0ece0}
 .news-comments-toggle:active{opacity:0.6}
-.news-comments-wrap{display:none;padding:0 14px 10px;border-top:1px dashed #ccc;background:#f5f1e4}
+.news-comments-wrap{display:none;padding:0 12px 10px;border-top:1px dashed #ccc;background:#ede9d8}
 .news-comment-item{padding:7px 0;border-bottom:1px dotted #ddd;font-family:'Nunito',sans-serif}
 .news-comment-item:last-of-type{border:none}
 .news-comment-author{font-weight:800;font-size:10px;color:#333;text-transform:uppercase;letter-spacing:1px}
@@ -370,13 +388,15 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 .news-post-submit:active{opacity:0.8}
 .news-post-cancel{width:100%;padding:10px;background:none;border:none;color:#bbb;font-family:'Nunito',sans-serif;font-size:13px;cursor:pointer;margin-top:4px}
 /* Dark mode */
-body.dark .news-screen{background:#0f0f0f}
-body.dark .news-article{background:#1a1a1a;border-color:#333;box-shadow:3px 4px 0 rgba(0,0,0,0.4)}
-body.dark .news-headline{color:#eee;border-bottom-color:#eee}
-body.dark .news-text{color:#ccc}
-body.dark .news-text::first-letter{color:#eee}
-body.dark .news-byline{color:#555;border-bottom-color:#333}
-body.dark .news-subheadline{color:#666}
+body.dark .news-screen{background:#111}
+body.dark .news-body{background:#111}
+body.dark .na-feature,.na-grid,.na-wide{background:#111}
+body.dark .na-headline-feature,.na-headline-small,.na-headline-wide{color:#eee}
+body.dark .na-body-cols,.na-body-single,.na-body-small,.na-body-wide{color:#ccc}
+body.dark .na-subhead{color:#888;border-color:#333}
+body.dark .na-byline,.na-byline-small,.na-byline-wide,.na-num,.na-kicker{color:#555}
+body.dark .news-section-rule{background:#111}
+body.dark .na-footer{color:#444}
 body.dark .news-comments-wrap{background:#111}
 body.dark .news-comment-author{color:#ccc}
 body.dark .news-comment-text{color:#888}
@@ -2683,6 +2703,15 @@ async function submitNewsPost(){
 }
 
 let _newsLastId=null;
+function _newsCommentBlock(id){
+  return `<div class="news-comments-toggle" onclick="toggleNewsComments(${id},this)">✎ Читатели пишут <span class="news-ccount-${id}"></span> ›</div>
+  <div class="news-comments-wrap" id="news-comments-${id}">
+    <div class="news-comment-form">
+      <input class="news-comment-input" id="news-ci-${id}" placeholder="Ваш отклик..." maxlength="300" onkeydown="if(event.key==='Enter'){event.preventDefault();sendNewsComment(${id});}">
+      <button class="news-comment-send" onclick="sendNewsComment(${id})">→</button>
+    </div>
+  </div>`;
+}
 async function loadNewsPosts(){
   const rows=await sf('newspaper_posts?select=*&order=created_at.desc&limit=30');
   if(!Array.isArray(rows)) return;
@@ -2694,37 +2723,74 @@ async function loadNewsPosts(){
   const lastId=rows[0].id;
   if(lastId===_newsLastId&&body.children.length>1) return;
   _newsLastId=lastId;
-  const today=new Date();
   const months=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-  const dateLabel=`${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()} г.`;
-  body.innerHTML=`<div class="news-section-rule"><span class="news-section-label">Выпуск · ${dateLabel}</span></div>`
-  +rows.map((post,i)=>`
-  <div class="news-article" id="article-${post.id}">
-    ${post.image?`<div class="news-article-img-wrap"><img class="news-article-img" src="${escapeHtml(post.image)}" alt="фото"><div class="news-article-img-caption">Фото: редакция Вино &amp; Хинкали</div></div>`:''}
-    <div class="news-article-inner">
-      <div class="news-article-num">№${rows.length-i} · Репортаж</div>
-      <div class="news-headline">${escapeHtml(post.headline||'Хроника смены')}</div>
-      <div class="news-subheadline">Наш корреспондент сообщает из зала</div>
-      <div class="news-byline">
-        <span>Корр. ${escapeHtml(post.author)}</span>
-        <span>${newsDateStr(post.created_at)}</span>
-      </div>
-      <div class="news-text">${escapeHtml(post.text)}</div>
-    </div>
-    <div class="news-article-footer">Редакция «Вино &amp; Хинкали» · Вечерний вестник</div>
-    <div class="news-comments-toggle" onclick="toggleNewsComments(${post.id},this)">
-      ✎ Читатели пишут <span class="news-ccount-${post.id}"></span> ›
-    </div>
-    <div class="news-comments-wrap" id="news-comments-${post.id}">
-      <div class="news-comment-form">
-        <input class="news-comment-input" id="news-ci-${post.id}" placeholder="Ваш отклик..." maxlength="300"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();sendNewsComment(${post.id});}">
-        <button class="news-comment-send" onclick="sendNewsComment(${post.id})">→</button>
-      </div>
-    </div>
-  </div>`).join('');
-  // Load comment counts
+  let html='';
+  rows.forEach((post,i)=>{
+    const hl=escapeHtml(post.headline||'Хроника смены');
+    const txt=escapeHtml(post.text);
+    const num=`№${rows.length-i}`;
+    const by=`Корр. ${escapeHtml(post.author)} · ${newsDateStr(post.created_at)}`;
+    const img=post.image?`<div class="na-photo"><img src="${escapeHtml(post.image)}" alt="фото"></div><div class="na-caption">Фото: редакция Вино &amp; Хинкали</div>`:'';
+    if(i===0){
+      // Feature — full width, main story
+      html+=`<div id="article-${post.id}" style="border-bottom:3px double #111">
+        <div class="na-feature">
+          <div class="na-num">${num} · Главная история</div>
+          <div class="na-headline-feature">${hl}</div>
+          <div class="na-subhead">Наш корреспондент сообщает из зала — подробности ниже</div>
+          <div class="na-byline"><span>${by}</span></div>
+          ${img}
+          <div class="${post.image?'na-body-cols':'na-body-single'}">${txt}</div>
+        </div>
+        <div class="na-footer">Редакция «Вино &amp; Хинкали» · Вечерний вестник</div>
+        ${_newsCommentBlock(post.id)}
+      </div>`;
+      if(rows.length>1){
+        html+=`<div class="news-section-rule"><span></span><span class="news-section-label">Также в номере</span><span></span></div>`;
+      }
+    } else if(!post.image && i+1<rows.length && !rows[i+1].image && _newsIsSmall(i,rows)){
+      // Pair of no-image posts — grid
+      const next=rows[i+1];
+      const hl2=escapeHtml(next.headline||'Хроника смены');
+      const txt2=escapeHtml(next.text);
+      const num2=`№${rows.length-i-1}`;
+      const by2=`Корр. ${escapeHtml(next.author)} · ${newsDateStr(next.created_at)}`;
+      html+=`<div class="na-grid">
+        <div class="na-small" id="article-${post.id}">
+          <div class="na-num">${num}</div>
+          <div class="na-headline-small">${hl}</div>
+          <div class="na-body-small">${txt}</div>
+          <div class="na-byline-small">${by}</div>
+          ${_newsCommentBlock(post.id)}
+        </div>
+        <div class="na-small" id="article-${next.id}">
+          <div class="na-num">${num2}</div>
+          <div class="na-headline-small">${hl2}</div>
+          <div class="na-body-small">${txt2}</div>
+          <div class="na-byline-small">${by2}</div>
+          ${_newsCommentBlock(next.id)}
+        </div>
+      </div>`;
+      // mark next as rendered
+      rows[i+1]._rendered=true;
+    } else if(!post._rendered){
+      // Wide single
+      html+=`<div class="na-wide" id="article-${post.id}">
+        ${post.image?`<div class="na-wide-photo"><img src="${escapeHtml(post.image)}" alt="фото"></div>`:''}
+        <div class="na-num">${num}</div>
+        <div class="na-headline-wide">${hl}</div>
+        <div class="na-body-wide">${txt}</div>
+        <div class="na-byline-wide">${by}</div>
+        ${_newsCommentBlock(post.id)}
+      </div>`;
+    }
+  });
+  body.innerHTML=html;
   rows.forEach(p=>loadNewsComments(p.id,false));
+}
+function _newsIsSmall(i,rows){
+  // Returns true if this index should start a grid pair (not yet rendered)
+  return !rows[i]._rendered;
 }
 
 async function loadNewsComments(postId,show){
