@@ -2642,8 +2642,17 @@ async function submitNewsPost(){
   if(!text){showToast('⚠️ Напиши что произошло');return;}
   if(!myName){showToast('⚠️ Сначала выбери своё имя');return;}
   const btn=document.querySelector('.news-post-submit');
-  btn.disabled=true;btn.textContent='⏳ Публикуем...';
-  const headline=generateHeadline(text);
+  btn.disabled=true;btn.textContent='✍️ Редакция думает...';
+  let headline=generateHeadline(text);
+  try{
+    const r=await fetch('https://vinokhinkali.mooo.com:8443/api/ai-headline',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text})
+    });
+    const d=await r.json();
+    if(d&&d.headline) headline=d.headline;
+  }catch(e){}
+  btn.textContent='⏳ Публикуем...';
   const payload={author:myName,text,headline};
   if(_newsRawImg) payload.image=await _newsGetCroppedImage();
   const res=await sf('newspaper_posts','POST',payload);
