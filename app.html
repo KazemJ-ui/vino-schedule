@@ -282,6 +282,66 @@ body.dark footer{color:#444}
 body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 .chat-empty{text-align:center;color:rgba(255,255,255,0.3);font-size:13px;padding:40px 0}
 
+/* ── NEWSPAPER SCREEN ── */
+.news-screen{position:fixed;inset:0;background:#f0ebe0;z-index:998;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);visibility:hidden}
+.news-screen.active{transform:translateX(0);visibility:visible}
+.news-header{background:#111;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;border-bottom:4px double #555}
+.news-back{background:none;border:none;color:#aaa;font-size:22px;cursor:pointer;line-height:1;padding:0;font-family:'Nunito',sans-serif}
+.news-masthead{flex:1;text-align:center}
+.news-masthead-title{font-family:'Playfair Display',serif;font-size:18px;color:#fff;font-weight:900;letter-spacing:1px;line-height:1}
+.news-masthead-sub{font-size:8px;color:#666;letter-spacing:3px;text-transform:uppercase;margin-top:2px}
+.news-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 90px}
+.news-date-bar{text-align:center;font-size:9px;color:#999;letter-spacing:2px;text-transform:uppercase;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid #ccc;font-family:'Nunito',sans-serif}
+.news-article{background:#fdfcf5;border:1px solid #ccc;margin-bottom:14px;overflow:hidden;box-shadow:2px 3px 0 rgba(0,0,0,0.1)}
+.news-article-img{width:100%;max-height:220px;object-fit:cover;filter:grayscale(100%) contrast(1.1) brightness(0.95);display:block;border-bottom:2px solid #ccc}
+.news-article-inner{padding:12px 14px 8px}
+.news-headline{font-family:'Playfair Display',serif;font-size:16px;font-weight:900;color:#111;line-height:1.25;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px}
+.news-byline{font-size:10px;color:#888;font-style:italic;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #ddd;font-family:'Nunito',sans-serif;display:flex;justify-content:space-between}
+.news-text{font-size:13px;color:#2a2a2a;line-height:1.65;font-family:'Georgia',serif}
+.news-comments-toggle{margin-top:10px;padding:8px 14px;border-top:1px solid #eee;font-size:11px;color:#777;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;gap:5px;user-select:none}
+.news-comments-toggle:active{opacity:0.6}
+.news-comments-wrap{display:none;padding:0 14px 10px;border-top:1px dashed #ddd;background:#faf9f0}
+.news-comment-item{padding:7px 0;border-bottom:1px dotted #e5e5e5;font-family:'Nunito',sans-serif}
+.news-comment-item:last-of-type{border:none}
+.news-comment-author{font-weight:800;font-size:11px;color:#333}
+.news-comment-text{font-size:12px;color:#555;margin-top:2px;line-height:1.4}
+.news-comment-time{font-size:10px;color:#bbb;margin-top:2px}
+.news-comment-form{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid #eee}
+.news-comment-input{flex:1;background:#f5f4ee;border:1px solid #ddd;border-radius:4px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:13px;outline:none;color:#111}
+.news-comment-send{padding:7px 12px;background:#111;color:#fff;border:none;border-radius:4px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.news-comment-send:active{opacity:0.7}
+.news-empty{text-align:center;padding:60px 20px;color:#aaa;font-family:'Nunito',sans-serif;font-size:14px;line-height:1.8}
+.news-loading{text-align:center;padding:40px;color:#aaa;font-family:'Nunito',sans-serif;font-size:13px}
+.news-add-btn{position:fixed;bottom:28px;right:20px;width:58px;height:58px;border-radius:50%;background:#111;color:#fff;border:3px solid #fff;font-size:28px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,0.35);z-index:999;display:none;align-items:center;justify-content:center;line-height:1;transition:transform 0.1s}
+.news-add-btn.visible{display:flex}
+.news-add-btn:active{transform:scale(0.9)}
+.news-post-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:1000;display:none;align-items:flex-end;justify-content:center}
+.news-post-overlay.active{display:flex}
+.news-post-sheet{background:#fff;width:100%;max-width:480px;border-radius:18px 18px 0 0;padding:20px 18px;padding-bottom:max(24px,env(safe-area-inset-bottom));max-height:90vh;overflow-y:auto}
+.news-post-sheet-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:#111;text-align:center;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px}
+.news-photo-btn{width:100%;height:130px;border:2px dashed #ccc;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin-bottom:12px;color:#aaa;font-family:'Nunito',sans-serif;font-size:12px;gap:4px;background:#fafaf8;overflow:hidden;position:relative}
+.news-photo-btn img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(100%)}
+.news-photo-btn span{position:relative;z-index:1}
+.news-photo-input{display:none}
+.news-post-textarea{width:100%;min-height:90px;border:1px solid #ddd;border-radius:8px;padding:10px 12px;font-family:'Nunito',sans-serif;font-size:14px;resize:none;outline:none;line-height:1.5;color:#111;background:#fafaf8}
+.news-post-hint{font-size:11px;color:#bbb;margin:5px 0 12px;font-family:'Nunito',sans-serif;text-align:center}
+.news-post-submit{width:100%;padding:14px;background:#111;color:#fff;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.news-post-submit:active{opacity:0.8}
+.news-post-cancel{width:100%;padding:10px;background:none;border:none;color:#bbb;font-family:'Nunito',sans-serif;font-size:14px;cursor:pointer;margin-top:4px}
+body.dark .news-screen{background:#0f0f0f}
+body.dark .news-article{background:#1a1a1a;border-color:#333}
+body.dark .news-headline{color:#eee}
+body.dark .news-text{color:#bbb}
+body.dark .news-byline{color:#666;border-bottom-color:#333}
+body.dark .news-comments-wrap{background:#111}
+body.dark .news-comment-author{color:#ccc}
+body.dark .news-comment-text{color:#888}
+body.dark .news-comment-input{background:#222;border-color:#444;color:#eee}
+body.dark .news-comment-send{background:#333}
+body.dark .news-date-bar{color:#555;border-bottom-color:#333}
+body.dark .news-comments-toggle{color:#666;border-top-color:#333}
+body.dark .news-header{background:#0a0a0a;border-bottom-color:#333}
+
 .edit-zone-group{margin-bottom:8px}
 .edit-zone-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .edit-zbadge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px}
@@ -327,6 +387,7 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
         <button class="theme-btn" onclick="openChat()" title="Чат смены">💬</button>
         <span class="chat-dot" id="chatDot"></span>
       </div>
+      <button class="theme-btn" onclick="openNewspaper()" title="Газета коллектива">📰</button>
       <button class="theme-btn" id="nameBtn" onclick="showNameScreen()" title="Сменить имя">👤<
       </button>
       <button class="theme-btn" onclick="openMgrScreen()" title="Панель менеджера">👔</button>
@@ -376,6 +437,40 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
     <input class="chat-input" id="chatInput" placeholder="Написать сообщение..." maxlength="500"
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"/>
     <button class="chat-send" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<!-- NEWSPAPER SCREEN -->
+<div class="news-screen" id="newsScreen">
+  <div class="news-header">
+    <button class="news-back" onclick="closeNewspaper()">←</button>
+    <div class="news-masthead">
+      <div class="news-masthead-title">ВИНО & ХИНКАЛИ</div>
+      <div class="news-masthead-sub">Вечерний вестник · Хроника смены</div>
+    </div>
+    <div style="width:30px"></div>
+  </div>
+  <div class="news-body" id="newsBody">
+    <div class="news-loading">⏳ Загрузка...</div>
+  </div>
+</div>
+
+<!-- NEWSPAPER ADD BUTTON -->
+<button class="news-add-btn" id="newsAddBtn" onclick="openPostSheet()">+</button>
+
+<!-- NEWSPAPER POST SHEET -->
+<div class="news-post-overlay" id="newsPostOverlay">
+  <div class="news-post-sheet">
+    <div class="news-post-sheet-title">Новая статья</div>
+    <div class="news-photo-btn" id="newsPhotoBtnEl" onclick="document.getElementById('newsPhotoInput').click()">
+      <span style="font-size:28px">📷</span>
+      <span>Добавить фото (необязательно)</span>
+    </div>
+    <input type="file" accept="image/*" class="news-photo-input" id="newsPhotoInput" onchange="onNewsPhotoSelected(this)">
+    <textarea class="news-post-textarea" id="newsPostText" placeholder="Что случилось? Расскажи в деталях — чем смешнее, тем лучше 😄" maxlength="600"></textarea>
+    <div class="news-post-hint">ИИ сам придумает заголовок по твоему тексту</div>
+    <button class="news-post-submit" onclick="submitNewsPost()">📰 Опубликовать</button>
+    <button class="news-post-cancel" onclick="closePostSheet()">Отмена</button>
   </div>
 </div>
 
@@ -2276,6 +2371,213 @@ async function addEditRow(day, zone){
   }
 }
 
+
+// ── NEWSPAPER ──
+let newsOpen=false, newsInterval=null, newsSelectedImage=null;
+
+function openNewspaper(){
+  newsOpen=true;
+  const screen=document.getElementById('newsScreen');
+  screen.style.transition='transform 0.3s cubic-bezier(0.4,0,0.2,1)';
+  screen.classList.add('active');
+  document.getElementById('newsAddBtn').classList.add('visible');
+  document.body.style.overflow='hidden';
+  loadNewsPosts();
+  newsInterval=setInterval(loadNewsPosts,8000);
+}
+
+function closeNewspaper(){
+  newsOpen=false;
+  const screen=document.getElementById('newsScreen');
+  screen.style.transition='transform 0.3s cubic-bezier(0.4,0,0.2,1)';
+  screen.classList.remove('active');
+  document.getElementById('newsAddBtn').classList.remove('visible');
+  document.body.style.overflow='';
+  if(newsInterval){clearInterval(newsInterval);newsInterval=null;}
+}
+
+function openPostSheet(){
+  if(!myName){showToast('⚠️ Сначала выбери своё имя');return;}
+  document.getElementById('newsPostOverlay').classList.add('active');
+  document.getElementById('newsPostText').focus();
+}
+
+function closePostSheet(){
+  document.getElementById('newsPostOverlay').classList.remove('active');
+  document.getElementById('newsPostText').value='';
+  newsSelectedImage=null;
+  const btn=document.getElementById('newsPhotoBtnEl');
+  btn.innerHTML='<span style="font-size:28px">📷</span><span>Добавить фото (необязательно)</span>';
+}
+
+function onNewsPhotoSelected(input){
+  const file=input.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const img=new Image();
+    img.onload=function(){
+      const canvas=document.createElement('canvas');
+      const MAX=800;
+      let w=img.width,h=img.height;
+      if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      newsSelectedImage=canvas.toDataURL('image/jpeg',0.72);
+      const btn=document.getElementById('newsPhotoBtnEl');
+      btn.innerHTML=`<img src="${newsSelectedImage}" alt=""><span style="background:rgba(0,0,0,0.5);color:#fff;padding:2px 8px;border-radius:4px;font-size:11px">✓ Фото выбрано</span>`;
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function generateHeadline(text){
+  const names=(text.match(/\b[А-ЯЁ][а-яё]{2,}\b/g)||[]).filter(w=>!['Это','Вот','Как','Что','Уже','Все','Она','Он','Они','Мы'].includes(w));
+  const hero=names.length>0?names[0].toUpperCase():null;
+  const h=n=>hero?`${hero}: ${n}`:n;
+
+  if(/спор|ругал|крич|скандал|наорал|конфликт|обидел|злой|недоволен/i.test(text)){
+    const t=[h('ГОРЯЧИЕ СТРАСТИ НА РАБОЧЕМ МЕСТЕ'),`ДИПЛОМАТИЧЕСКИЙ КРИЗИС В ЗАЛЕ — ПОДРОБНОСТИ ШОКИРУЮТ`,h('ЗАЯВЛЕНИЕ, КОТОРОЕ ИЗМЕНИЛО ВСЁ'),`НАПРЯЖЁННОСТЬ ДОСТИГЛА ПРЕДЕЛА: КОЛЛЕГИ В ШОКЕ`,`ИСТОЧНИКИ СООБЩАЮТ: В КОЛЛЕКТИВЕ НЕСПОКОЙНО`];
+    return t[Math.floor(Math.random()*t.length)];
+  }
+  if(/упал|уронил|разбил|облил|рассып|перепут|случайно|забыл|ошибся|фиаско|позор/i.test(text)){
+    const t=[h('КАК ОДИН МОМЕНТ ОСТАНОВИЛ ВЕСЬ РЕСТОРАН'),`СОТРУДНИКИ В ШОКЕ: ЭТОГО НИКТО НЕ ОЖИДАЛ`,`РЕПОРТАЖ С МЕСТА СОБЫТИЙ: НЕВЕРОЯТНОЕ ПРОИЗОШЛО`,h('СЛУЧАЙ, КОТОРЫЙ ВОЙДЁТ В ЛЕТОПИСЬ'),`СВИДЕТЕЛИ НЕ ВЕРЯТ ГЛАЗАМ: ИСТОРИЯ НА ВЕС ЗОЛОТА`];
+    return t[Math.floor(Math.random()*t.length)];
+  }
+  if(/тарел|блюд|суп|соус|вино|бокал|напит|кухн|повар|заказ|еда/i.test(text)){
+    const t=[h('КУХОННЫЕ ТАЙНЫ РАСКРЫТЫ'),`ГАСТРОНОМИЧЕСКАЯ ХРОНИКА: СОБЫТИЕ ВЕЧЕРА`,`СРОЧНО С КУХНИ: НИКТО НЕ ОСТАЛСЯ РАВНОДУШНЫМ`,h('ИНЦИДЕНТ, О КОТОРОМ ГОВОРИТ ВЕСЬ РЕСТОРАН')];
+    return t[Math.floor(Math.random()*t.length)];
+  }
+  if(/гость|клиент|посетитель|столик|чаевые|жалоба|похвала|отзыв/i.test(text)){
+    const t=[h('ГОСТЬ, О КОТОРОМ ВСЕ БУДУТ ГОВОРИТЬ'),`ХРОНИКА ВЕЧЕРА: СТОЛИК С СЮРПРИЗОМ`,`РЕПОРТАЖ ИЗ ЗАЛА: СОБЫТИЕ НА ГРАНИ НЕВЕРОЯТНОГО`,h('ТОТ САМЫЙ МОМЕНТ С ГОСТЯМИ')];
+    return t[Math.floor(Math.random()*t.length)];
+  }
+  if(/опозда|задержа|не пришёл|не пришел|исчез|пропал/i.test(text)){
+    const t=[h('ТАИНСТВЕННОЕ ИСЧЕЗНОВЕНИЕ'),`ЖДАЛИ — НЕ ДОЖДАЛИСЬ: ${hero||'КОЛЛЕГА'} В ЦЕНТРЕ СКАНДАЛА`,h('ОПОЗДАНИЕ ГОДА: ОЧЕВИДЦЫ ДЕЛЯТСЯ ПОДРОБНОСТЯМИ')];
+    return t[Math.floor(Math.random()*t.length)];
+  }
+  if(/влюбил|нравится|симпат|роман|флирт|признал|свидан/i.test(text)){
+    const t=[h('ЭКСКЛЮЗИВ: СЕРДЕЧНЫЕ ТАЙНЫ СМЕНЫ'),`СПЕЦИАЛЬНЫЙ РЕПОРТАЖ: ЛЮБОВЬ В РАБОЧЕЕ ВРЕМЯ`,h('ИСТОРИЯ, О КОТОРОЙ ШЕПТАЛИСЬ НА КУХНЕ')];
+    return t[Math.floor(Math.random()*t.length)];
+  }
+  // Generic
+  const generic=[h('ИСТОРИЯ, КОТОРУЮ ВСЕ ЖДАЛИ'),`ЭКСКЛЮЗИВ: ${hero?hero+' — ':''}ПОДРОБНОСТИ ИЗНУТРИ`,h('ЧП МИРОВОГО МАСШТАБА В МАСШТАБАХ РЕСТОРАНА'),`СРОЧНО: ${hero?hero+' — ':''}КОЛЛЕГИ В ШОКЕ`,h('СОБЫТИЕ, КОТОРОЕ ОБСУДЯТ ЕЩЁ ДОЛГО'),`ХРОНИКА СОБЫТИЙ: ${hero?hero+' — ':''}МОМЕНТ ИСТИНЫ`,`ИСТОЧНИКИ ПОДТВЕРЖДАЮТ: ${hero?hero+' — ':''}НЕБЫВАЛОЕ`,h('РЕПОРТАЖ ОТ ОЧЕВИДЦА'),`ВЕЧЕР ЗАПОМНИТСЯ: ${hero?hero+' — ':''}ИСТОРИЯ СМЕНЫ`,`ОФИЦИАЛЬНО: ${hero?hero+' — ':''}ПРОИЗОШЛО ТО, ЧТО ПРОИЗОШЛО`];
+  return generic[Math.floor(Math.random()*generic.length)];
+}
+
+function newsDateStr(iso){
+  const d=new Date(iso);
+  const months=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  return`${d.getDate()} ${months[d.getMonth()]} · ${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
+}
+
+async function submitNewsPost(){
+  const text=document.getElementById('newsPostText').value.trim();
+  if(!text){showToast('⚠️ Напиши что произошло');return;}
+  if(!myName){showToast('⚠️ Сначала выбери своё имя');return;}
+  const btn=document.querySelector('.news-post-submit');
+  btn.disabled=true;btn.textContent='⏳ Публикуем...';
+  const headline=generateHeadline(text);
+  const payload={author:myName,text,headline};
+  if(newsSelectedImage) payload.image=newsSelectedImage;
+  const res=await sf('newspaper_posts','POST',payload);
+  btn.disabled=false;btn.textContent='📰 Опубликовать';
+  if(res&&!res.error){
+    closePostSheet();
+    showToast('✅ Статья опубликована!');
+    await loadNewsPosts();
+  } else {
+    showToast('❌ Ошибка — попробуй ещё раз');
+  }
+}
+
+let _newsLastId=null;
+async function loadNewsPosts(){
+  const rows=await sf('newspaper_posts?select=*&order=created_at.desc&limit=30');
+  if(!Array.isArray(rows)) return;
+  const body=document.getElementById('newsBody');
+  if(rows.length===0){
+    body.innerHTML='<div class="news-empty">📰 Здесь пусто<br><br>Будь первым — нажми <b>+</b> и расскажи<br>что интересного произошло в смене</div>';
+    return;
+  }
+  const lastId=rows[0].id;
+  if(lastId===_newsLastId&&body.children.length>1) return;
+  _newsLastId=lastId;
+  const today=new Date();
+  const months=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  const dateLabel=`${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()} года`;
+  body.innerHTML=`<div class="news-date-bar">${dateLabel}</div>`+rows.map(post=>`
+  <div class="news-article" id="article-${post.id}">
+    ${post.image?`<img class="news-article-img" src="${escapeHtml(post.image)}" alt="фото">`:'' }
+    <div class="news-article-inner">
+      <div class="news-headline">${escapeHtml(post.headline||'Хроника смены')}</div>
+      <div class="news-byline">
+        <span>Корр. ${escapeHtml(post.author)}</span>
+        <span>${newsDateStr(post.created_at)}</span>
+      </div>
+      <div class="news-text">${escapeHtml(post.text)}</div>
+    </div>
+    <div class="news-comments-toggle" onclick="toggleNewsComments(${post.id},this)">
+      💬 Комментарии <span class="news-ccount-${post.id}"></span> ›
+    </div>
+    <div class="news-comments-wrap" id="news-comments-${post.id}">
+      <div class="news-comment-form">
+        <input class="news-comment-input" id="news-ci-${post.id}" placeholder="Ваш комментарий..." maxlength="300"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();sendNewsComment(${post.id});}">
+        <button class="news-comment-send" onclick="sendNewsComment(${post.id})">→</button>
+      </div>
+    </div>
+  </div>`).join('');
+  // Load comment counts
+  rows.forEach(p=>loadNewsComments(p.id,false));
+}
+
+async function loadNewsComments(postId,show){
+  const rows=await sf(`newspaper_comments?post_id=eq.${postId}&select=*&order=created_at.asc`);
+  if(!Array.isArray(rows)) return;
+  const countEl=document.querySelector(`.news-ccount-${postId}`);
+  if(countEl) countEl.textContent=rows.length>0?`(${rows.length})`:'';
+  if(!show) return;
+  const wrap=document.getElementById(`news-comments-${postId}`);
+  if(!wrap) return;
+  const form=wrap.querySelector('.news-comment-form');
+  // Remove old comments
+  wrap.querySelectorAll('.news-comment-item').forEach(el=>el.remove());
+  // Insert comments before form
+  rows.forEach(c=>{
+    const div=document.createElement('div');
+    div.className='news-comment-item';
+    div.innerHTML=`<div class="news-comment-author">${escapeHtml(c.author)}</div><div class="news-comment-text">${escapeHtml(c.text)}</div><div class="news-comment-time">${newsDateStr(c.created_at)}</div>`;
+    wrap.insertBefore(div,form);
+  });
+}
+
+function toggleNewsComments(postId,toggleEl){
+  const wrap=document.getElementById(`news-comments-${postId}`);
+  if(!wrap) return;
+  const isOpen=wrap.style.display==='block';
+  wrap.style.display=isOpen?'none':'block';
+  toggleEl.innerHTML=(isOpen?'💬':'💬') + ` Комментарии <span class="news-ccount-${postId}"></span> ${isOpen?'›':'‹'}`;
+  // Re-apply count
+  const old=document.querySelector(`.news-ccount-${postId}`);
+  if(old){/* keep*/}
+  if(!isOpen) loadNewsComments(postId,true);
+}
+
+async function sendNewsComment(postId){
+  if(!myName){showToast('⚠️ Сначала выбери своё имя');return;}
+  const input=document.getElementById(`news-ci-${postId}`);
+  const text=input.value.trim();
+  if(!text) return;
+  input.value='';
+  const res=await sf('newspaper_comments','POST',{post_id:postId,author:myName,text});
+  if(res&&!res.error){
+    loadNewsComments(postId,true);
+  } else {
+    showToast('❌ Ошибка отправки');
+  }
+}
 
 async function downloadSchedulePDF(){
   const periodRows = await sf('schedule_periods?is_open=eq.true&select=*&limit=1');
