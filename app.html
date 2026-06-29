@@ -323,7 +323,7 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 .news-comment-text{font-size:12px;color:#444;margin-top:2px;line-height:1.4;font-family:'Georgia',serif}
 .news-comment-time{font-size:9px;color:#bbb;margin-top:2px}
 .news-comment-form{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid #ddd}
-.news-comment-input{flex:1;background:#faf7ee;border:1px solid #ccc;border-radius:2px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:13px;outline:none;color:#111}
+.news-comment-input{flex:1;background:#faf7ee;border:1px solid #ccc;border-radius:2px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:16px;outline:none;color:#111}
 .news-comment-send{padding:7px 12px;background:#111;color:#fff;border:none;font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;text-transform:uppercase;letter-spacing:1px}
 .news-comment-send:active{opacity:0.7}
 .news-empty{text-align:center;padding:60px 20px;color:#aaa;font-family:'Georgia',serif;font-size:14px;line-height:2;font-style:italic}
@@ -341,13 +341,25 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 /* Photo picker — точный превью как в статье */
 .news-photo-label{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:2px;font-family:'Nunito',sans-serif;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .news-photo-label::after{content:'';flex:1;height:1px;background:#ccc}
-.news-photo-preview{width:100%;height:190px;border:2px solid #bbb;overflow:hidden;position:relative;cursor:pointer;margin-bottom:4px;background:#f0ece0}
+.news-photo-preview{width:100%;height:190px;border:2px solid #111;overflow:hidden;position:relative;cursor:pointer;margin-bottom:0;background:#f0ece0}
 .news-photo-preview img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%) contrast(1.15) brightness(0.92);display:block}
+.news-photo-preview::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:
+    linear-gradient(to right,#111 2px,transparent 2px) 0 0/14px 14px no-repeat,
+    linear-gradient(to bottom,#111 2px,transparent 2px) 0 0/14px 14px no-repeat,
+    linear-gradient(to left,#111 2px,transparent 2px) 100% 0/14px 14px no-repeat,
+    linear-gradient(to bottom,#111 2px,transparent 2px) 100% 0/14px 14px no-repeat,
+    linear-gradient(to right,#111 2px,transparent 2px) 0 100%/14px 14px no-repeat,
+    linear-gradient(to top,#111 2px,transparent 2px) 0 100%/14px 14px no-repeat,
+    linear-gradient(to left,#111 2px,transparent 2px) 100% 100%/14px 14px no-repeat,
+    linear-gradient(to top,#111 2px,transparent 2px) 100% 100%/14px 14px no-repeat;
+}
+.news-photo-preview::after{content:'КАДР СТАТЬИ';position:absolute;top:6px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.55);color:#fff;font-size:8px;padding:2px 8px;letter-spacing:2px;font-family:'Nunito',sans-serif;pointer-events:none;z-index:3}
 .news-photo-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#bbb;font-family:'Nunito',sans-serif;font-size:12px}
 .news-photo-placeholder-icon{font-size:32px;opacity:0.5}
-.news-photo-hint{font-size:9px;color:#bbb;text-align:center;font-family:'Nunito',sans-serif;margin-bottom:14px;font-style:italic}
+.news-photo-hint{font-size:10px;color:#888;text-align:center;font-family:'Nunito',sans-serif;margin:6px 0 14px;font-style:italic;display:flex;align-items:center;gap:4px;justify-content:center}
 .news-photo-input{display:none}
-.news-post-textarea{width:100%;min-height:90px;border:1px solid #ccc;border-radius:0;padding:10px 12px;font-family:'Georgia',serif;font-size:14px;resize:none;outline:none;line-height:1.6;color:#111;background:#fff}
+.news-post-textarea{width:100%;min-height:90px;border:1px solid #ccc;border-radius:0;padding:10px 12px;font-family:'Georgia',serif;font-size:16px;resize:none;outline:none;line-height:1.6;color:#111;background:#fff}
 .news-post-hint{font-size:9px;color:#bbb;margin:6px 0 14px;font-family:'Nunito',sans-serif;text-align:center;letter-spacing:1px;text-transform:uppercase}
 .news-post-submit{width:100%;padding:14px;background:#111;color:#fff;border:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;letter-spacing:2px;text-transform:uppercase;margin-top:4px}
 .news-post-submit:active{opacity:0.8}
@@ -510,7 +522,7 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
         <span style="font-size:10px;opacity:0.6">необязательно</span>
       </div>
     </div>
-    <div class="news-photo-hint" id="newsPhotoHint">Область выше — точно то, что будет видно в газете</div>
+    <div class="news-photo-hint" id="newsPhotoHint">↑ Всё что видишь в рамке — именно так появится в статье</div>
     <input type="file" accept="image/*" class="news-photo-input" id="newsPhotoInput" onchange="onNewsPhotoSelected(this)">
     <textarea class="news-post-textarea" id="newsPostText" placeholder="Что случилось? Расскажи подробно — чем смешнее, тем лучше" maxlength="600"></textarea>
     <div class="news-post-hint">ИИ придумает заголовок автоматически</div>
@@ -2478,7 +2490,7 @@ function onNewsPhotoSelected(input){
       // Показываем точный превью — такой же как будет в статье
       const prev=document.getElementById('newsPhotoPreview');
       prev.innerHTML=`<img src="${newsSelectedImage}" style="width:100%;height:100%;object-fit:cover;filter:grayscale(100%) contrast(1.15) brightness(0.92);display:block;">`;
-      document.getElementById('newsPhotoHint').textContent='✓ Именно так фото появится в газете';
+      document.getElementById('newsPhotoHint').textContent='✓ Фото выбрано — именно эта область попадёт в статью';
     };
     img.src=e.target.result;
   };
