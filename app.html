@@ -309,7 +309,7 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 .na-subhead{font-family:'Georgia',serif;font-size:10.5px;font-style:italic;color:#555;border-top:1px solid #bbb;border-bottom:1px solid #bbb;padding:5px 0;margin-bottom:8px;line-height:1.4}
 .na-byline{font-family:'Nunito',sans-serif;font-size:8px;color:#888;text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between;margin-bottom:8px}
 .na-photo{width:100%;height:170px;overflow:hidden;margin-bottom:8px;border-top:2px solid #111;border-bottom:2px solid #111}
-.na-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.na-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(100%) contrast(1.15) brightness(0.92)}
 .na-caption{font-family:'Nunito',sans-serif;font-size:8px;color:#777;font-style:italic;margin-bottom:8px}
 .na-body-cols{font-family:'Georgia',serif;font-size:11.5px;line-height:1.7;text-align:justify;color:#1a1a1a;columns:2;column-gap:14px;column-rule:1px solid #ccc;margin-bottom:12px}
 .na-body-cols::first-letter{font-size:48px;font-weight:900;float:left;line-height:0.8;margin:4px 6px 0 0;font-family:'Playfair Display',serif;color:#111}
@@ -390,26 +390,7 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 /* Dark mode */
 body.dark .news-screen{background:#111}
 body.dark .news-body{background:#111}
-body.dark .na-feature,body.dark .na-grid,body.dark .na-wide,body.dark .na-small{background:#111 !important}
-body.dark .na-feature *,body.dark .na-wide *,body.dark .na-grid *{background-color:transparent}
-body.dark .na-headline-feature{color:#eee}
-body.dark .na-headline-small{color:#eee}
-body.dark .na-headline-wide{color:#eee}
-body.dark .na-body-cols{color:#ccc}
-body.dark .na-body-single{color:#ccc}
-body.dark .na-body-small{color:#ccc}
-body.dark .na-body-wide{color:#ccc}
-body.dark .na-body-cols::first-letter{color:#eee}
-body.dark .na-body-single::first-letter{color:#eee}
-body.dark .na-subhead{color:#888;border-color:#333}
-body.dark .na-byline{color:#555}
-body.dark .na-byline-small{color:#555}
-body.dark .na-byline-wide{color:#555}
-body.dark .na-num{color:#444}
-body.dark .news-section-rule{background:#111}
-body.dark .na-footer{color:#444}
-body.dark .news-comments-toggle{background:#111;color:#555}
-body.dark .news-comments-wrap{background:#0a0a0a;border-color:#333}
+/* Газета всегда светлая — тёмная тема не применяется */
 body.dark .news-comments-wrap{background:#111}
 body.dark .news-comment-author{color:#ccc}
 body.dark .news-comment-text{color:#888}
@@ -2610,49 +2591,10 @@ async function _newsGetCroppedImage(){
   const srcX=-_newsCropPx/scale, srcY=-_newsCropPy/scale;
   const srcW=cW/scale, srcH=cH/scale;
   const OUT_W=800, OUT_H=Math.round(OUT_W*cH/cW);
-  // Draw cropped image to temp canvas
-  const tmp=document.createElement('canvas');
-  tmp.width=OUT_W;tmp.height=OUT_H;
-  const tctx=tmp.getContext('2d');
-  tctx.drawImage(_newsRawImg,srcX,srcY,srcW,srcH,0,0,OUT_W,OUT_H);
-  // Apply halftone on output canvas
-  return _applyHalftone(tmp,OUT_W,OUT_H);
-}
-
-function _applyHalftone(srcCanvas,w,h){
-  const sctx=srcCanvas.getContext('2d');
-  const px=sctx.getImageData(0,0,w,h).data;
-  const out=document.createElement('canvas');
-  out.width=w;out.height=h;
-  const octx=out.getContext('2d');
-  // Newspaper paper color background
-  octx.fillStyle='#f0ece0';
-  octx.fillRect(0,0,w,h);
-  const G=8; // grid cell size (bigger = larger dots, more visible)
-  octx.fillStyle='#111';
-  for(let y=0;y<h;y+=G){
-    for(let x=0;x<w;x+=G){
-      let lum=0,cnt=0;
-      for(let dy=0;dy<G&&y+dy<h;dy++){
-        for(let dx=0;dx<G&&x+dx<w;dx++){
-          const i=((y+dy)*w+(x+dx))*4;
-          // Luminance weighted
-          lum+=0.299*px[i]+0.587*px[i+1]+0.114*px[i+2];
-          cnt++;
-        }
-      }
-      const brightness=lum/cnt/255;
-      // High contrast: push towards extremes
-      const dark=Math.pow(1-brightness,1.4);
-      const r=dark*(G*0.72);
-      if(r>0.4){
-        octx.beginPath();
-        octx.arc(x+G/2,y+G/2,r,0,Math.PI*2);
-        octx.fill();
-      }
-    }
-  }
-  return out.toDataURL('image/jpeg',0.88);
+  const canvas=document.createElement('canvas');
+  canvas.width=OUT_W;canvas.height=OUT_H;
+  canvas.getContext('2d').drawImage(_newsRawImg,srcX,srcY,srcW,srcH,0,0,OUT_W,OUT_H);
+  return canvas.toDataURL('image/jpeg',0.72);
 }
 
 function generateHeadline(text){
