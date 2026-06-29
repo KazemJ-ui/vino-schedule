@@ -2710,6 +2710,9 @@ async function submitNewsPost(){
     closePostSheet();
     showToast('✅ Статья опубликована!');
     await loadNewsPosts();
+    // AI editor comment — fire and forget
+    const postId=Array.isArray(res)?res[0]?.id:res?.id;
+    if(postId) _newsAiEditorComment(postId,text,headline).catch(()=>{});
   } else {
     showToast('❌ Ошибка — попробуй ещё раз');
   }
@@ -2836,6 +2839,21 @@ function toggleNewsComments(postId,toggleEl){
   const old=document.querySelector(`.news-ccount-${postId}`);
   if(old){/* keep*/}
   if(!isOpen) loadNewsComments(postId,true);
+}
+
+async function _newsAiEditorComment(postId,text,headline){
+  try{
+    const r=await fetch('https://vinokhinkali.mooo.com:8443/api/ai-editor-comment',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text,headline})
+    });
+    const data=await r.json();
+    if(data&&data.comment){
+      await sf('newspaper_comments','POST',{post_id:postId,author:'✦ Главный редактор',text:data.comment});
+      loadNewsComments(postId,false);
+    }
+  }catch(e){}
 }
 
 async function sendNewsComment(postId){
