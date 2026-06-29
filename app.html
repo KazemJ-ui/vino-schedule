@@ -390,10 +390,8 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 /* Dark mode */
 body.dark .news-screen{background:#111}
 body.dark .news-body{background:#111}
-body.dark .na-feature{background:#111}
-body.dark .na-grid{background:#111}
-body.dark .na-wide{background:#111}
-body.dark .na-small{background:#111}
+body.dark .na-feature,body.dark .na-grid,body.dark .na-wide,body.dark .na-small{background:#111 !important}
+body.dark .na-feature *,body.dark .na-wide *,body.dark .na-grid *{background-color:transparent}
 body.dark .na-headline-feature{color:#eee}
 body.dark .na-headline-small{color:#eee}
 body.dark .na-headline-wide{color:#eee}
@@ -401,6 +399,8 @@ body.dark .na-body-cols{color:#ccc}
 body.dark .na-body-single{color:#ccc}
 body.dark .na-body-small{color:#ccc}
 body.dark .na-body-wide{color:#ccc}
+body.dark .na-body-cols::first-letter{color:#eee}
+body.dark .na-body-single::first-letter{color:#eee}
 body.dark .na-subhead{color:#888;border-color:#333}
 body.dark .na-byline{color:#555}
 body.dark .na-byline-small{color:#555}
@@ -2710,6 +2710,9 @@ async function submitNewsPost(){
     closePostSheet();
     showToast('✅ Статья опубликована!');
     await loadNewsPosts();
+    // AI editor comment — fire and forget
+    const postId=Array.isArray(res)?res[0]?.id:res?.id;
+    if(postId) _newsAiEditorComment(postId,text,headline).catch(()=>{});
   } else {
     showToast('❌ Ошибка — попробуй ещё раз');
   }
@@ -2836,6 +2839,21 @@ function toggleNewsComments(postId,toggleEl){
   const old=document.querySelector(`.news-ccount-${postId}`);
   if(old){/* keep*/}
   if(!isOpen) loadNewsComments(postId,true);
+}
+
+async function _newsAiEditorComment(postId,text,headline){
+  try{
+    const r=await fetch('https://vinokhinkali.mooo.com:8443/api/ai-editor-comment',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text,headline})
+    });
+    const data=await r.json();
+    if(data&&data.comment){
+      await sf('newspaper_comments','POST',{post_id:postId,author:'✦ Главный редактор',text:data.comment});
+      loadNewsComments(postId,false);
+    }
+  }catch(e){}
 }
 
 async function sendNewsComment(postId){
