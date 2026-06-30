@@ -330,7 +330,9 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 .na-body-wide{font-family:'Georgia',serif;font-size:10px;line-height:1.6;text-align:justify;color:#333}
 .na-byline-wide{font-family:'Nunito',sans-serif;font-size:7.5px;color:#999;margin-top:4px;font-style:italic;clear:both}
 /* Footer strip */
-.na-footer{text-align:right;font-size:8px;color:#bbb;font-family:'Nunito',sans-serif;padding:2px 12px 6px;font-style:italic}
+.na-footer{display:flex;align-items:center;justify-content:space-between;font-size:8px;color:#bbb;font-family:'Nunito',sans-serif;padding:2px 12px 6px;font-style:italic}
+.na-delete-btn{background:none;border:none;color:#ccc;font-size:11px;cursor:pointer;padding:2px 4px;font-family:'Nunito',sans-serif;letter-spacing:1px;opacity:0.5}
+.na-delete-btn:active{opacity:1;color:#c0392b}
 /* Comments */
 .news-comments-toggle{padding:7px 12px;border-top:1px solid #ddd;font-size:9px;color:#888;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;gap:5px;user-select:none;text-transform:uppercase;letter-spacing:1px;background:#f0ece0}
 .news-comments-toggle:active{opacity:0.6}
@@ -2670,6 +2672,11 @@ async function submitNewsPost(){
 }
 
 let _newsLastId=null;
+function _newsFooter(post){
+  const isOwn=post.author===myName;
+  const del=isOwn?`<button class="na-delete-btn" onclick="deleteNewsPost('${post.id}','${escapeHtml(post.author)}')">✕ удалить</button>`:'<span></span>';
+  return `<div class="na-footer">${del}<span>Редакция «Вино &amp; Хинкали»</span></div>`;
+}
 function _newsCommentBlock(id){
   return `<div class="news-comments-toggle" onclick="toggleNewsComments(${id},this)">✎ Читатели пишут <span class="news-ccount-${id}"></span> ›</div>
   <div class="news-comments-wrap" id="news-comments-${id}">
@@ -2709,7 +2716,7 @@ async function loadNewsPosts(){
           ${img}
           <div class="${post.image?'na-body-cols':'na-body-single'}">${txt}</div>
         </div>
-        <div class="na-footer">Редакция «Вино &amp; Хинкали» · Вечерний вестник</div>
+        ${_newsFooter(post)}
         ${_newsCommentBlock(post.id)}
       </div>`;
       if(rows.length>1){
@@ -2728,6 +2735,7 @@ async function loadNewsPosts(){
           <div class="na-headline-small">${hl}</div>
           <div class="na-body-small">${txt}</div>
           <div class="na-byline-small">${by}</div>
+          ${post.author===myName?`<button class="na-delete-btn" onclick="deleteNewsPost('${post.id}','${escapeHtml(post.author)}')">✕ удалить</button>`:''}
           ${_newsCommentBlock(post.id)}
         </div>
         <div class="na-small" id="article-${next.id}">
@@ -2735,19 +2743,19 @@ async function loadNewsPosts(){
           <div class="na-headline-small">${hl2}</div>
           <div class="na-body-small">${txt2}</div>
           <div class="na-byline-small">${by2}</div>
+          ${next.author===myName?`<button class="na-delete-btn" onclick="deleteNewsPost('${next.id}','${escapeHtml(next.author)}')">✕ удалить</button>`:''}
           ${_newsCommentBlock(next.id)}
         </div>
       </div>`;
-      // mark next as rendered
       rows[i+1]._rendered=true;
     } else if(!post._rendered){
-      // Wide single
       html+=`<div class="na-wide" id="article-${post.id}">
         ${post.image?`<div class="na-wide-photo"><img src="${escapeHtml(post.image)}" alt="фото"></div>`:''}
         <div class="na-num">${num}</div>
         <div class="na-headline-wide">${hl}</div>
         <div class="na-body-wide">${txt}</div>
         <div class="na-byline-wide">${by}</div>
+        ${_newsFooter(post)}
         ${_newsCommentBlock(post.id)}
       </div>`;
     }
@@ -2790,6 +2798,20 @@ function toggleNewsComments(postId,toggleEl){
   const old=document.querySelector(`.news-ccount-${postId}`);
   if(old){/* keep*/}
   if(!isOpen) loadNewsComments(postId,true);
+}
+
+async function deleteNewsPost(id,author){
+  if(author!==myName){showToast('⚠️ Можно удалять только свои статьи');return;}
+  if(!confirm('Удалить эту статью?')) return;
+  const res=await fetch(`https://api.vino-hinkali.online/api/newspaper_posts/${id}`,{method:'DELETE'});
+  if(res.ok||res.status===200||res.status===204){
+    document.getElementById('article-'+id)?.remove();
+    showToast('🗑 Статья удалена');
+    _newsLastId=null;
+    await loadNewsPosts();
+  } else {
+    showToast('❌ Не удалось удалить');
+  }
 }
 
 async function _newsAiEditorComment(postId,text,headline){
