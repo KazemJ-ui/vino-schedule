@@ -386,6 +386,8 @@ body.dark .news-comments-toggle{color:#555;border-top-color:#333}
 body.dark .news-article-footer{border-top-color:#333;color:#555}
 body.dark .news-section-rule::before,.news-section-rule::after{background:#444}
 body.dark .news-section-label{color:#555}
+.news-anon-label{display:flex;align-items:center;gap:8px;font-family:'Nunito',sans-serif;font-size:11px;color:#888;letter-spacing:1px;text-transform:uppercase;margin:8px 0 4px;cursor:pointer}
+.news-anon-label input{width:14px;height:14px;accent-color:#111;cursor:pointer}
 body.dark .news-post-sheet{background:#111;border-top-color:#555}
 body.dark .news-post-sheet-title{color:#eee}
 body.dark .news-photo-preview{border-color:#444;background:#1a1a1a}
@@ -531,6 +533,7 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
     <input type="file" accept="image/*" class="news-photo-input" id="newsPhotoInput" onchange="onNewsPhotoSelected(this)">
     <textarea class="news-post-textarea" id="newsPostText" placeholder="Что случилось? Расскажи подробно — чем смешнее, тем лучше" maxlength="600"></textarea>
     <div class="news-post-hint">ИИ придумает заголовок автоматически</div>
+    <label class="news-anon-label"><input type="checkbox" id="newsAnonCheck"> Опубликовать анонимно</label>
     <button class="news-post-submit" onclick="submitNewsPost()">Опубликовать</button>
     <button class="news-post-cancel" onclick="closePostSheet()">Отмена</button>
   </div>
@@ -2472,6 +2475,7 @@ function openPostSheet(){
 function closePostSheet(){
   document.getElementById('newsPostOverlay').classList.remove('active');
   document.getElementById('newsPostText').value='';
+  document.getElementById('newsAnonCheck').checked=false;
   newsSelectedImage=null;_newsRawImg=null;
   const prev=document.getElementById('newsPhotoPreview');
   prev.classList.remove('has-photo');
@@ -2639,7 +2643,8 @@ async function submitNewsPost(){
     if(d&&d.headline) headline=d.headline;
   }catch(e){}
   btn.textContent='⏳ Публикуем...';
-  const payload={author:myName,text,headline};
+  const anon=document.getElementById('newsAnonCheck').checked;
+  const payload={author:anon?'Аноним·'+myName:myName,text,headline};
   if(_newsRawImg) payload.image=await _newsGetCroppedImage();
   const res=await sf('newspaper_posts','POST',payload);
   btn.disabled=false;btn.textContent='📰 Опубликовать';
@@ -2656,8 +2661,16 @@ async function submitNewsPost(){
 }
 
 let _newsLastId=null;
+function _newsDisplayAuthor(author){
+  if(author&&author.startsWith('Аноним·')) return 'Аноним';
+  return author;
+}
+function _newsRealAuthor(author){
+  if(author&&author.startsWith('Аноним·')) return author.slice(7);
+  return author;
+}
 function _newsFooter(post){
-  const isOwn=post.author===myName;
+  const isOwn=_newsRealAuthor(post.author)===myName;
   const del=isOwn?`<button class="na-delete-btn" onclick="deleteNewsPost('${post.id}','${escapeHtml(post.author)}')">✕ удалить</button>`:'<span></span>';
   return `<div class="na-footer">${del}<span>Редакция «Вино &amp; Хинкали»</span></div>`;
 }
@@ -2685,7 +2698,7 @@ async function loadNewsPosts(){
     const hl=escapeHtml(post.headline||'Хроника смены');
     const txt=escapeHtml(post.text);
     const num=`№${rows.length-i}`;
-    const by=`Корр. ${escapeHtml(post.author)} · ${newsDateStr(post.created_at)}`;
+    const by=`Корр. ${escapeHtml(_newsDisplayAuthor(post.author))} · ${newsDateStr(post.created_at)}`;
     const img=post.image?`<div class="na-photo"><img src="${escapeHtml(post.image)}" alt="фото"></div><div class="na-caption">Фото: редакция Вино &amp; Хинкали</div>`:'';
     return `<div class="na-article" id="article-${post.id}">
       <div class="na-inner">
