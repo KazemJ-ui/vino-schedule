@@ -317,6 +317,10 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 .na-footer{display:flex;align-items:center;justify-content:space-between;font-size:8px;color:#bbb;font-family:'Nunito',sans-serif;padding:2px 12px 6px;font-style:italic}
 .na-delete-btn{background:none;border:none;color:#ccc;font-size:11px;cursor:pointer;padding:2px 4px;font-family:'Nunito',sans-serif;letter-spacing:1px;opacity:0.5}
 .na-delete-btn:active{opacity:1;color:#c0392b}
+.na-reactions{display:flex;gap:6px;padding:6px 12px 8px;border-top:1px solid #e8e0cc}
+.na-react-btn{background:none;border:1px solid #ddd;border-radius:20px;padding:3px 8px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:3px;font-family:'Nunito',sans-serif;font-size:11px;color:#666;transition:all 0.15s}
+.na-react-btn.active{background:#111;border-color:#111;color:#fff}
+.na-react-btn:active{transform:scale(1.2)}
 /* Comments */
 .news-comments-toggle{padding:7px 12px;border-top:1px solid #ddd;font-size:9px;color:#888;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;gap:5px;user-select:none;text-transform:uppercase;letter-spacing:1px;background:#f0ece0}
 .news-comments-toggle:active{opacity:0.6}
@@ -2683,6 +2687,28 @@ function _newsCommentBlock(id){
     </div>
   </div>`;
 }
+const REACTIONS=['😂','🔥','😱','👏'];
+async function loadReactions(postId){
+  const rows=await sf(`newspaper_reactions?post_id=eq.${postId}&select=*`);
+  if(!Array.isArray(rows)) return;
+  REACTIONS.forEach(e=>{
+    const count=rows.filter(r=>r.emoji===e).length;
+    const myReact=rows.some(r=>r.emoji===e&&r.author===myName);
+    const span=document.querySelector(`.rcount-${postId}-${e.codePointAt(0)}`);
+    if(span) span.textContent=count||0;
+    const btn=span?.parentElement;
+    if(btn) btn.classList.toggle('active',myReact);
+  });
+}
+async function toggleReaction(postId,emoji,btn){
+  btn.style.transform='scale(1.3)';
+  setTimeout(()=>btn.style.transform='',200);
+  await fetch(`https://api.vino-hinkali.online/api/newspaper_reactions/toggle`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({post_id:postId,author:myName,emoji})
+  });
+  loadReactions(postId);
+}
 function _newsArticleHTML(post,num){
   const hl=escapeHtml(post.headline||'Хроника смены');
   const txt=escapeHtml(post.text);
@@ -2697,6 +2723,9 @@ function _newsArticleHTML(post,num){
       <div class="na-body">${txt}</div>
     </div>
     ${_newsFooter(post)}
+    <div class="na-reactions" id="reactions-${post.id}">
+      ${['😂','🔥','😱','👏'].map(e=>`<button class="na-react-btn" onclick="toggleReaction(${post.id},'${e}',this)">${e} <span class="rcount-${post.id}-${e.codePointAt(0)}">0</span></button>`).join('')}
+    </div>
     ${_newsCommentBlock(post.id)}
   </div>`;
 }
@@ -2712,7 +2741,7 @@ async function loadNewsPosts(){
   if(!_newsLastId){
     _newsLastId=rows[0].id;
     body.innerHTML=rows.map((post,i)=>_newsArticleHTML(post,`№${rows.length-i}`)).join('');
-    rows.forEach(p=>loadNewsComments(p.id,false));
+    rows.forEach(p=>{loadNewsComments(p.id,false);loadReactions(p.id);});
     return;
   }
   // Добавляем только новые посты сверху, не трогая существующие
@@ -2726,11 +2755,12 @@ async function loadNewsPosts(){
       div.innerHTML=_newsArticleHTML(post,num);
       body.insertBefore(div.firstElementChild,body.firstChild);
       loadNewsComments(post.id,false);
+      loadReactions(post.id);
     });
   }
   // Обновляем счётчики комментариев у существующих постов
   rows.forEach(p=>{
-    if(!newPosts.includes(p)) loadNewsComments(p.id,false);
+    if(!newPosts.includes(p)){loadNewsComments(p.id,false);loadReactions(p.id);}
   });
 }
 
