@@ -301,34 +301,18 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 .news-section-rule{display:flex;align-items:center;gap:0;margin:0;border:none;background:#f0ece0}
 .news-section-rule span{flex:1;height:1px;background:#111}
 .news-section-label{font-size:7px;color:#555;letter-spacing:3px;text-transform:uppercase;font-family:'Nunito',sans-serif;white-space:nowrap;padding:7px 8px}
-/* FEATURE article — full width, main story */
-.na-feature{padding:12px 12px 0;border-bottom:3px double #111;background:#f0ece0}
-.na-kicker{font-family:'Nunito',sans-serif;font-size:7px;letter-spacing:3px;text-transform:uppercase;color:#666;margin-bottom:4px}
-.na-num{font-family:'Nunito',sans-serif;font-size:7px;color:#bbb;letter-spacing:2px;margin-bottom:2px;text-transform:uppercase}
-.na-headline-feature{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;line-height:1.1;color:#111;text-transform:uppercase;margin-bottom:6px;letter-spacing:0.2px}
-.na-subhead{font-family:'Georgia',serif;font-size:10.5px;font-style:italic;color:#555;border-top:1px solid #bbb;border-bottom:1px solid #bbb;padding:5px 0;margin-bottom:8px;line-height:1.4}
-.na-byline{font-family:'Nunito',sans-serif;font-size:8px;color:#888;text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between;margin-bottom:8px}
-.na-photo{width:100%;height:170px;overflow:hidden;margin-bottom:8px;border-top:2px solid #111;border-bottom:2px solid #111}
+/* ARTICLE — единый стиль для всех */
+.na-article{background:#f0ece0;border-bottom:1px solid #bbb}
+.na-article:first-child{border-bottom:3px double #111}
+.na-inner{padding:12px 12px 0}
+.na-num{font-family:'Nunito',sans-serif;font-size:7px;color:#bbb;letter-spacing:2px;margin-bottom:3px;text-transform:uppercase}
+.na-headline{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;line-height:1.15;color:#111;text-transform:uppercase;margin-bottom:6px}
+.na-byline{font-family:'Nunito',sans-serif;font-size:8px;color:#888;text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between;margin-bottom:8px;border-bottom:1px solid #ddd;padding-bottom:6px}
+.na-photo{width:100%;height:200px;overflow:hidden;margin-bottom:8px;border-top:2px solid #111;border-bottom:2px solid #111}
 .na-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(100%) contrast(1.15) brightness(0.92)}
 .na-caption{font-family:'Nunito',sans-serif;font-size:8px;color:#777;font-style:italic;margin-bottom:8px}
-.na-body-cols{font-family:'Georgia',serif;font-size:11.5px;line-height:1.7;text-align:justify;color:#1a1a1a;columns:2;column-gap:14px;column-rule:1px solid #ccc;margin-bottom:12px}
-.na-body-cols::first-letter{font-size:48px;font-weight:900;float:left;line-height:0.8;margin:4px 6px 0 0;font-family:'Playfair Display',serif;color:#111}
-.na-body-single{font-family:'Georgia',serif;font-size:11.5px;line-height:1.7;text-align:justify;color:#1a1a1a;margin-bottom:12px}
-.na-body-single::first-letter{font-size:48px;font-weight:900;float:left;line-height:0.8;margin:4px 6px 0 0;font-family:'Playfair Display',serif;color:#111}
-/* GRID — two small side-by-side */
-.na-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #bbb;background:#f0ece0}
-.na-small{padding:10px 10px 10px;border-right:1px solid #bbb}
-.na-small:last-child{border-right:none}
-.na-headline-small{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;line-height:1.2;color:#111;margin-bottom:5px;text-transform:uppercase}
-.na-body-small{font-family:'Georgia',serif;font-size:9.5px;line-height:1.55;text-align:justify;color:#333}
-.na-byline-small{font-family:'Nunito',sans-serif;font-size:7.5px;color:#999;margin-top:5px;font-style:italic}
-/* WIDE — image floated */
-.na-wide{padding:10px 12px;border-bottom:1px solid #bbb;background:#f0ece0;overflow:hidden}
-.na-wide-photo{float:right;width:110px;height:75px;overflow:hidden;margin:0 0 6px 10px;border:1px solid #bbb;flex-shrink:0}
-.na-wide-photo img{width:100%;height:100%;object-fit:cover;display:block}
-.na-headline-wide{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;line-height:1.2;color:#111;margin-bottom:4px;text-transform:uppercase}
-.na-body-wide{font-family:'Georgia',serif;font-size:10px;line-height:1.6;text-align:justify;color:#333}
-.na-byline-wide{font-family:'Nunito',sans-serif;font-size:7.5px;color:#999;margin-top:4px;font-style:italic;clear:both}
+.na-body{font-family:'Georgia',serif;font-size:12px;line-height:1.7;text-align:justify;color:#1a1a1a;margin-bottom:12px}
+.na-body::first-letter{font-size:46px;font-weight:900;float:left;line-height:0.8;margin:4px 6px 0 0;font-family:'Playfair Display',serif;color:#111}
 /* Footer strip */
 .na-footer{display:flex;align-items:center;justify-content:space-between;font-size:8px;color:#bbb;font-family:'Nunito',sans-serif;padding:2px 12px 6px;font-style:italic}
 .na-delete-btn{background:none;border:none;color:#ccc;font-size:11px;cursor:pointer;padding:2px 4px;font-family:'Nunito',sans-serif;letter-spacing:1px;opacity:0.5}
@@ -2697,75 +2681,26 @@ async function loadNewsPosts(){
   const lastId=rows[0].id;
   if(lastId===_newsLastId&&body.children.length>1) return;
   _newsLastId=lastId;
-  const months=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-  let html='';
-  rows.forEach((post,i)=>{
+  const html=rows.map((post,i)=>{
     const hl=escapeHtml(post.headline||'Хроника смены');
     const txt=escapeHtml(post.text);
     const num=`№${rows.length-i}`;
     const by=`Корр. ${escapeHtml(post.author)} · ${newsDateStr(post.created_at)}`;
     const img=post.image?`<div class="na-photo"><img src="${escapeHtml(post.image)}" alt="фото"></div><div class="na-caption">Фото: редакция Вино &amp; Хинкали</div>`:'';
-    if(i===0){
-      // Feature — full width, main story
-      html+=`<div id="article-${post.id}" style="border-bottom:3px double #111">
-        <div class="na-feature">
-          <div class="na-num">${num} · Главная история</div>
-          <div class="na-headline-feature">${hl}</div>
-          <div class="na-subhead">Наш корреспондент сообщает из зала — подробности ниже</div>
-          <div class="na-byline"><span>${by}</span></div>
-          ${img}
-          <div class="${post.image?'na-body-cols':'na-body-single'}">${txt}</div>
-        </div>
-        ${_newsFooter(post)}
-        ${_newsCommentBlock(post.id)}
-      </div>`;
-      if(rows.length>1){
-        html+=`<div class="news-section-rule"><span></span><span class="news-section-label">Также в номере</span><span></span></div>`;
-      }
-    } else if(!post.image && i+1<rows.length && !rows[i+1].image && _newsIsSmall(i,rows)){
-      // Pair of no-image posts — grid
-      const next=rows[i+1];
-      const hl2=escapeHtml(next.headline||'Хроника смены');
-      const txt2=escapeHtml(next.text);
-      const num2=`№${rows.length-i-1}`;
-      const by2=`Корр. ${escapeHtml(next.author)} · ${newsDateStr(next.created_at)}`;
-      html+=`<div class="na-grid">
-        <div class="na-small" id="article-${post.id}">
-          <div class="na-num">${num}</div>
-          <div class="na-headline-small">${hl}</div>
-          <div class="na-body-small">${txt}</div>
-          <div class="na-byline-small">${by}</div>
-          ${post.author===myName?`<button class="na-delete-btn" onclick="deleteNewsPost('${post.id}','${escapeHtml(post.author)}')">✕ удалить</button>`:''}
-          ${_newsCommentBlock(post.id)}
-        </div>
-        <div class="na-small" id="article-${next.id}">
-          <div class="na-num">${num2}</div>
-          <div class="na-headline-small">${hl2}</div>
-          <div class="na-body-small">${txt2}</div>
-          <div class="na-byline-small">${by2}</div>
-          ${next.author===myName?`<button class="na-delete-btn" onclick="deleteNewsPost('${next.id}','${escapeHtml(next.author)}')">✕ удалить</button>`:''}
-          ${_newsCommentBlock(next.id)}
-        </div>
-      </div>`;
-      rows[i+1]._rendered=true;
-    } else if(!post._rendered){
-      html+=`<div class="na-wide" id="article-${post.id}">
-        ${post.image?`<div class="na-wide-photo"><img src="${escapeHtml(post.image)}" alt="фото"></div>`:''}
+    return `<div class="na-article" id="article-${post.id}">
+      <div class="na-inner">
         <div class="na-num">${num}</div>
-        <div class="na-headline-wide">${hl}</div>
-        <div class="na-body-wide">${txt}</div>
-        <div class="na-byline-wide">${by}</div>
-        ${_newsFooter(post)}
-        ${_newsCommentBlock(post.id)}
-      </div>`;
-    }
-  });
+        <div class="na-headline">${hl}</div>
+        <div class="na-byline"><span>${by}</span></div>
+        ${img}
+        <div class="na-body">${txt}</div>
+      </div>
+      ${_newsFooter(post)}
+      ${_newsCommentBlock(post.id)}
+    </div>`;
+  }).join('');
   body.innerHTML=html;
   rows.forEach(p=>loadNewsComments(p.id,false));
-}
-function _newsIsSmall(i,rows){
-  // Returns true if this index should start a grid pair (not yet rendered)
-  return !rows[i]._rendered;
 }
 
 async function loadNewsComments(postId,show){
