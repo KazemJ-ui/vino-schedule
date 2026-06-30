@@ -2644,7 +2644,7 @@ async function submitNewsPost(){
   }catch(e){}
   btn.textContent='⏳ Публикуем...';
   const anon=document.getElementById('newsAnonCheck').checked;
-  const payload={author:anon?'Аноним':myName,text,headline};
+  const payload={author:anon?'Аноним·'+myName:myName,text,headline};
   if(_newsRawImg) payload.image=await _newsGetCroppedImage();
   const res=await sf('newspaper_posts','POST',payload);
   btn.disabled=false;btn.textContent='📰 Опубликовать';
@@ -2661,8 +2661,16 @@ async function submitNewsPost(){
 }
 
 let _newsLastId=null;
+function _newsDisplayAuthor(author){
+  if(author&&author.startsWith('Аноним·')) return 'Аноним';
+  return author;
+}
+function _newsRealAuthor(author){
+  if(author&&author.startsWith('Аноним·')) return author.slice(7);
+  return author;
+}
 function _newsFooter(post){
-  const isOwn=post.author===myName;
+  const isOwn=_newsRealAuthor(post.author)===myName;
   const del=isOwn?`<button class="na-delete-btn" onclick="deleteNewsPost('${post.id}','${escapeHtml(post.author)}')">✕ удалить</button>`:'<span></span>';
   return `<div class="na-footer">${del}<span>Редакция «Вино &amp; Хинкали»</span></div>`;
 }
@@ -2690,7 +2698,7 @@ async function loadNewsPosts(){
     const hl=escapeHtml(post.headline||'Хроника смены');
     const txt=escapeHtml(post.text);
     const num=`№${rows.length-i}`;
-    const by=`Корр. ${escapeHtml(post.author)} · ${newsDateStr(post.created_at)}`;
+    const by=`Корр. ${escapeHtml(_newsDisplayAuthor(post.author))} · ${newsDateStr(post.created_at)}`;
     const img=post.image?`<div class="na-photo"><img src="${escapeHtml(post.image)}" alt="фото"></div><div class="na-caption">Фото: редакция Вино &amp; Хинкали</div>`:'';
     return `<div class="na-article" id="article-${post.id}">
       <div class="na-inner">
