@@ -2683,6 +2683,23 @@ function _newsCommentBlock(id){
     </div>
   </div>`;
 }
+function _newsArticleHTML(post,num){
+  const hl=escapeHtml(post.headline||'Хроника смены');
+  const txt=escapeHtml(post.text);
+  const by=`Корр. ${escapeHtml(_newsDisplayAuthor(post.author))} · ${newsDateStr(post.created_at)}`;
+  const img=post.image?`<div class="na-photo"><img src="${escapeHtml(post.image)}" alt="фото"></div><div class="na-caption">Фото: редакция Вино &amp; Хинкали</div>`:'';
+  return `<div class="na-article" id="article-${post.id}">
+    <div class="na-inner">
+      <div class="na-num">${num}</div>
+      <div class="na-headline">${hl}</div>
+      <div class="na-byline"><span>${by}</span></div>
+      ${img}
+      <div class="na-body">${txt}</div>
+    </div>
+    ${_newsFooter(post)}
+    ${_newsCommentBlock(post.id)}
+  </div>`;
+}
 async function loadNewsPosts(){
   const rows=await sf('newspaper_posts?select=*&order=created_at.desc&limit=30');
   if(!Array.isArray(rows)) return;
@@ -2691,50 +2708,29 @@ async function loadNewsPosts(){
     body.innerHTML='<div class="news-empty">📰 Здесь пусто<br><br>Будь первым — нажми <b>+</b> и расскажи<br>что интересного произошло в смене</div>';
     return;
   }
-  const lastId=rows[0].id;
-  if(lastId===_newsLastId&&body.children.length>1){
-    // Только обновляем счётчики комментариев без перерисовки
+  // Первый раз — рисуем всё с нуля
+  if(!_newsLastId){
+    _newsLastId=rows[0].id;
+    body.innerHTML=rows.map((post,i)=>_newsArticleHTML(post,`№${rows.length-i}`)).join('');
     rows.forEach(p=>loadNewsComments(p.id,false));
     return;
   }
-  // Не перерисовываем если пользователь пишет комментарий
-  const inputs=body.querySelectorAll('.news-comment-input');
-  const typing=[...inputs].some(el=>el===document.activeElement||el.value.trim());
-  if(typing) return;
-  // Запоминаем открытые блоки комментариев
-  const openComments=new Set();
-  body.querySelectorAll('[id^="news-comments-"]').forEach(el=>{
-    if(el.style.display==='block') openComments.add(el.id.replace('news-comments-',''));
-  });
-  _newsLastId=lastId;
-  const html=rows.map((post,i)=>{
-    const hl=escapeHtml(post.headline||'Хроника смены');
-    const txt=escapeHtml(post.text);
-    const num=`№${rows.length-i}`;
-    const by=`Корр. ${escapeHtml(_newsDisplayAuthor(post.author))} · ${newsDateStr(post.created_at)}`;
-    const img=post.image?`<div class="na-photo"><img src="${escapeHtml(post.image)}" alt="фото"></div><div class="na-caption">Фото: редакция Вино &amp; Хинкали</div>`:'';
-    return `<div class="na-article" id="article-${post.id}">
-      <div class="na-inner">
-        <div class="na-num">${num}</div>
-        <div class="na-headline">${hl}</div>
-        <div class="na-byline"><span>${by}</span></div>
-        ${img}
-        <div class="na-body">${txt}</div>
-      </div>
-      ${_newsFooter(post)}
-      ${_newsCommentBlock(post.id)}
-    </div>`;
-  }).join('');
-  body.innerHTML=html;
+  // Добавляем только новые посты сверху, не трогая существующие
+  const newPosts=rows.filter(p=>!document.getElementById('article-'+p.id));
+  if(newPosts.length>0){
+    _newsLastId=rows[0].id;
+    const total=rows.length;
+    newPosts.reverse().forEach((post,i)=>{
+      const num=`№${total-(rows.length-1-i)}`;
+      const div=document.createElement('div');
+      div.innerHTML=_newsArticleHTML(post,num);
+      body.insertBefore(div.firstElementChild,body.firstChild);
+      loadNewsComments(post.id,false);
+    });
+  }
+  // Обновляем счётчики комментариев у существующих постов
   rows.forEach(p=>{
-    const show=openComments.has(String(p.id));
-    if(show){
-      const wrap=document.getElementById(`news-comments-${p.id}`);
-      if(wrap) wrap.style.display='block';
-      const toggle=document.querySelector(`[onclick="toggleNewsComments(${p.id},this)"]`);
-      if(toggle) toggle.innerHTML=`💬 Комментарии <span class="news-ccount-${p.id}"></span> ‹`;
-    }
-    loadNewsComments(p.id,show);
+    if(!newPosts.includes(p)) loadNewsComments(p.id,false);
   });
 }
 
