@@ -2692,7 +2692,20 @@ async function loadNewsPosts(){
     return;
   }
   const lastId=rows[0].id;
-  if(lastId===_newsLastId&&body.children.length>1) return;
+  if(lastId===_newsLastId&&body.children.length>1){
+    // Только обновляем счётчики комментариев без перерисовки
+    rows.forEach(p=>loadNewsComments(p.id,false));
+    return;
+  }
+  // Не перерисовываем если пользователь пишет комментарий
+  const inputs=body.querySelectorAll('.news-comment-input');
+  const typing=[...inputs].some(el=>el===document.activeElement||el.value.trim());
+  if(typing) return;
+  // Запоминаем открытые блоки комментариев
+  const openComments=new Set();
+  body.querySelectorAll('[id^="news-comments-"]').forEach(el=>{
+    if(el.style.display==='block') openComments.add(el.id.replace('news-comments-',''));
+  });
   _newsLastId=lastId;
   const html=rows.map((post,i)=>{
     const hl=escapeHtml(post.headline||'Хроника смены');
@@ -2713,7 +2726,16 @@ async function loadNewsPosts(){
     </div>`;
   }).join('');
   body.innerHTML=html;
-  rows.forEach(p=>loadNewsComments(p.id,false));
+  rows.forEach(p=>{
+    const show=openComments.has(String(p.id));
+    if(show){
+      const wrap=document.getElementById(`news-comments-${p.id}`);
+      if(wrap) wrap.style.display='block';
+      const toggle=document.querySelector(`[onclick="toggleNewsComments(${p.id},this)"]`);
+      if(toggle) toggle.innerHTML=`💬 Комментарии <span class="news-ccount-${p.id}"></span> ‹`;
+    }
+    loadNewsComments(p.id,show);
+  });
 }
 
 async function loadNewsComments(postId,show){
