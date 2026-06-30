@@ -2701,7 +2701,7 @@ function _newsArticleHTML(post,num){
   </div>`;
 }
 async function loadNewsPosts(){
-  const rows=await sf('newspaper_posts?select=*&order=created_at.desc&limit=30');
+  const rows=await sf('newspaper_posts?select=*&order=id.desc&limit=30');
   if(!Array.isArray(rows)) return;
   const body=document.getElementById('newsBody');
   if(rows.length===0){
