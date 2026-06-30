@@ -2647,7 +2647,7 @@ async function submitNewsPost(){
   btn.disabled=true;btn.textContent='✍️ Редакция думает...';
   let headline=generateHeadline(text);
   try{
-    const r=await fetch('https://api.vino-hinkali.online/api/ai-headline',{
+    const r=await fetch('https://api.vino-hinkali.online/ai/headline',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({text})
     });
@@ -2816,7 +2816,7 @@ async function deleteNewsPost(id,author){
 
 async function _newsAiEditorComment(postId,text,headline){
   try{
-    const r=await fetch('https://api.vino-hinkali.online/api/ai-editor-comment',{
+    const r=await fetch('https://api.vino-hinkali.online/ai/editor-comment',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({text,headline})
