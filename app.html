@@ -283,119 +283,64 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 .chat-empty{text-align:center;color:rgba(255,255,255,0.3);font-size:13px;padding:40px 0}
 
 /* ── NEWSPAPER SCREEN ── */
-.news-screen{position:fixed;inset:0;background:#e8e0cc;z-index:998;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);visibility:hidden}
+.news-screen{position:fixed;inset:0;background:#f0ebe0;z-index:998;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);visibility:hidden}
 .news-screen.active{transform:translateX(0);visibility:visible}
-/* Masthead */
-.news-header{background:#111;padding:0;flex-shrink:0}
-.news-header-top{display:flex;align-items:center;padding:10px 14px 8px;border-bottom:1px solid #333}
-.news-back{background:none;border:none;color:#aaa;font-size:22px;cursor:pointer;line-height:1;padding:0;font-family:'Nunito',sans-serif;flex-shrink:0}
-.news-masthead{flex:1;text-align:center;padding:0 8px}
-.news-masthead-title{font-family:'Playfair Display',serif;font-size:22px;color:#fff;font-weight:900;letter-spacing:2px;line-height:1;text-transform:uppercase}
-.news-masthead-motto{font-size:7px;color:#666;letter-spacing:2px;text-transform:uppercase;margin-top:3px;font-style:italic}
-.news-masthead-meta{display:flex;justify-content:space-between;align-items:center;padding:5px 14px 8px;border-top:1px solid #333}
-.news-meta-item{font-size:8px;color:#555;letter-spacing:1px;text-transform:uppercase;font-family:'Nunito',sans-serif}
-.news-meta-center{font-size:9px;color:#888;font-family:'Playfair Display',serif;font-style:italic}
-/* Body */
-.news-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 90px;background:#f0ece0}
-/* Section rule */
-.news-section-rule{display:flex;align-items:center;gap:0;margin:0;border:none;background:#f0ece0}
-.news-section-rule span{flex:1;height:1px;background:#111}
-.news-section-label{font-size:7px;color:#555;letter-spacing:3px;text-transform:uppercase;font-family:'Nunito',sans-serif;white-space:nowrap;padding:7px 8px}
-/* ARTICLE — единый стиль для всех */
-.na-article{background:#f0ece0;border-bottom:1px solid #bbb}
-.na-article:first-child{border-bottom:3px double #111}
-.na-inner{padding:12px 12px 0}
-.na-num{font-family:'Nunito',sans-serif;font-size:7px;color:#bbb;letter-spacing:2px;margin-bottom:3px;text-transform:uppercase}
-.na-headline{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;line-height:1.15;color:#111;text-transform:uppercase;margin-bottom:6px}
-.na-byline{font-family:'Nunito',sans-serif;font-size:8px;color:#888;text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between;margin-bottom:8px;border-bottom:1px solid #ddd;padding-bottom:6px}
-.na-photo{width:100%;height:200px;overflow:hidden;margin-bottom:8px;border-top:2px solid #111;border-bottom:2px solid #111}
-.na-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(100%) contrast(1.15) brightness(0.92)}
-.na-caption{font-family:'Nunito',sans-serif;font-size:8px;color:#777;font-style:italic;margin-bottom:8px}
-.na-body{font-family:'Georgia',serif;font-size:12px;line-height:1.7;text-align:justify;color:#1a1a1a;margin-bottom:12px}
-.na-body::first-letter{font-size:46px;font-weight:900;float:left;line-height:0.8;margin:4px 6px 0 0;font-family:'Playfair Display',serif;color:#111}
-/* Footer strip */
-.na-footer{display:flex;align-items:center;justify-content:space-between;font-size:8px;color:#bbb;font-family:'Nunito',sans-serif;padding:2px 12px 6px;font-style:italic}
-.na-delete-btn{background:none;border:none;color:#ccc;font-size:11px;cursor:pointer;padding:2px 4px;font-family:'Nunito',sans-serif;letter-spacing:1px;opacity:0.5}
-.na-delete-btn:active{opacity:1;color:#c0392b}
-.na-reactions{display:flex;gap:6px;padding:6px 12px 8px;border-top:1px solid #e8e0cc}
-.na-react-btn{background:none;border:1px solid #ddd;border-radius:20px;padding:3px 8px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:3px;font-family:'Nunito',sans-serif;font-size:11px;color:#666;transition:all 0.15s}
-.na-react-btn.active{background:#111;border-color:#111;color:#fff}
-.na-react-btn:active{transform:scale(1.2)}
-/* Comments */
-.news-comments-toggle{padding:7px 12px;border-top:1px solid #ddd;font-size:9px;color:#888;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;gap:5px;user-select:none;text-transform:uppercase;letter-spacing:1px;background:#f0ece0}
+.news-header{background:#111;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;border-bottom:4px double #555}
+.news-back{background:none;border:none;color:#aaa;font-size:22px;cursor:pointer;line-height:1;padding:0;font-family:'Nunito',sans-serif}
+.news-masthead{flex:1;text-align:center}
+.news-masthead-title{font-family:'Playfair Display',serif;font-size:18px;color:#fff;font-weight:900;letter-spacing:1px;line-height:1}
+.news-masthead-sub{font-size:8px;color:#666;letter-spacing:3px;text-transform:uppercase;margin-top:2px}
+.news-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 90px}
+.news-date-bar{text-align:center;font-size:9px;color:#999;letter-spacing:2px;text-transform:uppercase;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid #ccc;font-family:'Nunito',sans-serif}
+.news-article{background:#fdfcf5;border:1px solid #ccc;margin-bottom:14px;overflow:hidden;box-shadow:2px 3px 0 rgba(0,0,0,0.1)}
+.news-article-img{width:100%;max-height:220px;object-fit:cover;filter:grayscale(100%) contrast(1.1) brightness(0.95);display:block;border-bottom:2px solid #ccc}
+.news-article-inner{padding:12px 14px 8px}
+.news-headline{font-family:'Playfair Display',serif;font-size:16px;font-weight:900;color:#111;line-height:1.25;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px}
+.news-byline{font-size:10px;color:#888;font-style:italic;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #ddd;font-family:'Nunito',sans-serif;display:flex;justify-content:space-between}
+.news-text{font-size:13px;color:#2a2a2a;line-height:1.65;font-family:'Georgia',serif}
+.news-comments-toggle{margin-top:10px;padding:8px 14px;border-top:1px solid #eee;font-size:11px;color:#777;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;gap:5px;user-select:none}
 .news-comments-toggle:active{opacity:0.6}
-.news-comments-wrap{display:none;padding:0 12px 10px;border-top:1px dashed #ccc;background:#ede9d8}
-.news-comment-item{padding:7px 0;border-bottom:1px dotted #ddd;font-family:'Nunito',sans-serif}
+.news-comments-wrap{display:none;padding:0 14px 10px;border-top:1px dashed #ddd;background:#faf9f0}
+.news-comment-item{padding:7px 0;border-bottom:1px dotted #e5e5e5;font-family:'Nunito',sans-serif}
 .news-comment-item:last-of-type{border:none}
-.news-comment-author{font-weight:800;font-size:10px;color:#333;text-transform:uppercase;letter-spacing:1px}
-.news-comment-text{font-size:12px;color:#444;margin-top:2px;line-height:1.4;font-family:'Georgia',serif}
-.news-comment-time{font-size:9px;color:#bbb;margin-top:2px}
-.news-comment-form{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid #ddd}
-.news-comment-input{flex:1;background:#faf7ee;border:1px solid #ccc;border-radius:2px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:16px;outline:none;color:#111}
-.news-comment-send{padding:7px 12px;background:#111;color:#fff;border:none;font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;text-transform:uppercase;letter-spacing:1px}
+.news-comment-author{font-weight:800;font-size:11px;color:#333}
+.news-comment-text{font-size:12px;color:#555;margin-top:2px;line-height:1.4}
+.news-comment-time{font-size:10px;color:#bbb;margin-top:2px}
+.news-comment-form{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid #eee}
+.news-comment-input{flex:1;background:#f5f4ee;border:1px solid #ddd;border-radius:4px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:13px;outline:none;color:#111}
+.news-comment-send{padding:7px 12px;background:#111;color:#fff;border:none;border-radius:4px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
 .news-comment-send:active{opacity:0.7}
-.news-empty{text-align:center;padding:60px 20px;color:#aaa;font-family:'Georgia',serif;font-size:14px;line-height:2;font-style:italic}
+.news-empty{text-align:center;padding:60px 20px;color:#aaa;font-family:'Nunito',sans-serif;font-size:14px;line-height:1.8}
 .news-loading{text-align:center;padding:40px;color:#aaa;font-family:'Nunito',sans-serif;font-size:13px}
-/* Add button */
-.news-add-btn{position:fixed;bottom:28px;right:20px;width:58px;height:58px;border-radius:50%;background:#111;color:#fff;border:3px solid #e8e0cc;font-size:28px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,0.4);z-index:999;display:none;align-items:center;justify-content:center;line-height:1;transition:transform 0.1s}
+.news-add-btn{position:fixed;bottom:28px;right:20px;width:58px;height:58px;border-radius:50%;background:#111;color:#fff;border:3px solid #fff;font-size:28px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,0.35);z-index:999;display:none;align-items:center;justify-content:center;line-height:1;transition:transform 0.1s}
 .news-add-btn.visible{display:flex}
 .news-add-btn:active{transform:scale(0.9)}
-/* Post sheet */
 .news-post-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:1000;display:none;align-items:flex-end;justify-content:center}
 .news-post-overlay.active{display:flex}
-.news-post-sheet{background:#faf7ee;width:100%;max-width:480px;border-radius:0;padding:20px 18px;padding-bottom:max(24px,env(safe-area-inset-bottom));max-height:92vh;overflow-y:auto;border-top:4px double #111}
-.news-post-sheet-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:#111;text-align:center;margin-bottom:4px;text-transform:uppercase;letter-spacing:2px}
-.news-post-sheet-sub{font-size:9px;color:#aaa;text-align:center;letter-spacing:2px;text-transform:uppercase;font-family:'Nunito',sans-serif;margin-bottom:16px}
-/* Photo picker — кроппер с перетаскиванием */
-.news-photo-label{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:2px;font-family:'Nunito',sans-serif;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.news-photo-label::after{content:'';flex:1;height:1px;background:#ccc}
-.news-photo-preview{width:100%;height:190px;border:2px solid #111;overflow:hidden;position:relative;cursor:pointer;margin-bottom:0;background:#f0ece0;user-select:none}
-.news-photo-preview.has-photo{cursor:grab}
-.news-photo-preview.has-photo:active{cursor:grabbing}
-.news-photo-preview .crop-img{position:absolute;filter:grayscale(100%) contrast(1.7) brightness(0.8) blur(0.3px);pointer-events:none;will-change:transform}
-.news-halftone-overlay{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(0,0,0,0.85) 1px,transparent 1px);background-size:3.5px 3.5px;mix-blend-mode:multiply;pointer-events:none;z-index:1}
-.news-photo-preview::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:2;
-  background:
-    linear-gradient(to right,#fff 2px,transparent 2px) 0 0/18px 18px no-repeat,
-    linear-gradient(to bottom,#fff 2px,transparent 2px) 0 0/18px 18px no-repeat,
-    linear-gradient(to left,#fff 2px,transparent 2px) 100% 0/18px 18px no-repeat,
-    linear-gradient(to bottom,#fff 2px,transparent 2px) 100% 0/18px 18px no-repeat,
-    linear-gradient(to right,#fff 2px,transparent 2px) 0 100%/18px 18px no-repeat,
-    linear-gradient(to top,#fff 2px,transparent 2px) 0 100%/18px 18px no-repeat,
-    linear-gradient(to left,#fff 2px,transparent 2px) 100% 100%/18px 18px no-repeat,
-    linear-gradient(to top,#fff 2px,transparent 2px) 100% 100%/18px 18px no-repeat;
-}
-.news-photo-preview::after{content:'ДВИГАЙ ФОТО';position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);color:#fff;font-size:8px;padding:3px 10px;letter-spacing:2px;font-family:'Nunito',sans-serif;pointer-events:none;z-index:3;opacity:0;transition:opacity 0.3s}
-.news-photo-preview.has-photo::after{opacity:1}
-.news-photo-change{position:absolute;top:7px;right:7px;z-index:10;background:rgba(0,0,0,0.6);color:#fff;font-size:9px;padding:3px 9px;font-family:'Nunito',sans-serif;border:none;cursor:pointer;letter-spacing:1px;text-transform:uppercase}
-.news-photo-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#bbb;font-family:'Nunito',sans-serif;font-size:12px}
-.news-photo-placeholder-icon{font-size:32px;opacity:0.5}
-.news-photo-hint{font-size:10px;color:#888;text-align:center;font-family:'Nunito',sans-serif;margin:6px 0 14px;font-style:italic;display:flex;align-items:center;gap:4px;justify-content:center}
+.news-post-sheet{background:#fff;width:100%;max-width:480px;border-radius:18px 18px 0 0;padding:20px 18px;padding-bottom:max(24px,env(safe-area-inset-bottom));max-height:90vh;overflow-y:auto}
+.news-post-sheet-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:#111;text-align:center;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px}
+.news-photo-btn{width:100%;height:130px;border:2px dashed #ccc;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin-bottom:12px;color:#aaa;font-family:'Nunito',sans-serif;font-size:12px;gap:4px;background:#fafaf8;overflow:hidden;position:relative}
+.news-photo-btn img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(100%)}
+.news-photo-btn span{position:relative;z-index:1}
 .news-photo-input{display:none}
-.news-post-textarea{width:100%;min-height:90px;border:1px solid #ccc;border-radius:0;padding:10px 12px;font-family:'Georgia',serif;font-size:16px;resize:none;outline:none;line-height:1.6;color:#111;background:#fff}
-.news-post-hint{font-size:9px;color:#bbb;margin:6px 0 14px;font-family:'Nunito',sans-serif;text-align:center;letter-spacing:1px;text-transform:uppercase}
-.news-post-submit{width:100%;padding:14px;background:#111;color:#fff;border:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.news-post-textarea{width:100%;min-height:90px;border:1px solid #ddd;border-radius:8px;padding:10px 12px;font-family:'Nunito',sans-serif;font-size:14px;resize:none;outline:none;line-height:1.5;color:#111;background:#fafaf8}
+.news-post-hint{font-size:11px;color:#bbb;margin:5px 0 12px;font-family:'Nunito',sans-serif;text-align:center}
+.news-post-submit{width:100%;padding:14px;background:#111;color:#fff;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:1px;text-transform:uppercase;margin-top:4px}
 .news-post-submit:active{opacity:0.8}
-.news-post-cancel{width:100%;padding:10px;background:none;border:none;color:#bbb;font-family:'Nunito',sans-serif;font-size:13px;cursor:pointer;margin-top:4px}
-/* Dark mode */
-body.dark .news-screen{background:#111}
-body.dark .news-body{background:#111}
-/* Газета всегда светлая — тёмная тема не применяется */
+.news-post-cancel{width:100%;padding:10px;background:none;border:none;color:#bbb;font-family:'Nunito',sans-serif;font-size:14px;cursor:pointer;margin-top:4px}
+body.dark .news-screen{background:#0f0f0f}
+body.dark .news-article{background:#1a1a1a;border-color:#333}
+body.dark .news-headline{color:#eee}
+body.dark .news-text{color:#bbb}
+body.dark .news-byline{color:#666;border-bottom-color:#333}
 body.dark .news-comments-wrap{background:#111}
 body.dark .news-comment-author{color:#ccc}
 body.dark .news-comment-text{color:#888}
-body.dark .news-comment-input{background:#1a1a1a;border-color:#444;color:#eee}
+body.dark .news-comment-input{background:#222;border-color:#444;color:#eee}
 body.dark .news-comment-send{background:#333}
-body.dark .news-comments-toggle{color:#555;border-top-color:#333}
-body.dark .news-article-footer{border-top-color:#333;color:#555}
-body.dark .news-section-rule::before,.news-section-rule::after{background:#444}
-body.dark .news-section-label{color:#555}
-.news-anon-label{display:flex;align-items:center;gap:8px;font-family:'Nunito',sans-serif;font-size:11px;color:#888;letter-spacing:1px;text-transform:uppercase;margin:8px 0 4px;cursor:pointer}
-.news-anon-label input{width:14px;height:14px;accent-color:#111;cursor:pointer}
-body.dark .news-post-sheet{background:#111;border-top-color:#555}
-body.dark .news-post-sheet-title{color:#eee}
-body.dark .news-photo-preview{border-color:#444;background:#1a1a1a}
-body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
+body.dark .news-date-bar{color:#555;border-bottom-color:#333}
+body.dark .news-comments-toggle{color:#666;border-top-color:#333}
+body.dark .news-header{background:#0a0a0a;border-bottom-color:#333}
 
 .edit-zone-group{margin-bottom:8px}
 .edit-zone-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
@@ -498,22 +443,15 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
 <!-- NEWSPAPER SCREEN -->
 <div class="news-screen" id="newsScreen">
   <div class="news-header">
-    <div class="news-header-top">
-      <button class="news-back" onclick="closeNewspaper()">←</button>
-      <div class="news-masthead">
-        <div class="news-masthead-title">Вино &amp; Хинкали</div>
-        <div class="news-masthead-motto">«Правда одна — остальное детали»</div>
-      </div>
-      <div style="width:30px"></div>
+    <button class="news-back" onclick="closeNewspaper()">←</button>
+    <div class="news-masthead">
+      <div class="news-masthead-title">ВИНО & ХИНКАЛИ</div>
+      <div class="news-masthead-sub">Вечерний вестник · Хроника смены</div>
     </div>
-    <div class="news-masthead-meta">
-      <span class="news-meta-item" id="newsEditionDate">—</span>
-      <span class="news-meta-center">Вечерний вестник</span>
-      <span class="news-meta-item">Бесплатно</span>
-    </div>
+    <div style="width:30px"></div>
   </div>
   <div class="news-body" id="newsBody">
-    <div class="news-loading">Загрузка последнего выпуска...</div>
+    <div class="news-loading">⏳ Загрузка...</div>
   </div>
 </div>
 
@@ -523,22 +461,15 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
 <!-- NEWSPAPER POST SHEET -->
 <div class="news-post-overlay" id="newsPostOverlay">
   <div class="news-post-sheet">
-    <div class="news-post-sheet-title">Редакция</div>
-    <div class="news-post-sheet-sub">Новая статья в выпуск</div>
-    <div class="news-photo-label">Фото для статьи</div>
-    <div class="news-photo-preview" id="newsPhotoPreview" onclick="newsPreviewClick()">
-      <div class="news-photo-placeholder" id="newsPhotoPlaceholder">
-        <div class="news-photo-placeholder-icon">📷</div>
-        <span>Нажми чтобы выбрать фото</span>
-        <span style="font-size:10px;opacity:0.6">необязательно</span>
-      </div>
+    <div class="news-post-sheet-title">Новая статья</div>
+    <div class="news-photo-btn" id="newsPhotoBtnEl" onclick="document.getElementById('newsPhotoInput').click()">
+      <span style="font-size:28px">📷</span>
+      <span>Добавить фото (необязательно)</span>
     </div>
-    <div class="news-photo-hint" id="newsPhotoHint">Выбери фото и двигай пальцем чтобы выбрать нужную область</div>
     <input type="file" accept="image/*" class="news-photo-input" id="newsPhotoInput" onchange="onNewsPhotoSelected(this)">
-    <textarea class="news-post-textarea" id="newsPostText" placeholder="Что случилось? Расскажи подробно — чем смешнее, тем лучше" maxlength="600"></textarea>
-    <div class="news-post-hint">ИИ придумает заголовок автоматически</div>
-    <label class="news-anon-label"><input type="checkbox" id="newsAnonCheck"> Опубликовать анонимно</label>
-    <button class="news-post-submit" onclick="submitNewsPost()">Опубликовать</button>
+    <textarea class="news-post-textarea" id="newsPostText" placeholder="Что случилось? Расскажи в деталях — чем смешнее, тем лучше 😄" maxlength="600"></textarea>
+    <div class="news-post-hint">ИИ сам придумает заголовок по твоему тексту</div>
+    <button class="news-post-submit" onclick="submitNewsPost()">📰 Опубликовать</button>
     <button class="news-post-cancel" onclick="closePostSheet()">Отмена</button>
   </div>
 </div>
@@ -710,7 +641,7 @@ const zonesDef=[
   {key:"Оранжевые",label:"Оранжевые",icon:"🍊",cls:"zor"}
 ];
 const weekends=["Сб","Вс"];
-const allStaff=["Арсений","Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Алексей","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся"];
+const allStaff=["Арсений","Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Алексей","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр"];
 
 let currentDay=null,myName=null,swapRequests={},swapModalDay=null;
 const _cache={msgs:null};
@@ -2451,11 +2382,6 @@ function openNewspaper(){
   screen.classList.add('active');
   document.getElementById('newsAddBtn').classList.add('visible');
   document.body.style.overflow='hidden';
-  // Дата в шапке
-  const today=new Date();
-  const months=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-  const days=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
-  document.getElementById('newsEditionDate').textContent=`${days[today.getDay()]}, ${today.getDate()} ${months[today.getMonth()]}`;
   loadNewsPosts();
   newsInterval=setInterval(loadNewsPosts,8000);
 }
@@ -2479,29 +2405,9 @@ function openPostSheet(){
 function closePostSheet(){
   document.getElementById('newsPostOverlay').classList.remove('active');
   document.getElementById('newsPostText').value='';
-  document.getElementById('newsAnonCheck').checked=false;
-  newsSelectedImage=null;_newsRawImg=null;
-  const prev=document.getElementById('newsPhotoPreview');
-  prev.classList.remove('has-photo');
-  prev.innerHTML='<div class="news-photo-placeholder" id="newsPhotoPlaceholder"><div class="news-photo-placeholder-icon">📷</div><span>Нажми чтобы выбрать фото</span><span style="font-size:10px;opacity:0.6">необязательно</span></div>';
-  document.getElementById('newsPhotoHint').textContent='Выбери фото и двигай пальцем чтобы выбрать нужную область';
-}
-
-let _newsRawImg=null, _newsCropPx=0, _newsCropPy=0;
-let _newsImgW=0, _newsImgH=0;
-let _newsDragStartX=0, _newsDragStartY=0, _newsDragCropPx=0, _newsDragCropPy=0, _newsDragging=false;
-
-function newsPreviewClick(){
-  if(!_newsRawImg) document.getElementById('newsPhotoInput').click();
-}
-
-function _newsClampCrop(cW,cH){
-  _newsCropPx=Math.min(0,Math.max(cW-_newsImgW,_newsCropPx));
-  _newsCropPy=Math.min(0,Math.max(cH-_newsImgH,_newsCropPy));
-}
-function _newsUpdateCropImg(){
-  const el=document.querySelector('#newsPhotoPreview .crop-img');
-  if(el) el.style.transform=`translate(${_newsCropPx}px,${_newsCropPy}px)`;
+  newsSelectedImage=null;
+  const btn=document.getElementById('newsPhotoBtnEl');
+  btn.innerHTML='<span style="font-size:28px">📷</span><span>Добавить фото (необязательно)</span>';
 }
 
 function onNewsPhotoSelected(input){
@@ -2511,84 +2417,19 @@ function onNewsPhotoSelected(input){
   reader.onload=function(e){
     const img=new Image();
     img.onload=function(){
-      _newsRawImg=img;
-      const prev=document.getElementById('newsPhotoPreview');
-      const cW=prev.offsetWidth||300, cH=190;
-      const scale=Math.max(cW/img.width, cH/img.height);
-      _newsImgW=Math.round(img.width*scale);
-      _newsImgH=Math.round(img.height*scale);
-      _newsCropPx=Math.round((cW-_newsImgW)/2);
-      _newsCropPy=Math.round((cH-_newsImgH)/2);
-      _newsClampCrop(cW,cH);
-
-      prev.innerHTML='';
-      prev.classList.add('has-photo');
-      const imgEl=document.createElement('img');
-      imgEl.className='crop-img';
-      imgEl.src=e.target.result;
-      imgEl.style.width=_newsImgW+'px';
-      imgEl.style.height=_newsImgH+'px';
-      imgEl.style.transform=`translate(${_newsCropPx}px,${_newsCropPy}px)`;
-      prev.appendChild(imgEl);
-      const htDiv=document.createElement('div');
-      htDiv.className='news-halftone-overlay';
-      prev.appendChild(htDiv);
-
-      const btn=document.createElement('button');
-      btn.className='news-photo-change';
-      btn.textContent='изменить';
-      btn.onclick=ev=>{ev.stopPropagation();document.getElementById('newsPhotoInput').click();};
-      prev.appendChild(btn);
-
-      // touch drag
-      prev.addEventListener('touchstart',ev=>{
-        _newsDragging=true;
-        _newsDragStartX=ev.touches[0].clientX;_newsDragStartY=ev.touches[0].clientY;
-        _newsDragCropPx=_newsCropPx;_newsDragCropPy=_newsCropPy;
-      },{passive:true});
-      prev.addEventListener('touchmove',ev=>{
-        if(!_newsDragging)return;
-        _newsCropPx=_newsDragCropPx+ev.touches[0].clientX-_newsDragStartX;
-        _newsCropPy=_newsDragCropPy+ev.touches[0].clientY-_newsDragStartY;
-        _newsClampCrop(prev.offsetWidth||300,190);
-        _newsUpdateCropImg();
-      },{passive:true});
-      prev.addEventListener('touchend',()=>{_newsDragging=false;},{passive:true});
-      // mouse drag
-      prev.addEventListener('mousedown',ev=>{
-        _newsDragging=true;
-        _newsDragStartX=ev.clientX;_newsDragStartY=ev.clientY;
-        _newsDragCropPx=_newsCropPx;_newsDragCropPy=_newsCropPy;
-        ev.preventDefault();
-      });
-      window.addEventListener('mousemove',ev=>{
-        if(!_newsDragging)return;
-        _newsCropPx=_newsDragCropPx+ev.clientX-_newsDragStartX;
-        _newsCropPy=_newsDragCropPy+ev.clientY-_newsDragStartY;
-        _newsClampCrop(prev.offsetWidth||300,190);
-        _newsUpdateCropImg();
-      });
-      window.addEventListener('mouseup',()=>{_newsDragging=false;});
-
-      document.getElementById('newsPhotoHint').textContent='✦ Двигай фото пальцем — выбери нужную часть';
+      const canvas=document.createElement('canvas');
+      const MAX=800;
+      let w=img.width,h=img.height;
+      if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      newsSelectedImage=canvas.toDataURL('image/jpeg',0.72);
+      const btn=document.getElementById('newsPhotoBtnEl');
+      btn.innerHTML=`<img src="${newsSelectedImage}" alt=""><span style="background:rgba(0,0,0,0.5);color:#fff;padding:2px 8px;border-radius:4px;font-size:11px">✓ Фото выбрано</span>`;
     };
     img.src=e.target.result;
   };
   reader.readAsDataURL(file);
-}
-
-async function _newsGetCroppedImage(){
-  if(!_newsRawImg) return null;
-  const prev=document.getElementById('newsPhotoPreview');
-  const cW=prev.offsetWidth||300, cH=190;
-  const scale=Math.max(cW/_newsRawImg.width, cH/_newsRawImg.height);
-  const srcX=-_newsCropPx/scale, srcY=-_newsCropPy/scale;
-  const srcW=cW/scale, srcH=cH/scale;
-  const OUT_W=800, OUT_H=Math.round(OUT_W*cH/cW);
-  const canvas=document.createElement('canvas');
-  canvas.width=OUT_W;canvas.height=OUT_H;
-  canvas.getContext('2d').drawImage(_newsRawImg,srcX,srcY,srcW,srcH,0,0,OUT_W,OUT_H);
-  return canvas.toDataURL('image/jpeg',0.72);
 }
 
 function generateHeadline(text){
@@ -2636,132 +2477,60 @@ async function submitNewsPost(){
   if(!text){showToast('⚠️ Напиши что произошло');return;}
   if(!myName){showToast('⚠️ Сначала выбери своё имя');return;}
   const btn=document.querySelector('.news-post-submit');
-  btn.disabled=true;btn.textContent='✍️ Редакция думает...';
-  let headline=generateHeadline(text);
-  try{
-    const r=await fetch('https://api.vino-hinkali.online/ai/headline',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({text})
-    });
-    const d=await r.json();
-    if(d&&d.headline) headline=d.headline;
-  }catch(e){}
-  btn.textContent='⏳ Публикуем...';
-  const anon=document.getElementById('newsAnonCheck').checked;
-  const payload={author:anon?'Аноним·'+myName:myName,text,headline};
-  if(_newsRawImg) payload.image=await _newsGetCroppedImage();
+  btn.disabled=true;btn.textContent='⏳ Публикуем...';
+  const headline=generateHeadline(text);
+  const payload={author:myName,text,headline};
+  if(newsSelectedImage) payload.image=newsSelectedImage;
   const res=await sf('newspaper_posts','POST',payload);
   btn.disabled=false;btn.textContent='📰 Опубликовать';
   if(res&&!res.error){
     closePostSheet();
     showToast('✅ Статья опубликована!');
     await loadNewsPosts();
-    // AI editor comment — fire and forget
-    const postId=Array.isArray(res)?res[0]?.id:res?.id;
-    if(postId) _newsAiEditorComment(postId,text,headline).catch(()=>{});
   } else {
     showToast('❌ Ошибка — попробуй ещё раз');
   }
 }
 
 let _newsLastId=null;
-function _newsDisplayAuthor(author){
-  if(author&&author.startsWith('Аноним·')) return 'Аноним';
-  return author;
-}
-function _newsRealAuthor(author){
-  if(author&&author.startsWith('Аноним·')) return author.slice(7);
-  return author;
-}
-function _newsFooter(post){
-  const isOwn=_newsRealAuthor(post.author)===myName;
-  const del=isOwn?`<button class="na-delete-btn" onclick="deleteNewsPost('${post.id}','${escapeHtml(post.author)}')">✕ удалить</button>`:'<span></span>';
-  return `<div class="na-footer">${del}<span>Редакция «Вино &amp; Хинкали»</span></div>`;
-}
-function _newsCommentBlock(id){
-  return `<div class="news-comments-toggle" onclick="toggleNewsComments(${id},this)">✎ Читатели пишут <span class="news-ccount-${id}"></span> ›</div>
-  <div class="news-comments-wrap" id="news-comments-${id}">
-    <div class="news-comment-form">
-      <input class="news-comment-input" id="news-ci-${id}" placeholder="Ваш отклик..." maxlength="300" onkeydown="if(event.key==='Enter'){event.preventDefault();sendNewsComment(${id});}">
-      <button class="news-comment-send" onclick="sendNewsComment(${id})">→</button>
-    </div>
-  </div>`;
-}
-const REACTIONS=['😂','🔥','😱','👏'];
-async function loadReactions(postId){
-  const rows=await sf(`newspaper_reactions?post_id=eq.${postId}&select=*`);
-  if(!Array.isArray(rows)) return;
-  REACTIONS.forEach(e=>{
-    const count=rows.filter(r=>r.emoji===e).length;
-    const myReact=rows.some(r=>r.emoji===e&&r.author===myName);
-    const span=document.querySelector(`.rcount-${postId}-${e.codePointAt(0)}`);
-    if(span) span.textContent=count||0;
-    const btn=span?.parentElement;
-    if(btn) btn.classList.toggle('active',myReact);
-  });
-}
-async function toggleReaction(postId,emoji,btn){
-  btn.style.transform='scale(1.3)';
-  setTimeout(()=>btn.style.transform='',200);
-  await fetch(`https://api.vino-hinkali.online/api/newspaper_reactions/toggle`,{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({post_id:postId,author:myName,emoji})
-  });
-  loadReactions(postId);
-}
-function _newsArticleHTML(post,num){
-  const hl=escapeHtml(post.headline||'Хроника смены');
-  const txt=escapeHtml(post.text);
-  const by=`Корр. ${escapeHtml(_newsDisplayAuthor(post.author))} · ${newsDateStr(post.created_at)}`;
-  const img=post.image?`<div class="na-photo"><img src="${escapeHtml(post.image)}" alt="фото"></div><div class="na-caption">Фото: редакция Вино &amp; Хинкали</div>`:'';
-  return `<div class="na-article" id="article-${post.id}">
-    <div class="na-inner">
-      <div class="na-num">${num}</div>
-      <div class="na-headline">${hl}</div>
-      <div class="na-byline"><span>${by}</span></div>
-      ${img}
-      <div class="na-body">${txt}</div>
-    </div>
-    ${_newsFooter(post)}
-    <div class="na-reactions" id="reactions-${post.id}">
-      ${['😂','🔥','😱','👏'].map(e=>`<button class="na-react-btn" onclick="toggleReaction(${post.id},'${e}',this)">${e} <span class="rcount-${post.id}-${e.codePointAt(0)}">0</span></button>`).join('')}
-    </div>
-    ${_newsCommentBlock(post.id)}
-  </div>`;
-}
 async function loadNewsPosts(){
-  const rows=await sf('newspaper_posts?select=*&order=id.desc&limit=30');
+  const rows=await sf('newspaper_posts?select=*&order=created_at.desc&limit=30');
   if(!Array.isArray(rows)) return;
   const body=document.getElementById('newsBody');
   if(rows.length===0){
     body.innerHTML='<div class="news-empty">📰 Здесь пусто<br><br>Будь первым — нажми <b>+</b> и расскажи<br>что интересного произошло в смене</div>';
     return;
   }
-  // Первый раз — рисуем всё с нуля
-  if(!_newsLastId){
-    _newsLastId=rows[0].id;
-    body.innerHTML=rows.map((post,i)=>_newsArticleHTML(post,`№${rows.length-i}`)).join('');
-    rows.forEach(p=>{loadNewsComments(p.id,false);loadReactions(p.id);});
-    return;
-  }
-  // Добавляем только новые посты сверху, не трогая существующие
-  const newPosts=rows.filter(p=>!document.getElementById('article-'+p.id));
-  if(newPosts.length>0){
-    _newsLastId=rows[0].id;
-    const total=rows.length;
-    newPosts.reverse().forEach((post,i)=>{
-      const num=`№${total-(rows.length-1-i)}`;
-      const div=document.createElement('div');
-      div.innerHTML=_newsArticleHTML(post,num);
-      body.insertBefore(div.firstElementChild,body.firstChild);
-      loadNewsComments(post.id,false);
-      loadReactions(post.id);
-    });
-  }
-  // Обновляем счётчики комментариев у существующих постов
-  rows.forEach(p=>{
-    if(!newPosts.includes(p)){loadNewsComments(p.id,false);loadReactions(p.id);}
-  });
+  const lastId=rows[0].id;
+  if(lastId===_newsLastId&&body.children.length>1) return;
+  _newsLastId=lastId;
+  const today=new Date();
+  const months=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  const dateLabel=`${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()} года`;
+  body.innerHTML=`<div class="news-date-bar">${dateLabel}</div>`+rows.map(post=>`
+  <div class="news-article" id="article-${post.id}">
+    ${post.image?`<img class="news-article-img" src="${escapeHtml(post.image)}" alt="фото">`:'' }
+    <div class="news-article-inner">
+      <div class="news-headline">${escapeHtml(post.headline||'Хроника смены')}</div>
+      <div class="news-byline">
+        <span>Корр. ${escapeHtml(post.author)}</span>
+        <span>${newsDateStr(post.created_at)}</span>
+      </div>
+      <div class="news-text">${escapeHtml(post.text)}</div>
+    </div>
+    <div class="news-comments-toggle" onclick="toggleNewsComments(${post.id},this)">
+      💬 Комментарии <span class="news-ccount-${post.id}"></span> ›
+    </div>
+    <div class="news-comments-wrap" id="news-comments-${post.id}">
+      <div class="news-comment-form">
+        <input class="news-comment-input" id="news-ci-${post.id}" placeholder="Ваш комментарий..." maxlength="300"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();sendNewsComment(${post.id});}">
+        <button class="news-comment-send" onclick="sendNewsComment(${post.id})">→</button>
+      </div>
+    </div>
+  </div>`).join('');
+  // Load comment counts
+  rows.forEach(p=>loadNewsComments(p.id,false));
 }
 
 async function loadNewsComments(postId,show){
@@ -2794,35 +2563,6 @@ function toggleNewsComments(postId,toggleEl){
   const old=document.querySelector(`.news-ccount-${postId}`);
   if(old){/* keep*/}
   if(!isOpen) loadNewsComments(postId,true);
-}
-
-async function deleteNewsPost(id,author){
-  if(author!==myName){showToast('⚠️ Можно удалять только свои статьи');return;}
-  if(!confirm('Удалить эту статью?')) return;
-  const res=await fetch(`https://api.vino-hinkali.online/api/newspaper_posts/${id}`,{method:'DELETE'});
-  if(res.ok||res.status===200||res.status===204){
-    document.getElementById('article-'+id)?.remove();
-    showToast('🗑 Статья удалена');
-    _newsLastId=null;
-    await loadNewsPosts();
-  } else {
-    showToast('❌ Не удалось удалить');
-  }
-}
-
-async function _newsAiEditorComment(postId,text,headline){
-  try{
-    const r=await fetch('https://api.vino-hinkali.online/ai/editor-comment',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({text,headline})
-    });
-    const data=await r.json();
-    if(data&&data.comment){
-      await sf('newspaper_comments','POST',{post_id:postId,author:'✦ Главный редактор',text:data.comment});
-      loadNewsComments(postId,false);
-    }
-  }catch(e){}
 }
 
 async function sendNewsComment(postId){
