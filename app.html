@@ -2710,7 +2710,7 @@ async function loadReactions(postId){
 async function toggleReaction(postId,emoji,btn){
   btn.style.transform='scale(1.3)';
   setTimeout(()=>btn.style.transform='',200);
-  await fetch(`https://api.vino-hinkali.online/api/newspaper_reactions/toggle`,{
+  await fetch(`https://api.vino-hinkali.online/reactions/toggle`,{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({post_id:postId,author:myName,emoji})
   });
@@ -2737,8 +2737,9 @@ function _newsArticleHTML(post,num){
   </div>`;
 }
 async function loadNewsPosts(){
-  const rows=await sf('newspaper_posts?select=*&order=id.desc&limit=30');
-  if(!Array.isArray(rows)) return;
+  const rawRows=await sf('newspaper_posts?select=*&limit=30');
+  if(!Array.isArray(rawRows)) return;
+  const rows=rawRows.sort((a,b)=>b.id-a.id);
   const body=document.getElementById('newsBody');
   if(rows.length===0){
     body.innerHTML='<div class="news-empty">📰 Здесь пусто<br><br>Будь первым — нажми <b>+</b> и расскажи<br>что интересного произошло в смене</div>';
