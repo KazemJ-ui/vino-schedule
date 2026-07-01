@@ -2805,7 +2805,7 @@ function toggleNewsComments(postId,toggleEl){
 }
 
 async function deleteNewsPost(id,author){
-  if(author!==myName){showToast('⚠️ Можно удалять только свои статьи');return;}
+  if(_newsRealAuthor(author)!==myName){showToast('⚠️ Можно удалять только свои статьи');return;}
   if(!confirm('Удалить эту статью?')) return;
   const res=await fetch(`https://api.vino-hinkali.online/api/newspaper_posts/${id}`,{method:'DELETE'});
   if(res.ok||res.status===200||res.status===204){
