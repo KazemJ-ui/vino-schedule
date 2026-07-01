@@ -2756,9 +2756,9 @@ async function loadNewsPosts(){
   const newPosts=rows.filter(p=>!document.getElementById('article-'+p.id));
   if(newPosts.length>0){
     _newsLastId=rows[0].id;
-    const total=rows.length;
-    newPosts.reverse().forEach((post,i)=>{
-      const num=`№${total-(rows.length-1-i)}`;
+    newPosts.reverse().forEach((post)=>{
+      const idx=rows.indexOf(post);
+      const num=`№${rows.length-idx}`;
       const div=document.createElement('div');
       div.innerHTML=_newsArticleHTML(post,num);
       body.insertBefore(div.firstElementChild,body.firstChild);
