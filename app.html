@@ -710,7 +710,7 @@ const zonesDef=[
   {key:"Оранжевые",label:"Оранжевые",icon:"🍊",cls:"zor"}
 ];
 const weekends=["Сб","Вс"];
-const allStaff=["Арсений","Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Алексей","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся"];
+const allStaff=["Арсений","Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Алексей","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр"];
 
 let currentDay=null,myName=null,swapRequests={},swapModalDay=null;
 const _cache={msgs:null};
@@ -1950,9 +1950,16 @@ async function publishSchedule(){
   });
 
   // Разрешаем конфликты — если в день слотов не хватает, меняем с кем-то
-  // Удаляем старый график
+  // Удаляем старый график (текущий период и все другие периоды)
   await sf(`published_schedule?period=eq.${encodeURIComponent(period)}`,'DELETE');
   await sf(`zone_history?period=eq.${encodeURIComponent(period)}`,'DELETE');
+  const oldRows=await sf('published_schedule?select=period');
+  if(Array.isArray(oldRows)){
+    const oldPeriods=[...new Set(oldRows.map(r=>r.period))].filter(p=>p!==period);
+    for(const op of oldPeriods){
+      await sf(`published_schedule?period=eq.${encodeURIComponent(op)}`,'DELETE');
+    }
+  }
 
   const toInsert=[];
   const zoneHistInsert=[];
