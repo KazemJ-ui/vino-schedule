@@ -1882,7 +1882,6 @@ async function publishSchedule(){
 
   // Разрешаем конфликты — если в день слотов не хватает, меняем с кем-то
   // Удаляем ВСЕ старые графики включая другие периоды
-  // Сначала удаляем текущий период, потом остальные
   await sf(`published_schedule?period=eq.${encodeURIComponent(period)}`,'DELETE');
   // Удаляем записи других периодов
   const oldRows=await sf('published_schedule?select=period');
@@ -1893,6 +1892,13 @@ async function publishSchedule(){
     }
   }
   await sf(`zone_history?period=eq.${encodeURIComponent(period)}`,'DELETE');
+  const oldRows=await sf('published_schedule?select=period');
+  if(Array.isArray(oldRows)){
+    const oldPeriods=[...new Set(oldRows.map(r=>r.period))].filter(p=>p!==period);
+    for(const op of oldPeriods){
+      await sf(`published_schedule?period=eq.${encodeURIComponent(op)}`,'DELETE');
+    }
+  }
 
   const toInsert=[];
   const zoneHistInsert=[];
