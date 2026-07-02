@@ -381,6 +381,8 @@ body.dark .chat-msg.other .chat-bubble{background:rgba(255,255,255,0.07)}
 body.dark .news-screen{background:#111}
 body.dark .news-body{background:#111}
 /* Газета всегда светлая — тёмная тема не применяется */
+#newsBadgeBtn{position:relative}
+.news-badge{position:absolute;top:2px;right:2px;width:8px;height:8px;background:#e74c3c;border-radius:50%;border:1px solid var(--wine-dark)}
 body.dark .news-comments-wrap{background:#111}
 body.dark .news-comment-author{color:#ccc}
 body.dark .news-comment-text{color:#888}
@@ -442,7 +444,7 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
         <button class="theme-btn" onclick="openChat()" title="Чат смены">💬</button>
         <span class="chat-dot" id="chatDot"></span>
       </div>
-      <button class="theme-btn" onclick="openNewspaper()" title="Газета коллектива">📰</button>
+      <button class="theme-btn" id="newsBadgeBtn" onclick="openNewspaper()" title="Газета коллектива">📰<span class="news-badge" id="newsBadge" style="display:none"></span></button>
       <button class="theme-btn" id="nameBtn" onclick="showNameScreen()" title="Сменить имя">👤<
       </button>
       <button class="theme-btn" onclick="openMgrScreen()" title="Панель менеджера">👔</button>
@@ -2331,8 +2333,14 @@ async function openMgrEditView(){
   const staffOptions=allStaff.map(n=>`<option value="${n}">${n}</option>`).join('');
   const timeOptions=TIMES.map(t=>`<option value="${t}">${t}</option>`).join('');
 
+  // Определяем год и месяц из периода (например "Июль · 1–15")
+  const MONTHS_RU=['январ','феврал','март','апрел','май','июн','июл','август','сентябр','октябр','ноябр','декабр'];
+  const periodStr=(schedRows[0]?.period||'').toLowerCase();
+  const monthIdx=MONTHS_RU.findIndex(m=>periodStr.includes(m));
+  const schedMonth=monthIdx>=0?monthIdx:new Date().getMonth();
+  const schedYear=new Date().getFullYear();
   container.innerHTML=Object.keys(byDay).sort((a,b)=>+a-+b).map(day=>{
-    const dow=new Date(2026,4,+day).getDay();
+    const dow=new Date(schedYear,schedMonth,+day).getDay();
     const a=assignMap[day]||{};
     const total=Object.values(byDay[day]).reduce((s,arr)=>s+arr.length,0);
 
@@ -2453,6 +2461,7 @@ let newsOpen=false, newsInterval=null, newsSelectedImage=null;
 
 function openNewspaper(){
   newsOpen=true;
+  _newsMarkSeen();
   const screen=document.getElementById('newsScreen');
   screen.style.transition='transform 0.3s cubic-bezier(0.4,0,0.2,1)';
   screen.classList.add('active');
@@ -2672,6 +2681,18 @@ async function submitNewsPost(){
 }
 
 let _newsLastId=null;
+let _newsSeenId=parseInt(localStorage.getItem('vinoNewsSeenId')||'0');
+function _newsUpdateBadge(latestId){
+  const badge=document.getElementById('newsBadge');
+  if(!badge) return;
+  if(latestId>_newsSeenId){badge.style.display='block';}
+  else{badge.style.display='none';}
+}
+function _newsMarkSeen(){
+  if(_newsLastId){_newsSeenId=_newsLastId;localStorage.setItem('vinoNewsSeenId',_newsLastId);}
+  const badge=document.getElementById('newsBadge');
+  if(badge) badge.style.display='none';
+}
 function _newsDisplayAuthor(author){
   if(author&&author.startsWith('Аноним·')) return 'Аноним';
   return author;
@@ -2746,6 +2767,7 @@ async function loadNewsPosts(){
     return;
   }
   // Первый раз — рисуем всё с нуля
+  _newsUpdateBadge(rows[0].id);
   if(!_newsLastId){
     _newsLastId=rows[0].id;
     body.innerHTML=rows.map((post,i)=>_newsArticleHTML(post,`№${rows.length-i}`)).join('');
