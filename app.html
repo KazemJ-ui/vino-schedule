@@ -2304,9 +2304,10 @@ async function openMgrEditView(){
   const container=document.getElementById('mgrEditDays');
   container.innerHTML='<div class="mgr-empty">⏳ Загрузка...</div>';
 
-  const [schedRows, assignments] = await Promise.all([
+  const [schedRows, assignments, periodRows] = await Promise.all([
     sf('published_schedule?select=*&order=day,zone'),
-    sf('day_assignments?select=*')
+    sf('day_assignments?select=*'),
+    sf('schedule_periods?is_open=eq.true&select=*&limit=1')
   ]);
 
   if(!Array.isArray(schedRows)||schedRows.length===0){
@@ -2333,9 +2334,10 @@ async function openMgrEditView(){
   const staffOptions=allStaff.map(n=>`<option value="${n}">${n}</option>`).join('');
   const timeOptions=TIMES.map(t=>`<option value="${t}">${t}</option>`).join('');
 
-  // Определяем год и месяц из периода (например "Июль · 1–15")
+  // Определяем год и месяц из активного периода
   const MONTHS_RU=['январ','феврал','март','апрел','май','июн','июл','август','сентябр','октябр','ноябр','декабр'];
-  const periodStr=(schedRows[0]?.period||'').toLowerCase();
+  const activePeriod=Array.isArray(periodRows)&&periodRows[0]?periodRows[0].period:'';
+  const periodStr=(activePeriod||schedRows[0]?.period||'').toLowerCase();
   const monthIdx=MONTHS_RU.findIndex(m=>periodStr.includes(m));
   const schedMonth=monthIdx>=0?monthIdx:new Date().getMonth();
   const schedYear=new Date().getFullYear();
