@@ -712,7 +712,8 @@ const zonesDef=[
   {key:"Оранжевые",label:"Оранжевые",icon:"🍊",cls:"zor"}
 ];
 const weekends=["Сб","Вс"];
-const allStaff=["Арсений","Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Алексей","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Аня"];
+const allStaff=["Арсений","Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Алексей","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Аня","Игорь"];
+const NEWS_HIDDEN_FOR=["Игорь"];
 
 let currentDay=null,myName=null,swapRequests={},swapModalDay=null;
 const _cache={msgs:null};
@@ -1769,6 +1770,7 @@ const savedName=getCookie('myName');
 if(savedName!==null){
   myName=savedName||null;
   document.getElementById('nameScreen').style.display='none';
+  document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(myName)?'none':'';
   // Если имя уже известно — запрашиваем разрешение на уведомления
   if(myName && 'Notification' in window && Notification.permission === 'default'){
     Notification.requestPermission().then(permission=>{
@@ -1854,6 +1856,7 @@ function selectName(name){
   myName=name;
   localStorage.setItem('vinoMyName',name);setCookie('myName',name||'',365);
   document.getElementById('nameScreen').style.display='none';
+  document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(name)?'none':'';
   // Перестраиваем панели с подсветкой имени (schedule уже загружен из БД)
   if(Object.keys(schedule).length>0){
     Object.keys(schedule).forEach(d=>{const p=document.getElementById('panel-'+d);if(p)p.innerHTML=buildPanel(+d);});
