@@ -1975,25 +1975,35 @@ async function publishSchedule(){
       for(let ei=0;extra>0;extra--,ei++) slots[extraZones[ei%4]]++;
     }
 
-    // Жадное назначение: порядок очереди меняется каждый день чтобы
-    // никто не был постоянно первым и не получал 1-16 чаще других
+    // Оптимальное назначение: перебираем все варианты, выбираем минимальный дисбаланс
+    const slotList=[];
+    ZONES.forEach(z=>{for(let i=0;i<(slots[z]||0);i++) slotList.push(z);});
+
+    // Генератор перестановок (алгоритм Хипа)
+    function*perms(arr){
+      const a=[...arr],c=new Array(a.length).fill(0);
+      yield [...a];let i=0;
+      while(i<a.length){
+        if(c[i]<i){const j=i%2===0?0:c[i];[a[i],a[j]]=[a[j],a[i]];yield [...a];c[i]++;i=0;}
+        else{c[i]=0;i++;}
+      }
+    }
+
+    let bestScore=Infinity,bestPerm=null;
+    for(const perm of perms(workers)){
+      let score=0;
+      perm.forEach((w,idx)=>{
+        const z=slotList[idx];
+        const after=(zoneCount[w.staff_name]?.[z]||0)+1;
+        score+=after*after;
+        if(z===lastZoneForPerson[w.staff_name]) score+=10;
+      });
+      if(score<bestScore){bestScore=score;bestPerm=[...perm];}
+    }
+
     const assigned={};
     ZONES.forEach(z=>assigned[z]=[]);
-
-    const offset=+day%workers.length;
-    const sorted=[...workers.slice(offset),...workers.slice(0,offset)];
-
-    sorted.forEach(w=>{
-      const freeZones=ZONES.filter(z=>(slots[z]||0)>assigned[z].length);
-      if(!freeZones.length) return;
-      const last=lastZoneForPerson[w.staff_name];
-      freeZones.sort((a,b)=>{
-        const ca=(zoneCount[w.staff_name]?.[a]||0)+(a===last?1000:0);
-        const cb=(zoneCount[w.staff_name]?.[b]||0)+(b===last?1000:0);
-        return ca-cb;
-      });
-      assigned[freeZones[0]].push(w);
-    });
+    bestPerm.forEach((w,idx)=>assigned[slotList[idx]].push(w));
 
     ZONES.forEach(zone=>{
       assigned[zone].forEach(w=>{
