@@ -2132,7 +2132,7 @@ async function loadPublishedSchedule(fromCache=false){
   const [rows, hist, assignments] = await Promise.all([
     sf(`published_schedule?period=eq.${encodeURIComponent(latestPeriodName)}&select=*&order=day`),
     sf(`swap_history?period=eq.${encodeURIComponent(latestPeriodName)}&select=*`),
-    sf('day_assignments?select=*')
+    sf(`day_assignments?period=eq.${encodeURIComponent(latestPeriodName)}&select=*`)
   ]);
 
   if(!Array.isArray(rows)||rows.length===0) return;
@@ -2332,11 +2332,12 @@ async function openMgrEditView(){
   const container=document.getElementById('mgrEditDays');
   container.innerHTML='<div class="mgr-empty">⏳ Загрузка...</div>';
 
-  const [schedRows, assignments, periodRows] = await Promise.all([
+  const [schedRows, periodRows] = await Promise.all([
     sf('published_schedule?select=*&order=day,zone'),
-    sf('day_assignments?select=*'),
     sf('schedule_periods?is_open=eq.true&select=*&limit=1')
   ]);
+  const editorPeriodName=Array.isArray(periodRows)&&periodRows[0]?periodRows[0].period:(schedRows[0]?.period||'');
+  const assignments=editorPeriodName?await sf(`day_assignments?period=eq.${encodeURIComponent(editorPeriodName)}&select=*`):[];
 
   if(!Array.isArray(schedRows)||schedRows.length===0){
     container.innerHTML='<div class="mgr-empty">График не опубликован</div>';
