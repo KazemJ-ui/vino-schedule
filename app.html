@@ -221,11 +221,18 @@ body.dark footer{color:#444}
 .mgr-screen.active{display:flex}
 .mgr-logo{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold);font-weight:900;margin-bottom:4px}
 .mgr-sub{font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:3px;text-transform:uppercase;margin-bottom:28px}
-.mgr-login{width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px}
-.mgr-login h2{font-family:'Playfair Display',serif;font-size:20px;color:#fff;font-weight:700;text-align:center}
-.mgr-input{padding:13px 16px;border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;background:rgba(255,255,255,0.08);color:#fff;font-family:'Nunito',sans-serif;font-size:16px;outline:none;width:100%;box-sizing:border-box;text-align:center;letter-spacing:4px}
+.mgr-login{width:100%;max-width:280px;display:flex;flex-direction:column;align-items:center;gap:28px}
 .mgr-btn{padding:14px;background:var(--gold);color:var(--wine-dark);border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer}
 .mgr-back{background:transparent;border:none;color:rgba(255,255,255,0.4);font-family:'Nunito',sans-serif;font-size:13px;cursor:pointer;margin-top:8px}
+.pin-dots{display:flex;gap:16px}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);transition:all .15s}
+.pin-dot.filled{background:var(--gold);border-color:var(--gold)}
+.pin-dot.error{background:#e74c3c;border-color:#e74c3c}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%}
+.pin-key{height:64px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#fff;font-family:'Nunito',sans-serif;font-size:22px;font-weight:700;cursor:pointer;transition:background .1s,transform .08s;-webkit-tap-highlight-color:transparent}
+.pin-key:active{background:rgba(255,255,255,0.18);transform:scale(.93)}
+.pin-key-back{font-size:16px;color:rgba(255,255,255,0.4);border-color:transparent;background:transparent}
+.pin-key-del{font-size:18px}
 .mgr-panel{width:100%;max-width:420px}
 .mgr-panel-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);font-weight:700;margin-bottom:16px;text-align:center}
 .mgr-section-title{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.5);font-weight:700;margin:20px 0 10px}
@@ -592,11 +599,26 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
   <div class="mgr-logo">Вино &amp; Хинкали</div>
   <div class="mgr-sub">Панель менеджера</div>
   <div id="mgrLogin" class="mgr-login">
-    <h2>🔐 Вход</h2>
-    <input class="mgr-input" id="mgrPassword" type="password" placeholder="••••" maxlength="10"
-      onkeydown="if(event.key==='Enter')checkMgrPassword()"/>
-    <button class="mgr-btn" onclick="checkMgrPassword()">Войти</button>
-    <button class="mgr-back" onclick="closeMgrScreen()">← Назад</button>
+    <div class="pin-dots" id="pinDots">
+      <span class="pin-dot" id="pd0"></span>
+      <span class="pin-dot" id="pd1"></span>
+      <span class="pin-dot" id="pd2"></span>
+      <span class="pin-dot" id="pd3"></span>
+    </div>
+    <div class="pin-pad">
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key pin-key-back" onclick="closeMgrScreen()">←</button>
+      <button class="pin-key" onclick="pinKey('0')">0</button>
+      <button class="pin-key pin-key-del" onclick="pinDel()">⌫</button>
+    </div>
   </div>
   <div id="mgrPanel" class="mgr-panel" style="display:none">
     <div class="mgr-panel-title">👔 Панель менеджера</div>
@@ -1293,12 +1315,14 @@ async function openMgrSchedView(){
   const periodRows=await sf('schedule_periods?is_open=eq.true&select=*&limit=1');
   const activePeriod=(Array.isArray(periodRows)&&periodRows.length>0)?periodRows[0]:currentPeriod;
   if(!activePeriod){document.getElementById('mgrSchedDays').innerHTML='<div class="mgr-empty">Нет открытого периода</div>';return;}
-  // Парсим месяц и год из периода
-  const RU_MONTHS={'января':0,'февраля':1,'марта':2,'апреля':3,'мая':4,'июня':5,'июля':6,'августа':7,'сентября':8,'октября':9,'ноября':10,'декабря':11};
-  const periodMonthMatch=activePeriod.period.match(/[а-яёА-ЯЁ]+/);
-  const periodMonth=periodMonthMatch?RU_MONTHS[periodMonthMatch[0].toLowerCase()]??4:4;
+  // Парсим месяц из периода по стему (работает с любым падежом)
+  const MONTH_STEMS=['январ','феврал','март','апрел','май','июн','июл','август','сентябр','октябр','ноябр','декабр'];
+  const MONTH_NAMES_NOM=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  const pstrLower=activePeriod.period.toLowerCase();
+  const periodMonth=MONTH_STEMS.findIndex(s=>pstrLower.includes(s));
+  const periodMonthNum=periodMonth>=0?periodMonth:new Date().getMonth();
   const periodYear=new Date().getFullYear();
-  const periodMonthName=periodMonthMatch?periodMonthMatch[0]:'мая';
+  const periodMonthName=MONTH_NAMES_NOM[periodMonthNum];
   const rows=await sf(`schedule_requests?period=eq.${encodeURIComponent(activePeriod.period)}&select=*`);
   if(!Array.isArray(rows)||rows.length===0){
     document.getElementById('mgrSchedDays').innerHTML='<div class="mgr-empty">Никто ещё не ответил</div>';
@@ -1412,25 +1436,41 @@ async function loadMgrSchedStatus(){
 const MGR_PASSWORD='1234';
 const dayNames={1:'Пт',2:'Сб',3:'Вс',4:'Пн',5:'Вт',6:'Ср',7:'Чт',8:'Пт',9:'Сб',10:'Вс',11:'Пн',12:'Вт',13:'Ср',14:'Чт',15:'Пт'};
 
+let pinValue='';
+function pinUpdateDots(){
+  for(let i=0;i<4;i++){
+    document.getElementById('pd'+i).classList.toggle('filled',i<pinValue.length);
+    document.getElementById('pd'+i).classList.remove('error');
+  }
+}
+function pinKey(d){
+  if(pinValue.length>=4) return;
+  pinValue+=d;
+  pinUpdateDots();
+  if(pinValue.length===4) setTimeout(checkMgrPassword,120);
+}
+function pinDel(){
+  pinValue=pinValue.slice(0,-1);
+  pinUpdateDots();
+}
 function openMgrScreen(){
   document.getElementById('mgrScreen').classList.add('active');
   document.getElementById('mgrLogin').style.display='flex';
   document.getElementById('mgrPanel').style.display='none';
-  document.getElementById('mgrPassword').value='';
-  setTimeout(()=>document.getElementById('mgrPassword').focus(),300);
+  pinValue='';pinUpdateDots();
 }
 function closeMgrScreen(){
   document.getElementById('mgrScreen').classList.remove('active');
+  pinValue='';
 }
 async function checkMgrPassword(){
-  const val=document.getElementById('mgrPassword').value;
-  if(val===MGR_PASSWORD){
+  if(pinValue===MGR_PASSWORD){
     document.getElementById('mgrLogin').style.display='none';
     document.getElementById('mgrPanel').style.display='block';
     await loadMgrData();
   } else {
-    showToast('❌ Неверный пароль');
-    document.getElementById('mgrPassword').value='';
+    for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.add('error');
+    setTimeout(()=>{pinValue='';pinUpdateDots();},600);
   }
 }
 
@@ -2128,9 +2168,10 @@ function applyScheduleData(rows, hist, assignments){
   const DAY_NAMES=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
   rows.forEach(r=>{
     if(!schedule[r.day]){
-      const periodMonthName2=rows[0]?.period?.match(/[а-яё]+/i)?.[0]?.toLowerCase();
-      const RU_MONTHS2={'января':0,'февраля':1,'марта':2,'апреля':3,'мая':4,'июня':5,'июля':6,'августа':7,'сентября':8,'октября':9,'ноября':10,'декабря':11};
-      const periodMonth2=periodMonthName2?(RU_MONTHS2[periodMonthName2]??4):4;
+      const MONTH_STEMS2=['январ','феврал','март','апрел','май','июн','июл','август','сентябр','октябр','ноябр','декабр'];
+      const p2str=(rows[0]?.period||'').toLowerCase();
+      const periodMonth2idx=MONTH_STEMS2.findIndex(s=>p2str.includes(s));
+      const periodMonth2=periodMonth2idx>=0?periodMonth2idx:new Date().getMonth();
       const periodYear2=new Date().getFullYear();
       const dow=new Date(periodYear2,periodMonth2,+r.day).getDay();
       schedule[r.day]={name:DAY_NAMES[dow],manager:'',hostess:null,bartender:null,staff:{}};
