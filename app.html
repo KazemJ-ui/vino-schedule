@@ -1975,15 +1975,13 @@ async function publishSchedule(){
       for(let ei=0;extra>0;extra--,ei++) slots[extraZones[ei%4]]++;
     }
 
-    // Жадное назначение: сначала — у кого меньше смен в этом периоде
+    // Жадное назначение: порядок очереди меняется каждый день чтобы
+    // никто не был постоянно первым и не получал 1-16 чаще других
     const assigned={};
     ZONES.forEach(z=>assigned[z]=[]);
 
-    const sorted=[...workers].sort((a,b)=>{
-      const ta=ZONES.reduce((s,z)=>s+(zoneCount[a.staff_name]?.[z]||0),0);
-      const tb=ZONES.reduce((s,z)=>s+(zoneCount[b.staff_name]?.[z]||0),0);
-      return ta-tb;
-    });
+    const offset=+day%workers.length;
+    const sorted=[...workers.slice(offset),...workers.slice(0,offset)];
 
     sorted.forEach(w=>{
       const freeZones=ZONES.filter(z=>(slots[z]||0)>assigned[z].length);
