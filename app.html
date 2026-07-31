@@ -1785,15 +1785,15 @@ function buildPanel(d){
     <div class="info-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08)">
       <div style="display:flex;flex-direction:column;gap:4px">
         <span class="info-label">МЕНЕДЖЕР</span>
-        ${info.manager?`<span class="chip manager-chip${myName&&info.manager===myName?' is-me-chip':''}" style="border-radius:10px;width:100%;justify-content:flex-start">👔 ${info.manager}${myName&&info.manager===myName?' 👈':''}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
+        ${info.manager&&info.manager!=='не назначен'?`<span class="chip manager-chip${myName&&info.manager===myName?' is-me-chip':''}" style="border-radius:10px;width:100%;justify-content:flex-start">👔 ${info.manager}${myName&&info.manager===myName?' 👈':''}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <span class="info-label">ХОСТЕС</span>
-        ${info.hostess?`<span class="chip host-chip${myName&&info.hostess===myName?' is-me-chip':''}" style="border-radius:10px;width:100%;justify-content:flex-start">🎀 ${info.hostess}${myName&&info.hostess===myName?' 👈':''}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
+        ${info.hostess&&info.hostess!=='не назначен'?`<span class="chip host-chip${myName&&info.hostess===myName?' is-me-chip':''}" style="border-radius:10px;width:100%;justify-content:flex-start">🎀 ${info.hostess}${myName&&info.hostess===myName?' 👈':''}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <span class="info-label">БАРМЕН</span>
-        ${info.bartender?`<span class="chip bartender-chip" style="border-radius:10px;width:100%;justify-content:flex-start">🍹 ${info.bartender}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
+        ${info.bartender&&info.bartender!=='не назначен'?`<span class="chip bartender-chip" style="border-radius:10px;width:100%;justify-content:flex-start">🍹 ${info.bartender}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
       </div>
     </div>
     <div style="text-align:right;margin-top:4px">
