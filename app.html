@@ -87,6 +87,7 @@ header{background:var(--wine-dark);padding:12px 16px;position:sticky;top:0;z-ind
 .chip{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700;padding:5px 12px;border-radius:20px}
 .manager-chip{background:var(--gold);color:var(--wine-dark)}
 .host-chip{background:rgba(123,63,160,0.85);color:#fff}
+.is-me-chip{outline:2px solid var(--gold)!important;box-shadow:0 0 10px rgba(201,150,58,0.5)!important}
 .bartender-chip{background:rgba(26,79,122,0.85);color:#fff}
 .nohost-chip{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);font-size:11px}
 .change-name-btn{background:none;border:none;color:rgba(255,255,255,0.35);font-size:11px;font-family:'Nunito',sans-serif;cursor:pointer;padding:0;text-decoration:underline;margin-left:auto}
@@ -1294,7 +1295,7 @@ async function openMgrSchedView(){
   if(!activePeriod){document.getElementById('mgrSchedDays').innerHTML='<div class="mgr-empty">Нет открытого периода</div>';return;}
   // Парсим месяц и год из периода
   const RU_MONTHS={'января':0,'февраля':1,'марта':2,'апреля':3,'мая':4,'июня':5,'июля':6,'августа':7,'сентября':8,'октября':9,'ноября':10,'декабря':11};
-  const periodMonthMatch=activePeriod.period.match(/[а-яё]+/i);
+  const periodMonthMatch=activePeriod.period.match(/[а-яёА-ЯЁ]+/);
   const periodMonth=periodMonthMatch?RU_MONTHS[periodMonthMatch[0].toLowerCase()]??4:4;
   const periodYear=new Date().getFullYear();
   const periodMonthName=periodMonthMatch?periodMonthMatch[0]:'мая';
@@ -1359,6 +1360,7 @@ async function openMgrSchedView(){
             <option value="">— не назначен —</option>
             <option value="Арсений">Арсений</option>
             <option value="Алексей">Алексей</option>
+            <option value="Солтан">Солтан</option>
           </select>
         </div>
       </div>
@@ -1743,11 +1745,11 @@ function buildPanel(d){
     <div class="info-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08)">
       <div style="display:flex;flex-direction:column;gap:4px">
         <span class="info-label">МЕНЕДЖЕР</span>
-        ${info.manager?`<span class="chip manager-chip" style="border-radius:10px;width:100%;justify-content:flex-start">👔 ${info.manager}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
+        ${info.manager?`<span class="chip manager-chip${myName&&info.manager===myName?' is-me-chip':''}" style="border-radius:10px;width:100%;justify-content:flex-start">👔 ${info.manager}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <span class="info-label">ХОСТЕС</span>
-        ${info.hostess?`<span class="chip host-chip" style="border-radius:10px;width:100%;justify-content:flex-start">🎀 ${info.hostess}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
+        ${info.hostess?`<span class="chip host-chip${myName&&info.hostess===myName?' is-me-chip':''}" style="border-radius:10px;width:100%;justify-content:flex-start">🎀 ${info.hostess}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <span class="info-label">БАРМЕН</span>
@@ -2029,7 +2031,7 @@ async function publishSchedule(){
   // Автоназначение менеджер/хостес/бармен
   const managers=['Игорь','Алена'];
   const hostesses=['Карина','Аня'];
-  const bartenders=['Арсений','Алексей'];
+  const bartenders=['Арсений','Алексей','Солтан'];
 
   // Загружаем ручные назначения менеджера
   const existingAssignments=await sf(`day_assignments?period=eq.${encodeURIComponent(period)}&select=*`);
@@ -2396,6 +2398,7 @@ async function openMgrEditView(){
             <option value="">— не назначен —</option>
             <option value="Арсений"${a.bartender==='Арсений'?' selected':''}>Арсений</option>
             <option value="Алексей"${a.bartender==='Алексей'?' selected':''}>Алексей</option>
+            <option value="Солтан"${a.bartender==='Солтан'?' selected':''}>Солтан</option>
           </select>
         </div>
       </div>
