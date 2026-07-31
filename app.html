@@ -594,32 +594,33 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
   </div>
 </div>
 
+<!-- PIN OVERLAY -->
+<div id="pinOverlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,0,5,0.92);backdrop-filter:blur(12px);flex-direction:column;align-items:center;justify-content:center;gap:32px">
+  <div style="font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);letter-spacing:2px">Панель менеджера</div>
+  <div class="pin-dots" id="pinDots">
+    <span class="pin-dot" id="pd0"></span>
+    <span class="pin-dot" id="pd1"></span>
+    <span class="pin-dot" id="pd2"></span>
+    <span class="pin-dot" id="pd3"></span>
+  </div>
+  <div class="pin-pad">
+    <button class="pin-key" onclick="pinKey('1')">1</button>
+    <button class="pin-key" onclick="pinKey('2')">2</button>
+    <button class="pin-key" onclick="pinKey('3')">3</button>
+    <button class="pin-key" onclick="pinKey('4')">4</button>
+    <button class="pin-key" onclick="pinKey('5')">5</button>
+    <button class="pin-key" onclick="pinKey('6')">6</button>
+    <button class="pin-key" onclick="pinKey('7')">7</button>
+    <button class="pin-key" onclick="pinKey('8')">8</button>
+    <button class="pin-key" onclick="pinKey('9')">9</button>
+    <button class="pin-key pin-key-back" onclick="closePinOverlay()">←</button>
+    <button class="pin-key" onclick="pinKey('0')">0</button>
+    <button class="pin-key pin-key-del" onclick="pinDel()">⌫</button>
+  </div>
+</div>
+
 <!-- MANAGER SCREEN -->
 <div class="mgr-screen" id="mgrScreen">
-  <div class="mgr-logo">Вино &amp; Хинкали</div>
-  <div class="mgr-sub">Панель менеджера</div>
-  <div id="mgrLogin" class="mgr-login">
-    <div class="pin-dots" id="pinDots">
-      <span class="pin-dot" id="pd0"></span>
-      <span class="pin-dot" id="pd1"></span>
-      <span class="pin-dot" id="pd2"></span>
-      <span class="pin-dot" id="pd3"></span>
-    </div>
-    <div class="pin-pad">
-      <button class="pin-key" onclick="pinKey('1')">1</button>
-      <button class="pin-key" onclick="pinKey('2')">2</button>
-      <button class="pin-key" onclick="pinKey('3')">3</button>
-      <button class="pin-key" onclick="pinKey('4')">4</button>
-      <button class="pin-key" onclick="pinKey('5')">5</button>
-      <button class="pin-key" onclick="pinKey('6')">6</button>
-      <button class="pin-key" onclick="pinKey('7')">7</button>
-      <button class="pin-key" onclick="pinKey('8')">8</button>
-      <button class="pin-key" onclick="pinKey('9')">9</button>
-      <button class="pin-key pin-key-back" onclick="closeMgrScreen()">←</button>
-      <button class="pin-key" onclick="pinKey('0')">0</button>
-      <button class="pin-key pin-key-del" onclick="pinDel()">⌫</button>
-    </div>
-  </div>
   <div id="mgrPanel" class="mgr-panel" style="display:none">
     <div class="mgr-panel-title">👔 Панель менеджера</div>
 
@@ -1454,10 +1455,13 @@ function pinDel(){
   pinUpdateDots();
 }
 function openMgrScreen(){
-  document.getElementById('mgrScreen').classList.add('active');
-  document.getElementById('mgrLogin').style.display='flex';
-  document.getElementById('mgrPanel').style.display='none';
+  const ov=document.getElementById('pinOverlay');
+  ov.style.display='flex';
   pinValue='';pinUpdateDots();
+}
+function closePinOverlay(){
+  document.getElementById('pinOverlay').style.display='none';
+  pinValue='';
 }
 function closeMgrScreen(){
   document.getElementById('mgrScreen').classList.remove('active');
@@ -1465,7 +1469,8 @@ function closeMgrScreen(){
 }
 async function checkMgrPassword(){
   if(pinValue===MGR_PASSWORD){
-    document.getElementById('mgrLogin').style.display='none';
+    document.getElementById('pinOverlay').style.display='none';
+    document.getElementById('mgrScreen').classList.add('active');
     document.getElementById('mgrPanel').style.display='block';
     await loadMgrData();
   } else {
