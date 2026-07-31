@@ -1981,6 +1981,14 @@ async function publishSchedule(){
     const slotList=[];
     ZONES.forEach(z=>{for(let i=0;i<(slots[z]||0);i++) slotList.push(z);});
 
+    // Перемешиваем сотрудников через день как сид — чтобы при равных score
+    // каждый день побеждала разная перестановка (иначе всегда первая из базы)
+    const shuffled=[...workers];
+    for(let si=shuffled.length-1;si>0;si--){
+      const sj=Math.abs((+day*(si+1)*2654435761)|0)%(si+1);
+      [shuffled[si],shuffled[sj]]=[shuffled[sj],shuffled[si]];
+    }
+
     // Генератор перестановок (алгоритм Хипа)
     function*perms(arr){
       const a=[...arr],c=new Array(a.length).fill(0);
@@ -1992,7 +2000,7 @@ async function publishSchedule(){
     }
 
     let bestScore=Infinity,bestPerm=null;
-    for(const perm of perms(workers)){
+    for(const perm of perms(shuffled)){
       let score=0;
       perm.forEach((w,idx)=>{
         const z=slotList[idx];
