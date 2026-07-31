@@ -1934,6 +1934,8 @@ async function publishSchedule(){
   // Удаляем старый график (текущий период и все другие периоды)
   await sf(`published_schedule?period=eq.${encodeURIComponent(period)}`,'DELETE');
   await sf(`zone_history?period=eq.${encodeURIComponent(period)}`,'DELETE');
+  // Сбрасываем счётчики — начинаем с нуля, старые данные уже удалены
+  Object.keys(zoneCount).forEach(k=>delete zoneCount[k]);
   const oldRows=await sf('published_schedule?select=period');
   if(Array.isArray(oldRows)){
     const oldPeriods=[...new Set(oldRows.map(r=>r.period))].filter(p=>p!==period);
