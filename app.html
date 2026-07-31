@@ -1770,7 +1770,7 @@ const savedName=getCookie('myName');
 if(savedName!==null){
   myName=savedName||null;
   document.getElementById('nameScreen').style.display='none';
-  document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(myName)?'none':'';
+  document.getElementById('newsBadgeBtn').style.display=(myName===null||NEWS_HIDDEN_FOR.includes(myName))?'none':'';
   // Если имя уже известно — запрашиваем разрешение на уведомления
   if(myName && 'Notification' in window && Notification.permission === 'default'){
     Notification.requestPermission().then(permission=>{
@@ -1856,7 +1856,7 @@ function selectName(name){
   myName=name;
   localStorage.setItem('vinoMyName',name);setCookie('myName',name||'',365);
   document.getElementById('nameScreen').style.display='none';
-  document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(name)?'none':'';
+  document.getElementById('newsBadgeBtn').style.display=(name===null||NEWS_HIDDEN_FOR.includes(name))?'none':'';
   // Перестраиваем панели с подсветкой имени (schedule уже загружен из БД)
   if(Object.keys(schedule).length>0){
     Object.keys(schedule).forEach(d=>{const p=document.getElementById('panel-'+d);if(p)p.innerHTML=buildPanel(+d);});
