@@ -1925,46 +1925,10 @@ async function publishSchedule(){
 
   const sortedDays=Object.keys(byDay).sort((a,b)=>+a-+b);
 
-  // ── ГЛОБАЛЬНОЕ ПЛАНИРОВАНИЕ ЗОН ──
-  // 1. Для каждого человека строим личный цикл зон
-  // 2. Назначаем зоны на весь период сразу
-  // 3. Разрешаем конфликты свопами
-
-  // Собираем рабочие дни каждого человека
-  const personDays={};
-  sortedDays.forEach(day=>{
-    byDay[day].forEach(w=>{
-      if(!personDays[w.staff_name]) personDays[w.staff_name]=[];
-      personDays[w.staff_name].push(String(day));
-    });
-  });
-
-  // Строим личный цикл зон для каждого (случайный старт)
-  const personZoneCycle={};
-  Object.keys(personDays).forEach(name=>{
-    const hash=name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-    const shift=hash%ZONES.length;
-    personZoneCycle[name]=[...ZONES.slice(shift),...ZONES.slice(0,shift)];
-  });
-
-  // Предварительное назначение — каждый по своему циклу
-  // globalPlan[day][staffName] = zone
-  const globalPlan={};
-  sortedDays.forEach(day=>globalPlan[day]={});
-  
-  Object.keys(personDays).forEach(name=>{
-    const cycle=personZoneCycle[name];
-    let lastZone=null;
-    personDays[name].forEach((day,i)=>{
-      let zone=cycle[i%cycle.length];
-      // Если зона совпадает с вчерашней — берём следующую в цикле
-      if(zone===lastZone){
-        zone=cycle[(i+1)%cycle.length];
-      }
-      globalPlan[day][name]=zone;
-      lastZone=zone;
-    });
-  });
+  // ── ЖАДНОЕ РАСПРЕДЕЛЕНИЕ ЗОН ──
+  // Для каждого дня сортируем сотрудников по наименьшему числу смен,
+  // затем каждому назначаем зону которую он посещал реже всего (и != вчерашней).
+  const lastZoneForPerson={};
 
   // Разрешаем конфликты — если в день слотов не хватает, меняем с кем-то
   // Удаляем старый график (текущий период и все другие периоды)
@@ -2004,32 +1968,26 @@ async function publishSchedule(){
       for(let ei=0;extra>0;extra--,ei++) slots[extraZones[ei%4]]++;
     }
 
-    // Назначаем из глобального плана — но строго в рамках слотов
+    // Жадное назначение: сначала — у кого меньше смен в этом периоде
     const assigned={};
     ZONES.forEach(z=>assigned[z]=[]);
-    const unassigned=[...workers];
 
-    // Сначала по плану если слот свободен
-    unassigned.slice().forEach(w=>{
-      const pz=globalPlan[String(day)]&&globalPlan[String(day)][w.staff_name];
-      if(pz&&(slots[pz]||0)>assigned[pz].length){
-        assigned[pz].push(w);
-        unassigned.splice(unassigned.indexOf(w),1);
-      }
+    const sorted=[...workers].sort((a,b)=>{
+      const ta=ZONES.reduce((s,z)=>s+(zoneCount[a.staff_name]?.[z]||0),0);
+      const tb=ZONES.reduce((s,z)=>s+(zoneCount[b.staff_name]?.[z]||0),0);
+      return ta-tb;
     });
 
-    // Остальных — в зону с наименьшим числом посещений среди СВОБОДНЫХ слотов
-    [...unassigned].forEach(w=>{
+    sorted.forEach(w=>{
       const freeZones=ZONES.filter(z=>(slots[z]||0)>assigned[z].length);
       if(!freeZones.length) return;
-      const myHistory=toInsert.filter(r=>r.staff_name===w.staff_name).map(r=>r.zone);
+      const last=lastZoneForPerson[w.staff_name];
       freeZones.sort((a,b)=>{
-        const ca=myHistory.filter(z=>z===a).length;
-        const cb=myHistory.filter(z=>z===b).length;
+        const ca=(zoneCount[w.staff_name]?.[a]||0)+(a===last?1000:0);
+        const cb=(zoneCount[w.staff_name]?.[b]||0)+(b===last?1000:0);
         return ca-cb;
       });
       assigned[freeZones[0]].push(w);
-      unassigned.splice(unassigned.indexOf(w),1);
     });
 
     ZONES.forEach(zone=>{
@@ -2038,6 +1996,7 @@ async function publishSchedule(){
         zoneHistInsert.push({period,staff_name:w.staff_name,zone,day:+day});
         if(!zoneCount[w.staff_name]) zoneCount[w.staff_name]={};
         zoneCount[w.staff_name][zone]=(zoneCount[w.staff_name][zone]||0)+1;
+        lastZoneForPerson[w.staff_name]=zone;
       });
     });
   });
