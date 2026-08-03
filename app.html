@@ -583,8 +583,8 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
   <h2>🔒 Придумайте пароль</h2>
   <div class="name-screen-hint">Вводить придётся только один раз на этом устройстве</div>
   <div style="width:100%;max-width:280px;display:flex;flex-direction:column;gap:12px;margin-top:8px">
-    <input class="mgr-input" id="pwdCreateInput" type="password" placeholder="Пароль" maxlength="20" autocomplete="new-password"/>
-    <input class="mgr-input" id="pwdCreateConfirm" type="password" placeholder="Повторите пароль" maxlength="20" autocomplete="new-password"
+    <input class="mgr-input" id="pwdCreateInput" type="password" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="new-password"/>
+    <input class="mgr-input" id="pwdCreateConfirm" type="password" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="new-password"
       onkeydown="if(event.key==='Enter')submitCreatePassword()"/>
     <button class="mgr-btn" onclick="submitCreatePassword()">Сохранить</button>
   </div>
@@ -595,7 +595,7 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
   <h2 id="pwdEnterTitle">🔑 Введите пароль</h2>
   <div class="name-screen-hint">Забыли пароль? Обратитесь к менеджеру</div>
   <div style="width:100%;max-width:280px;display:flex;flex-direction:column;gap:12px;margin-top:8px">
-    <input class="mgr-input" id="pwdEnterInput" type="password" placeholder="Пароль" maxlength="20" autocomplete="current-password"
+    <input class="mgr-input" id="pwdEnterInput" type="password" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="current-password"
       onkeydown="if(event.key==='Enter')submitEnterPassword()"/>
     <button class="mgr-btn" onclick="submitEnterPassword()">Войти</button>
     <button class="mgr-back" onclick="backToNameScreen()">← Выбрать другое имя</button>
@@ -1857,7 +1857,8 @@ function finishLogin(name){
 async function submitCreatePassword(){
   const p1=document.getElementById('pwdCreateInput').value;
   const p2=document.getElementById('pwdCreateConfirm').value;
-  if(!p1){showToast('⚠️ Введите пароль');return;}
+  if(!p1||p1.length<4){showToast('⚠️ Пароль должен быть 4 цифры');return;}
+  if(!/^\d{4}$/.test(p1)){showToast('⚠️ Только цифры');return;}
   if(p1!==p2){showToast('⚠️ Пароли не совпадают');return;}
   const hash=await hashPassword(p1);
   const token=genToken();
@@ -1886,6 +1887,15 @@ function backToNameScreen(){
 }
 async function startPasswordFlow(name){
   _pwdPendingName=name;
+  const curToken=getCookie('vinoSessionToken');
+  // Если есть токен — сначала проверяем его
+  if(curToken){
+    const tokenRows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}&session_token=eq.${encodeURIComponent(curToken)}&select=staff_name`);
+    if(Array.isArray(tokenRows)&&tokenRows.length>0){
+      finishLogin(name);
+      return;
+    }
+  }
   const rows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}&select=staff_name`);
   if(!Array.isArray(rows)||rows.length===0){
     // Первый вход — создать пароль
