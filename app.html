@@ -229,8 +229,8 @@ body.dark footer{color:#444}
 .pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);transition:all .15s}
 .pin-dot.filled{background:var(--gold);border-color:var(--gold)}
 .pin-dot.error{background:#e74c3c;border-color:#e74c3c}
-.pin-grid{display:grid;grid-template-columns:repeat(3,72px);gap:12px;margin-top:8px}
-.pin-key{height:72px;border-radius:50%;border:none;background:rgba(255,255,255,0.08);color:#fff;font-size:22px;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;transition:background .12s;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center}
+.pin-grid{display:grid;grid-template-columns:repeat(3,72px);grid-template-rows:repeat(4,72px);gap:12px;margin-top:8px}
+.pin-key{width:72px;height:72px;border-radius:50%;border:none;background:rgba(255,255,255,0.08);color:#fff;font-size:22px;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;transition:background .12s;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;box-sizing:border-box}
 .pin-key:active{background:rgba(255,255,255,0.22)}
 .pin-key.del{font-size:18px;background:transparent}
 .pin-key.empty{background:transparent;pointer-events:none}
@@ -587,6 +587,7 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
   <div class="name-screen-logo">Вино &amp; Хинкали</div>
   <div class="name-screen-sub">Зональный график</div>
   <h2 id="pwdCreateTitle">🔒 Придумайте пароль</h2>
+  <div style="font-size:15px;color:var(--gold);font-weight:700;margin-bottom:2px" id="pwdCreateName"></div>
   <div class="name-screen-hint" id="pwdCreateHint">Введите 4 цифры</div>
   <div class="pin-dots" id="pinCreateDots">
     <div class="pin-dot" id="pcd0"></div><div class="pin-dot" id="pcd1"></div>
@@ -1944,6 +1945,7 @@ function _showPinCreate(){
   _pinCreateVal='';_pinCreateFirst='';_pinCreateStep=0;
   _pinUpdateDots('pcd','');
   document.getElementById('pwdCreateTitle').textContent='🔒 Придумайте пароль';
+  document.getElementById('pwdCreateName').textContent=_pwdPendingName||'';
   document.getElementById('pwdCreateHint').textContent='Введите 4 цифры';
   _pinRenderGrid('pinCreateGrid','pinCreateDigit','pinCreateDel');
   document.getElementById('nameScreen').style.display='none';
