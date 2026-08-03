@@ -230,10 +230,11 @@ body.dark footer{color:#444}
 .pin-dot.filled{background:var(--gold);border-color:var(--gold)}
 .pin-dot.error{background:#e74c3c;border-color:#e74c3c}
 .pin-grid{display:grid;grid-template-columns:repeat(3,72px);grid-template-rows:repeat(4,72px);gap:12px;margin-top:8px}
-.pin-key{width:72px;height:72px;border-radius:50%;border:none;background:rgba(255,255,255,0.08);color:#fff;font-size:22px;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;transition:background .12s;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;box-sizing:border-box}
-.pin-key:active{background:rgba(255,255,255,0.22)}
-.pin-key.del{font-size:18px;background:transparent}
-.pin-key.empty{background:transparent;pointer-events:none}
+.pin-key{width:72px;height:72px;border-radius:50%;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.12);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:24px;font-family:'Nunito',sans-serif;font-weight:600;cursor:pointer;transition:all .12s;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;box-sizing:border-box;box-shadow:0 2px 8px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.2)}
+.pin-key:active{background:rgba(255,255,255,0.28);transform:scale(0.93)}
+.pin-key.del{font-size:20px;background:transparent;border-color:transparent;box-shadow:none}
+.pin-key.del:active{background:rgba(255,255,255,0.12);transform:scale(0.93)}
+.pin-key.empty{background:transparent;border-color:transparent;box-shadow:none;pointer-events:none}
 .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%}
 .pin-key{height:64px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#fff;font-family:'Nunito',sans-serif;font-size:22px;font-weight:700;cursor:pointer;transition:background .1s,transform .08s;-webkit-tap-highlight-color:transparent}
 .pin-key:active{background:rgba(255,255,255,0.18);transform:scale(.93)}
