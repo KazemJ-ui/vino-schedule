@@ -634,10 +634,12 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
   <div class="mgr-sub">Панель менеджера</div>
   <div id="mgrLogin" class="mgr-login">
     <h2>🔐 Вход</h2>
-    <input class="mgr-input" id="mgrPassword" type="password" placeholder="••••" maxlength="10"
-      onkeydown="if(event.key==='Enter')checkMgrPassword()"/>
-    <button class="mgr-btn" onclick="checkMgrPassword()">Войти</button>
-    <button class="mgr-back" onclick="closeMgrScreen()">← Назад</button>
+    <div class="pin-dots" style="margin:8px 0 16px">
+      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-grid" id="mgrPinGrid"></div>
+    <button class="mgr-back" style="margin-top:16px" onclick="closeMgrScreen()">← Назад</button>
   </div>
   <div id="mgrPanel" class="mgr-panel" style="display:none">
     <div class="mgr-panel-title">👔 Панель менеджера</div>
@@ -1458,41 +1460,42 @@ const MGR_PASSWORD='5187';
 const dayNames={1:'Пт',2:'Сб',3:'Вс',4:'Пн',5:'Вт',6:'Ср',7:'Чт',8:'Пт',9:'Сб',10:'Вс',11:'Пн',12:'Вт',13:'Ср',14:'Чт',15:'Пт'};
 
 let pinValue='';
-function pinUpdateDots(){
+function _mgrPinUpdateDots(){
   for(let i=0;i<4;i++){
-    document.getElementById('pd'+i).classList.toggle('filled',i<pinValue.length);
-    document.getElementById('pd'+i).classList.remove('error');
+    const d=document.getElementById('pd'+i);
+    d.className='pin-dot'+(i<pinValue.length?' filled':'');
   }
 }
-function pinKey(d){
+function mgrPinKey(d){
   if(pinValue.length>=4) return;
   pinValue+=d;
-  pinUpdateDots();
-  if(pinValue.length===4) setTimeout(checkMgrPassword,120);
+  _mgrPinUpdateDots();
+  if(pinValue.length===4) setTimeout(checkMgrPassword,200);
 }
-function pinDel(){
+function mgrPinDel(){
   pinValue=pinValue.slice(0,-1);
-  pinUpdateDots();
+  _mgrPinUpdateDots();
 }
 function openMgrScreen(){
+  pinValue='';
+  _mgrPinUpdateDots();
+  _pinRenderGrid('mgrPinGrid','mgrPinKey','mgrPinDel');
   document.getElementById('mgrScreen').classList.add('active');
   document.getElementById('mgrLogin').style.display='flex';
   document.getElementById('mgrPanel').style.display='none';
-  document.getElementById('mgrPassword').value='';
-  setTimeout(()=>document.getElementById('mgrPassword').focus(),300);
 }
 function closeMgrScreen(){
   document.getElementById('mgrScreen').classList.remove('active');
 }
 async function checkMgrPassword(){
-  const val=document.getElementById('mgrPassword').value;
-  if(val===MGR_PASSWORD){
+  if(pinValue===MGR_PASSWORD){
     document.getElementById('mgrLogin').style.display='none';
     document.getElementById('mgrPanel').style.display='block';
+    pinValue='';
     await loadMgrData();
   } else {
-    showToast('❌ Неверный пароль');
-    document.getElementById('mgrPassword').value='';
+    for(let i=0;i<4;i++){const d=document.getElementById('pd'+i);if(d)d.className='pin-dot error';}
+    setTimeout(()=>{pinValue='';_mgrPinUpdateDots();},700);
   }
 }
 
