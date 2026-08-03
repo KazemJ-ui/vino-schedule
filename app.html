@@ -576,6 +576,32 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
 </div>
 <div class="tabs-wrap"><div class="tabs" id="tabs"></div></div>
 <div class="content" id="content"></div>
+<!-- Password screens -->
+<div class="name-screen" id="passwordCreateScreen" style="display:none">
+  <div class="name-screen-logo">Вино &amp; Хинкали</div>
+  <div class="name-screen-sub">Зональный график</div>
+  <h2>🔒 Придумайте пароль</h2>
+  <div class="name-screen-hint">Вводить придётся только один раз на этом устройстве</div>
+  <div style="width:100%;max-width:280px;display:flex;flex-direction:column;gap:12px;margin-top:8px">
+    <input class="mgr-input" id="pwdCreateInput" type="password" placeholder="Пароль" maxlength="20" autocomplete="new-password"/>
+    <input class="mgr-input" id="pwdCreateConfirm" type="password" placeholder="Повторите пароль" maxlength="20" autocomplete="new-password"
+      onkeydown="if(event.key==='Enter')submitCreatePassword()"/>
+    <button class="mgr-btn" onclick="submitCreatePassword()">Сохранить</button>
+  </div>
+</div>
+<div class="name-screen" id="passwordEnterScreen" style="display:none">
+  <div class="name-screen-logo">Вино &amp; Хинкали</div>
+  <div class="name-screen-sub">Зональный график</div>
+  <h2 id="pwdEnterTitle">🔑 Введите пароль</h2>
+  <div class="name-screen-hint">Забыли пароль? Обратитесь к менеджеру</div>
+  <div style="width:100%;max-width:280px;display:flex;flex-direction:column;gap:12px;margin-top:8px">
+    <input class="mgr-input" id="pwdEnterInput" type="password" placeholder="Пароль" maxlength="20" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')submitEnterPassword()"/>
+    <button class="mgr-btn" onclick="submitEnterPassword()">Войти</button>
+    <button class="mgr-back" onclick="backToNameScreen()">← Выбрать другое имя</button>
+  </div>
+</div>
+
 <div class="name-screen" id="nameScreen">
   <div class="name-screen-logo">Вино &amp; Хинкали</div>
   <div class="name-screen-sub">Зональный график</div>
@@ -641,6 +667,8 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
     <div id="mgrPending"><div class="mgr-empty">⏳ Загрузка...</div></div>
     <div class="mgr-section-title">История обменов</div>
     <div id="mgrHistory"><div class="mgr-empty">⏳ Загрузка...</div></div>
+    <div class="mgr-section-title">Пароли сотрудников</div>
+    <div id="mgrPasswords"><div class="mgr-empty">⏳ Загрузка...</div></div>
     </div><!-- /mgrMainSection -->
 
     <!-- Редактор графика -->
@@ -1461,6 +1489,7 @@ async function checkMgrPassword(){
 }
 
 async function loadMgrData(){
+  loadMgrPasswords();
   // Все три запроса параллельно — втрое быстрее
   const [schedStatus, pending, history] = await Promise.all([
     sf('schedule_periods?is_open=eq.true&select=*&limit=1'),
@@ -1797,20 +1826,108 @@ const contentEl=document.getElementById('content');
 
 // Читаем имя ДО построения панелей
 const savedName=getCookie('myName');
-if(savedName!==null){
-  myName=savedName||null;
+const savedToken=getCookie('vinoSessionToken');
+let _pwdPendingName=null; // имя, для которого ждём ввода пароля
+
+async function hashPassword(pwd){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pwd));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function genToken(){
+  return Array.from(crypto.getRandomValues(new Uint8Array(24))).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function finishLogin(name){
+  myName=name;
+  setCookie('myName',name||'',365);
   document.getElementById('nameScreen').style.display='none';
-  document.getElementById('newsBadgeBtn').style.display=(myName===null||NEWS_HIDDEN_FOR.includes(myName))?'none':'';
-  // Если имя уже известно — запрашиваем разрешение на уведомления
-  if(myName && 'Notification' in window && Notification.permission === 'default'){
-    Notification.requestPermission().then(permission=>{
-      if(permission==='granted') subscribeToPush(myName);
+  document.getElementById('passwordCreateScreen').style.display='none';
+  document.getElementById('passwordEnterScreen').style.display='none';
+  document.getElementById('newsBadgeBtn').style.display=(name===null||NEWS_HIDDEN_FOR.includes(name))?'none':'';
+  if(name && 'Notification' in window && Notification.permission==='default'){
+    Notification.requestPermission().then(p=>{if(p==='granted')subscribeToPush(name);});
+  } else if(name && 'Notification' in window && Notification.permission==='granted'){
+    if('serviceWorker' in navigator) navigator.serviceWorker.ready.then(()=>subscribeToPush(name));
+  }
+  if(Object.keys(schedule).length>0){
+    Object.keys(schedule).forEach(d=>{const p=document.getElementById('panel-'+d);if(p)p.innerHTML=buildPanel(+d);});
+  }
+  loadSwaps();
+  loadMgrPasswords();
+}
+async function submitCreatePassword(){
+  const p1=document.getElementById('pwdCreateInput').value;
+  const p2=document.getElementById('pwdCreateConfirm').value;
+  if(!p1){showToast('⚠️ Введите пароль');return;}
+  if(p1!==p2){showToast('⚠️ Пароли не совпадают');return;}
+  const hash=await hashPassword(p1);
+  const token=genToken();
+  await sf('staff_sessions','POST',{staff_name:_pwdPendingName,password_hash:hash,session_token:token});
+  setCookie('vinoSessionToken',token,365);
+  document.getElementById('pwdCreateInput').value='';
+  document.getElementById('pwdCreateConfirm').value='';
+  finishLogin(_pwdPendingName);
+}
+async function submitEnterPassword(){
+  const p=document.getElementById('pwdEnterInput').value;
+  if(!p){showToast('⚠️ Введите пароль');return;}
+  const hash=await hashPassword(p);
+  const rows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(_pwdPendingName)}&password_hash=eq.${encodeURIComponent(hash)}&select=staff_name`);
+  if(!Array.isArray(rows)||rows.length===0){showToast('❌ Неверный пароль');document.getElementById('pwdEnterInput').value='';return;}
+  const token=genToken();
+  await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(_pwdPendingName)}`,'PATCH',{session_token:token});
+  setCookie('vinoSessionToken',token,365);
+  document.getElementById('pwdEnterInput').value='';
+  finishLogin(_pwdPendingName);
+}
+function backToNameScreen(){
+  document.getElementById('passwordEnterScreen').style.display='none';
+  document.getElementById('nameScreen').style.display='flex';
+  _pwdPendingName=null;
+}
+async function startPasswordFlow(name){
+  _pwdPendingName=name;
+  const rows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}&select=staff_name`);
+  if(!Array.isArray(rows)||rows.length===0){
+    // Первый вход — создать пароль
+    document.getElementById('nameScreen').style.display='none';
+    document.getElementById('passwordCreateScreen').style.display='flex';
+    setTimeout(()=>document.getElementById('pwdCreateInput').focus(),300);
+  } else {
+    // Уже есть пароль — ввести
+    document.getElementById('pwdEnterTitle').textContent=`🔑 Привет, ${name}!`;
+    document.getElementById('nameScreen').style.display='none';
+    document.getElementById('passwordEnterScreen').style.display='flex';
+    setTimeout(()=>document.getElementById('pwdEnterInput').focus(),300);
+  }
+}
+
+if(savedName!==null){
+  if(savedName&&savedToken){
+    // Проверяем токен в базе
+    sf(`staff_sessions?staff_name=eq.${encodeURIComponent(savedName)}&session_token=eq.${encodeURIComponent(savedToken)}&select=staff_name`).then(rows=>{
+      if(Array.isArray(rows)&&rows.length>0){
+        // Токен валиден — авто-логин
+        myName=savedName;
+        document.getElementById('nameScreen').style.display='none';
+        document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(savedName)?'none':'';
+        if('Notification' in window && Notification.permission==='default'){
+          Notification.requestPermission().then(p=>{if(p==='granted')subscribeToPush(savedName);});
+        } else if('Notification' in window && Notification.permission==='granted'){
+          if('serviceWorker' in navigator) navigator.serviceWorker.ready.then(()=>subscribeToPush(savedName));
+        }
+      } else {
+        // Токен устарел — запросить пароль
+        document.getElementById('nameScreen').style.display='none';
+        startPasswordFlow(savedName);
+      }
     });
-  } else if(myName && 'Notification' in window && Notification.permission === 'granted'){
-    // Уже разрешено — просто подписываемся
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.ready.then(()=>subscribeToPush(myName));
-    }
+  } else if(savedName){
+    // Имя есть но токена нет — запросить пароль
+    startPasswordFlow(savedName);
+  } else {
+    // null имя (менеджер без имени)
+    myName=null;
+    document.getElementById('nameScreen').style.display='none';
   }
 }
 
@@ -1893,27 +2010,38 @@ function showNameScreen(){
   document.getElementById('nameScreen').style.display='flex';
 }
 function selectName(name){
-  myName=name;
-  localStorage.setItem('vinoMyName',name);setCookie('myName',name||'',365);
-  document.getElementById('nameScreen').style.display='none';
-  document.getElementById('newsBadgeBtn').style.display=(name===null||NEWS_HIDDEN_FOR.includes(name))?'none':'';
-  // Перестраиваем панели с подсветкой имени (schedule уже загружен из БД)
-  if(Object.keys(schedule).length>0){
-    Object.keys(schedule).forEach(d=>{const p=document.getElementById('panel-'+d);if(p)p.innerHTML=buildPanel(+d);});
+  if(!name){
+    // Менеджер без имени — сразу
+    finishLogin(null);
+    return;
   }
-  loadSwaps();
-  // Запрашиваем разрешение на уведомления
-  if(name && 'Notification' in window){
-    Notification.requestPermission().then(permission=>{
-      if(permission==='granted') subscribeToPush(name);
-    });
-  }
+  startPasswordFlow(name);
 }
 if(savedName===null){showNameScreen();}
 
 // Переход на текущий день — обрабатывается в loadPublishedSchedule
 
 // Свапы и история загружаются в фоне — график уже показан
+
+async function loadMgrPasswords(){
+  const el=document.getElementById('mgrPasswords');
+  if(!el) return;
+  const rows=await sf('staff_sessions?select=staff_name');
+  const withPwd=new Set(Array.isArray(rows)?rows.map(r=>r.staff_name):[]);
+  const everyone=[...allStaff,'Аня','Игорь','Алена'];
+  const unique=[...new Set(everyone)];
+  el.innerHTML=unique.map(name=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.07)">
+      <span style="font-size:14px">${name} ${withPwd.has(name)?'🔒':'<span style="opacity:0.4;font-size:12px">нет пароля</span>'}</span>
+      ${withPwd.has(name)?`<button class="mgr-reject-btn" style="padding:4px 10px;font-size:12px" onclick="resetStaffPassword('${name}')">Сбросить</button>`:'<span></span>'}
+    </div>`).join('');
+}
+async function resetStaffPassword(name){
+  if(!confirm(`Сбросить пароль для ${name}? При следующем входе им потребуется создать новый.`)) return;
+  await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}`,'DELETE');
+  showToast(`✅ Пароль ${name} сброшен`);
+  loadMgrPasswords();
+}
 
 async function publishSchedule(){
   console.log('publishSchedule called');
