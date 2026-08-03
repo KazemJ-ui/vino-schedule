@@ -225,10 +225,15 @@ body.dark footer{color:#444}
 .mgr-input{font-size:16px!important;width:100%;padding:14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;color:#fff;font-family:'Nunito',sans-serif;text-align:center;letter-spacing:6px;box-sizing:border-box}
 .mgr-btn{padding:14px;background:var(--gold);color:var(--wine-dark);border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer}
 .mgr-back{background:transparent;border:none;color:rgba(255,255,255,0.4);font-family:'Nunito',sans-serif;font-size:13px;cursor:pointer;margin-top:8px}
-.pin-dots{display:flex;gap:16px}
-.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);transition:all .15s}
+.pin-dots{display:flex;gap:16px;margin:16px 0}
+.pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);transition:all .15s}
 .pin-dot.filled{background:var(--gold);border-color:var(--gold)}
 .pin-dot.error{background:#e74c3c;border-color:#e74c3c}
+.pin-grid{display:grid;grid-template-columns:repeat(3,72px);gap:12px;margin-top:8px}
+.pin-key{height:72px;border-radius:50%;border:none;background:rgba(255,255,255,0.08);color:#fff;font-size:22px;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;transition:background .12s;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center}
+.pin-key:active{background:rgba(255,255,255,0.22)}
+.pin-key.del{font-size:18px;background:transparent}
+.pin-key.empty{background:transparent;pointer-events:none}
 .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%}
 .pin-key{height:64px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#fff;font-family:'Nunito',sans-serif;font-size:22px;font-weight:700;cursor:pointer;transition:background .1s,transform .08s;-webkit-tap-highlight-color:transparent}
 .pin-key:active{background:rgba(255,255,255,0.18);transform:scale(.93)}
@@ -581,26 +586,26 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
 <div class="name-screen" id="passwordCreateScreen" style="display:none">
   <div class="name-screen-logo">Вино &amp; Хинкали</div>
   <div class="name-screen-sub">Зональный график</div>
-  <h2>🔒 Придумайте пароль</h2>
-  <div class="name-screen-hint">Вводить придётся только один раз на этом устройстве</div>
-  <div style="width:100%;max-width:280px;display:flex;flex-direction:column;gap:12px;margin-top:8px">
-    <input class="mgr-input" id="pwdCreateInput" type="password" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="new-password"/>
-    <input class="mgr-input" id="pwdCreateConfirm" type="password" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="new-password"
-      onkeydown="if(event.key==='Enter')submitCreatePassword()"/>
-    <button class="mgr-btn" onclick="submitCreatePassword()">Сохранить</button>
+  <h2 id="pwdCreateTitle">🔒 Придумайте пароль</h2>
+  <div class="name-screen-hint" id="pwdCreateHint">Введите 4 цифры</div>
+  <div class="pin-dots" id="pinCreateDots">
+    <div class="pin-dot" id="pcd0"></div><div class="pin-dot" id="pcd1"></div>
+    <div class="pin-dot" id="pcd2"></div><div class="pin-dot" id="pcd3"></div>
   </div>
+  <div class="pin-grid" id="pinCreateGrid"></div>
+  <button class="mgr-back" style="margin-top:16px" onclick="backToNameScreen()">← Выбрать другое имя</button>
 </div>
 <div class="name-screen" id="passwordEnterScreen" style="display:none">
   <div class="name-screen-logo">Вино &amp; Хинкали</div>
   <div class="name-screen-sub">Зональный график</div>
   <h2 id="pwdEnterTitle">🔑 Введите пароль</h2>
   <div class="name-screen-hint">Забыли пароль? Обратитесь к менеджеру</div>
-  <div style="width:100%;max-width:280px;display:flex;flex-direction:column;gap:12px;margin-top:8px">
-    <input class="mgr-input" id="pwdEnterInput" type="password" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="current-password"
-      onkeydown="if(event.key==='Enter')submitEnterPassword()"/>
-    <button class="mgr-btn" onclick="submitEnterPassword()">Войти</button>
-    <button class="mgr-back" onclick="backToNameScreen()">← Выбрать другое имя</button>
+  <div class="pin-dots" id="pinEnterDots">
+    <div class="pin-dot" id="ped0"></div><div class="pin-dot" id="ped1"></div>
+    <div class="pin-dot" id="ped2"></div><div class="pin-dot" id="ped3"></div>
   </div>
+  <div class="pin-grid" id="pinEnterGrid"></div>
+  <button class="mgr-back" style="margin-top:16px" onclick="backToNameScreen()">← Выбрать другое имя</button>
 </div>
 
 <div class="name-screen" id="nameScreen">
@@ -1855,34 +1860,105 @@ function finishLogin(name){
   loadSwaps();
   loadMgrPasswords();
 }
-async function submitCreatePassword(){
-  const p1=document.getElementById('pwdCreateInput').value;
-  const p2=document.getElementById('pwdCreateConfirm').value;
-  if(!p1||p1.length<4){showToast('⚠️ Пароль должен быть 4 цифры');return;}
-  if(!/^\d{4}$/.test(p1)){showToast('⚠️ Только цифры');return;}
-  if(p1!==p2){showToast('⚠️ Пароли не совпадают');return;}
-  const hash=await hashPassword(p1);
-  const token=genToken();
-  await sf('staff_sessions','POST',{staff_name:_pwdPendingName,password_hash:hash,session_token:token});
-  setCookie('vinoSessionToken',token,365);
-  document.getElementById('pwdCreateInput').value='';
-  document.getElementById('pwdCreateConfirm').value='';
-  finishLogin(_pwdPendingName);
+// ── PIN PAD ──
+let _pinCreateVal='', _pinCreateStep=0; // step 0=first entry, 1=confirm
+let _pinCreateFirst='';
+let _pinEnterVal='';
+
+function _pinRenderGrid(gridId, onDigit, onDel){
+  const grid=document.getElementById(gridId);
+  const keys=[1,2,3,4,5,6,7,8,9,'','0','⌫'];
+  grid.innerHTML=keys.map(k=>{
+    if(k==='') return '<button class="pin-key empty"></button>';
+    if(k==='⌫') return `<button class="pin-key del" onclick="${onDel}">⌫</button>`;
+    return `<button class="pin-key" onclick="${onDigit}(${k})">${k}</button>`;
+  }).join('');
 }
-async function submitEnterPassword(){
-  const p=document.getElementById('pwdEnterInput').value;
-  if(!p){showToast('⚠️ Введите пароль');return;}
-  const hash=await hashPassword(p);
+function _pinUpdateDots(prefix, val){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById(prefix+i);
+    if(d) d.className='pin-dot'+(i<val.length?' filled':'');
+  }
+}
+function pinCreateDigit(d){
+  if(_pinCreateVal.length>=4) return;
+  _pinCreateVal+=d;
+  _pinUpdateDots('pcd',_pinCreateVal);
+  if(_pinCreateVal.length===4) setTimeout(_pinCreateNext,200);
+}
+function pinCreateDel(){
+  _pinCreateVal=_pinCreateVal.slice(0,-1);
+  _pinUpdateDots('pcd',_pinCreateVal);
+}
+async function _pinCreateNext(){
+  if(_pinCreateStep===0){
+    _pinCreateFirst=_pinCreateVal;
+    _pinCreateVal='';
+    _pinUpdateDots('pcd',_pinCreateVal);
+    document.getElementById('pwdCreateTitle').textContent='🔒 Повторите пароль';
+    document.getElementById('pwdCreateHint').textContent='Введите те же 4 цифры';
+    _pinCreateStep=1;
+  } else {
+    if(_pinCreateVal!==_pinCreateFirst){
+      // Не совпало — подсветить ошибку и начать заново
+      for(let i=0;i<4;i++){const d=document.getElementById('pcd'+i);if(d)d.className='pin-dot error';}
+      setTimeout(()=>{
+        _pinCreateVal='';_pinCreateFirst='';_pinCreateStep=0;
+        _pinUpdateDots('pcd','');
+        document.getElementById('pwdCreateTitle').textContent='🔒 Придумайте пароль';
+        document.getElementById('pwdCreateHint').textContent='Пароли не совпали. Попробуйте снова';
+      },700);
+      return;
+    }
+    const hash=await hashPassword(_pinCreateVal);
+    const token=genToken();
+    await sf('staff_sessions','POST',{staff_name:_pwdPendingName,password_hash:hash,session_token:token});
+    setCookie('vinoSessionToken',token,365);
+    finishLogin(_pwdPendingName);
+  }
+}
+function pinEnterDigit(d){
+  if(_pinEnterVal.length>=4) return;
+  _pinEnterVal+=d;
+  _pinUpdateDots('ped',_pinEnterVal);
+  if(_pinEnterVal.length===4) setTimeout(_pinEnterCheck,200);
+}
+function pinEnterDel(){
+  _pinEnterVal=_pinEnterVal.slice(0,-1);
+  _pinUpdateDots('ped',_pinEnterVal);
+}
+async function _pinEnterCheck(){
+  const hash=await hashPassword(_pinEnterVal);
   const rows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(_pwdPendingName)}&password_hash=eq.${encodeURIComponent(hash)}&select=staff_name`);
-  if(!Array.isArray(rows)||rows.length===0){showToast('❌ Неверный пароль');document.getElementById('pwdEnterInput').value='';return;}
+  if(!Array.isArray(rows)||rows.length===0){
+    for(let i=0;i<4;i++){const d=document.getElementById('ped'+i);if(d)d.className='pin-dot error';}
+    setTimeout(()=>{_pinEnterVal='';_pinUpdateDots('ped','');},700);
+    return;
+  }
   const token=genToken();
   await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(_pwdPendingName)}`,'PATCH',{session_token:token});
   setCookie('vinoSessionToken',token,365);
-  document.getElementById('pwdEnterInput').value='';
   finishLogin(_pwdPendingName);
+}
+function _showPinCreate(){
+  _pinCreateVal='';_pinCreateFirst='';_pinCreateStep=0;
+  _pinUpdateDots('pcd','');
+  document.getElementById('pwdCreateTitle').textContent='🔒 Придумайте пароль';
+  document.getElementById('pwdCreateHint').textContent='Введите 4 цифры';
+  _pinRenderGrid('pinCreateGrid','pinCreateDigit','pinCreateDel');
+  document.getElementById('nameScreen').style.display='none';
+  document.getElementById('passwordCreateScreen').style.display='flex';
+}
+function _showPinEnter(){
+  _pinEnterVal='';
+  _pinUpdateDots('ped','');
+  _pinRenderGrid('pinEnterGrid','pinEnterDigit','pinEnterDel');
+  document.getElementById('nameScreen').style.display='none';
+  document.getElementById('passwordEnterScreen').style.display='flex';
 }
 function backToNameScreen(){
   document.getElementById('passwordEnterScreen').style.display='none';
+  document.getElementById('passwordCreateScreen').style.display='none';
   document.getElementById('nameScreen').style.display='flex';
   _pwdPendingName=null;
 }
@@ -1899,16 +1975,10 @@ async function startPasswordFlow(name){
   }
   const rows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}&select=staff_name`);
   if(!Array.isArray(rows)||rows.length===0){
-    // Первый вход — создать пароль
-    document.getElementById('nameScreen').style.display='none';
-    document.getElementById('passwordCreateScreen').style.display='flex';
-    setTimeout(()=>document.getElementById('pwdCreateInput').focus(),300);
+    _showPinCreate();
   } else {
-    // Уже есть пароль — ввести
     document.getElementById('pwdEnterTitle').textContent=`🔑 Привет, ${name}!`;
-    document.getElementById('nameScreen').style.display='none';
-    document.getElementById('passwordEnterScreen').style.display='flex';
-    setTimeout(()=>document.getElementById('pwdEnterInput').focus(),300);
+    _showPinEnter();
   }
 }
 
