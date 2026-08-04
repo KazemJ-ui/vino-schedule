@@ -760,8 +760,8 @@ const zonesDef=[
   {key:"Оранжевые",label:"Оранжевые",icon:"🍊",cls:"zor"}
 ];
 const weekends=["Сб","Вс"];
-const allStaff=["Арсений","Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Алексей","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Аня","Игорь"];
-const NEWS_HIDDEN_FOR=["Игорь","Алена"];
+const allStaff=["Арсений","Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Алексей","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Аня","Игорь","Алексей Щ"];
+const NEWS_HIDDEN_FOR=["Игорь","Алена","Алексей Щ"];
 
 let currentDay=null,myName=null,swapRequests={},swapModalDay=null;
 const _cache={msgs:null};
@@ -2083,7 +2083,7 @@ if(getCookie('theme')==='dark'){document.body.classList.add('dark');document.get
 // ── NAME SCREEN ──
 function showNameScreen(){
   const grid=document.getElementById('nameGrid');
-  const MANAGERS=['Игорь','Алена'];
+  const MANAGERS=['Игорь','Алена','Алексей Щ'];
   const HOSTESS=['Аня'];
   const groups=[
     {label:'👔 Менеджер',names:MANAGERS},
@@ -2115,7 +2115,7 @@ async function loadMgrPasswords(){
   if(!el) return;
   const rows=await sf('staff_sessions?select=staff_name');
   const withPwd=new Set(Array.isArray(rows)?rows.map(r=>r.staff_name):[]);
-  const everyone=[...allStaff,'Аня','Игорь','Алена'];
+  const everyone=[...allStaff,'Аня','Игорь','Алена','Алексей Щ'];
   const unique=[...new Set(everyone)];
   el.innerHTML=unique.map(name=>`
     <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.07)">
