@@ -522,14 +522,17 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
       <button class="news-back" onclick="closeSalesLeaderboard()">←</button>
       <div class="news-masthead">
         <div class="news-masthead-title">🏆 Лидерборд продаж</div>
-        <div class="news-masthead-sub" id="salesMonthLabel"></div>
+        <div class="news-masthead-sub" id="salesMonthLabel" style="color:rgba(0,0,0,0.5)"></div>
       </div>
     </div>
   </div>
   <div style="padding:16px;max-width:480px;margin:0 auto">
-    <div id="salesList" style="display:flex;flex-direction:column;gap:8px"></div>
-    <div id="salesUpdatedAt" style="margin-top:12px;font-size:11px;color:rgba(255,255,255,0.35);text-align:center"></div>
-    <button id="salesSaveBtn" onclick="saveSalesLeaderboard()" style="display:none;width:100%;margin-top:16px;padding:12px;background:var(--wine-dark);border:none;border-radius:12px;color:#fff;font-size:15px;cursor:pointer">💾 Сохранить</button>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+      <button id="salesEditBtn" onclick="_salesToggleEdit()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);border-radius:20px;padding:6px 16px;font-size:13px;cursor:pointer">✏️ Редактировать</button>
+    </div>
+    <div id="salesList" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div id="salesUpdatedAt" style="margin-top:14px;font-size:11px;color:rgba(255,255,255,0.3);text-align:center"></div>
+    <button id="salesSaveBtn" onclick="saveSalesLeaderboard()" style="display:none;width:100%;margin-top:16px;padding:14px;background:linear-gradient(135deg,#c9963a,#e8b84b);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:0.5px">💾 Сохранить</button>
   </div>
 </div>
 
