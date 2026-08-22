@@ -1,0 +1,70 @@
+name: Merge 4 features into correct main
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: 3-way merge app.html
+        run: |
+          # current = broken (our features but old base)
+          # correct = last good main before our session (cc8f2d9)
+          # old_base = what the feature branch was based on
+          
+          git fetch origin
+          
+          # Get the correct last-good version (cc8f2d9)
+          git show cc8f2d9c727889db08ede1b38dedb30195e2f0a6:app.html > /tmp/correct.html
+          
+          # Get the old baseline the feature branch diverged from
+          # Feature branch first commit parent - let's find it
+          git show origin/claude/staff-newspaper-feature-is7606 --format='%P' -s | head -1
+          
+          # Get first commit on feature branch to find the base
+          FEATURE_BASE=$(git merge-base origin/claude/staff-newspaper-feature-is7606 cc8f2d9c727889db08ede1b38dedb30195e2f0a6 2>/dev/null || echo '')
+          echo "Feature base: $FEATURE_BASE"
+          
+          if [ -n "$FEATURE_BASE" ]; then
+            git show $FEATURE_BASE:app.html > /tmp/old_base.html
+          else
+            # Try to find oldest common ancestor differently
+            # Look at first commit on feature branch
+            FIRST_FEATURE=$(git log --reverse origin/claude/staff-newspaper-feature-is7606 --format='%H' | head -1)
+            echo "First feature commit: $FIRST_FEATURE"
+            PARENT=$(git show $FIRST_FEATURE --format='%P' -s | head -1)
+            echo "Parent: $PARENT"
+            git show $PARENT:app.html > /tmp/old_base.html 2>/dev/null || git show origin/claude/staff-newspaper-feature-is7606~10:app.html > /tmp/old_base.html
+          fi
+          
+          # Get the version with our 4 features (from feature branch)
+          git show origin/claude/staff-newspaper-feature-is7606:app.html > /tmp/our_features.html
+          
+          echo "File sizes:"
+          wc -l /tmp/correct.html /tmp/old_base.html /tmp/our_features.html
+          
+          # 3-way merge: take correct.html, apply diff between old_base and our_features
+          cp /tmp/correct.html app.html
+          git merge-file app.html /tmp/old_base.html /tmp/our_features.html || true
+          
+          echo "Conflicts in merged file:"
+          grep -c '<<<<<<' app.html || echo "0 conflicts"
+
+      - name: Commit and push
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Actions"
+          git add app.html
+          git diff --cached --stat
+          git commit -m "feat: Add 4 features (sales leaderboard, Eva, Aleksey Shch, manager editing) on top of correct main"
+          git push origin main
