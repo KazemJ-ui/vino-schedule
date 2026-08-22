@@ -2170,10 +2170,12 @@ function showNameScreen(){
   const grid=document.getElementById('nameGrid');
   const MANAGERS=['Игорь','Алена','Алексей Щ'];
   const HOSTESS=['Аня'];
+  const ALUMNI=['Арсений','Вероника','Виктория','Карина'];
   const groups=[
     {label:'👔 Менеджер',names:MANAGERS},
     {label:'🌸 Хостес',names:HOSTESS},
-    {label:'🍽️ Официант',names:allStaff.filter(n=>!MANAGERS.includes(n)&&!HOSTESS.includes(n))}
+    {label:'🍽️ Официант',names:allStaff.filter(n=>!MANAGERS.includes(n)&&!HOSTESS.includes(n)&&!ALUMNI.includes(n))},
+    {label:'🎓 Старички',names:ALUMNI}
   ];
   grid.innerHTML=groups.map(g=>`
     <div class="name-group-label">${g.label}</div>
@@ -2793,7 +2795,7 @@ async function addEditRow(day, zone){
 let newsOpen=false, newsInterval=null, newsSelectedImage=null;
 
 // ===== SALES LEADERBOARD =====
-const SALES_NON_WAITERS=['Игорь','Алена','Алексей Щ','Аня','Карина'];
+const SALES_NON_WAITERS=['Игорь','Алена','Алексей Щ','Аня','Карина','Арсений','Вероника','Виктория'];
 let salesWaiters=[];
 let salesData={}, salesCurrentMonth='';
 
