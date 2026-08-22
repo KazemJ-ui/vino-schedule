@@ -1,0 +1,119 @@
+name: Fix2 - restore passwords + 4 features
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Get correct base app.html from cc8f2d9
+        run: |
+          git fetch origin
+          git show cc8f2d9c727889db08ede1b38dedb30195e2f0a6:app.html > app.html
+          echo "Lines: $(wc -l < app.html)"
+          grep -c 'hashPassword' app.html
+          grep -c 'mgrAddReq' app.html || true
+
+      - name: Apply all feature changes via Python
+        run: |
+          python3 - << 'PYEOF'
+          content = open('app.html', encoding='utf-8').read()
+          changes = []
+
+          # 1. Add Eva to allStaff
+          if '"Ева"' not in content:
+              old = '"Алексей Щ"];'
+              new = '"Алексей Щ","Ева"];'
+              if old in content:
+                  content = content.replace(old, new, 1)
+                  changes.append('Added Eva to allStaff')
+
+          # 2. Add trophy sales button in header
+          if 'id="salesBtn"' not in content:
+              old = '      <button class="theme-btn" id="nameBtn" onclick="showNameScreen()"'
+              new = '      <button class="theme-btn" id="salesBtn" onclick="openSalesLeaderboard()" title="Лидерборд продаж">\U0001f3c6</button>\n      <button class="theme-btn" id="nameBtn" onclick="showNameScreen()"'
+              if old in content:
+                  content = content.replace(old, new, 1)
+                  changes.append('Added trophy button')
+
+          # 3. Add sales leaderboard HTML screen before NEWSPAPER SCREEN
+          if 'id="salesScreen"' not in content:
+              sales_html = '<!-- SALES LEADERBOARD SCREEN -->\n<div class="news-screen" id="salesScreen">\n  <div class="news-header">\n    <div class="news-header-top">\n      <button class="news-back" onclick="closeSalesLeaderboard()">←</button>\n      <div class="news-masthead">\n        <div class="news-masthead-title">\U0001f3c6 Лидерборд продаж</div>\n        <div class="news-masthead-sub" id="salesMonthLabel"></div>\n      </div>\n    </div>\n  </div>\n  <div style="padding:16px;max-width:480px;margin:0 auto">\n    <div id="salesList" style="display:flex;flex-direction:column;gap:8px"></div>\n    <div id="salesUpdatedAt" style="margin-top:12px;font-size:11px;color:rgba(255,255,255,0.35);text-align:center"></div>\n    <button id="salesSaveBtn" onclick="saveSalesLeaderboard()" style="display:none;width:100%;margin-top:16px;padding:12px;background:var(--wine-dark);border:none;border-radius:12px;color:#fff;font-size:15px;cursor:pointer">\U0001f4be Сохранить</button>\n  </div>\n</div>\n\n'
+              old = '<!-- NEWSPAPER SCREEN -->'
+              content = content.replace(old, sales_html + old, 1)
+              changes.append('Added salesScreen HTML')
+
+          # 4. Add activeMgrPeriod + allWaiters in openMgrSchedView
+          if 'activeMgrPeriod' not in content:
+              old = '  const periodMonthName=MONTH_NAMES_NOM[periodMonthNum];\n  const rows=await sf'
+              new = '  const periodMonthName=MONTH_NAMES_NOM[periodMonthNum];\n  activeMgrPeriod=activePeriod.period;\n  const NON_WAITERS=[\'Игорь\',\'Алена\',\'Алексей Щ\',\'Аня\',\'Карина\'];\n  const allWaiters=allStaff.filter(n=>!NON_WAITERS.includes(n));\n  const rows=await sf'
+              if old in content:
+                  content = content.replace(old, new, 1)
+                  changes.append('Added activeMgrPeriod + allWaiters')
+
+          # 5. Remove early return when no rows in openMgrSchedView
+          if 'Никто ещё не ответил' in content and 'if(Array.isArray(rows)) rows.forEach' not in content:
+              old5 = "  if(!Array.isArray(rows)||rows.length===0){\n    document.getElementById('mgrSchedDays').innerHTML='<div class=\"mgr-empty\">Никто ещё не ответил</div>';\n    return;\n  }\n  const byDay={};\n  rows.forEach(r=>{if(!byDay[r.day])byDay[r.day]=[];byDay[r.day].push(r);})"
+              new5 = '  const byDay={};\n  if(Array.isArray(rows)) rows.forEach(r=>{if(!byDay[r.day])byDay[r.day]=[];byDay[r.day].push(r);})'
+              if old5 in content:
+                  content = content.replace(old5, new5, 1)
+                  changes.append('Removed early return')
+
+          # 6. Replace old entries rendering with editable version
+          if 'mgrAddReq' not in content:
+              old6 = "      ${entries.map(e=>`<div style=\"display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid rgba(255,255,255,0.08);font-size:12px\">\n        <span style=\"color:rgba(255,255,255,0.8)\">${e.staff_name}</span>\n        <span style=\"color:${e.preference==='выходной'?'#555':e.preference==='10:00'?'var(--gold)':'#4CAF50'};font-weight:700\">${e.preference}</span>\n      </div>`).join('')}\n    </div>`;\n  }).join('');\n  loadAssignments();\n}"
+              new6 = open('/dev/stdin').read() if False else None
+              # Build new6 directly
+              new6 = '        <div id="mgr-day-entries-${day}">\n        ${_mgrDayEntriesHtml(day,entries,allWaiters)}\n      </div>\n    </div>`;\n  }).join(\'\');\n  const missingDays=[];\n  for(let d=1;d<=31;d++){\n    const dt=new Date(periodYear,periodMonthNum,d);\n    if(dt.getMonth()!==periodMonthNum) break;\n    if(!byDay[String(d)]) missingDays.push(String(d));\n  }\n  if(missingDays.length>0){\n    document.getElementById(\'mgrSchedDays\').innerHTML+=missingDays.map(day=>{\n      const dow=new Date(periodYear,periodMonthNum,+day).getDay();\n      return`<div class="mgr-card" style="margin-bottom:8px">\n        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">\n          <div class="mgr-card-title">⚪ ${day} ${periodMonthName} · ${DAY_NAMES[dow]}</div>\n        </div>\n        <div id="mgr-day-entries-${day}">\n          ${_mgrDayEntriesHtml(day,[],allWaiters)}\n        </div>\n      </div>`;\n    }).join(\'\');\n  }\n  loadAssignments();\n}\n\nfunction _mgrDayEntriesHtml(day,entries,allWaiters){\n  const TIMES=[\'10:00\',\'11:00\',\'12:00\',\'13:00\',\'14:00\',\'15:00\',\'16:00\',\'17:00\',\'18:00\',\'выходной\'];\n  const responded=new Set(entries.map(e=>e.staff_name));\n  const notResponded=allWaiters.filter(n=>!responded.has(n));\n  const timeOpts=TIMES.map(t=>`<option value="${t}">${t}</option>`).join(\'\');\n  let html=entries.map(e=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-top:1px solid rgba(255,255,255,0.08);font-size:12px;gap:6px">\n    <span style="color:rgba(255,255,255,0.8);flex:1">${e.staff_name}</span>\n    <select onchange="mgrUpdateReq(\'${e.staff_name}\',${day},this.value,activeMgrPeriod)" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:2px 4px;font-size:12px">\n      ${TIMES.map(t=>`<option value="${t}"${t===e.preference?\' selected\':\'\'}>${t}</option>`).join(\'\')}</select>\n    <button onclick="mgrDeleteReq(\'${e.staff_name}\',${day},activeMgrPeriod)" style="background:none;border:none;color:#e07070;font-size:16px;cursor:pointer;padding:0 2px">✕</button>\n  </div>`).join(\'\');\n  if(notResponded.length>0){\n    html+=`<div style="margin-top:6px;border-top:1px solid rgba(255,255,255,0.06);padding-top:6px">\n      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Не ответили:</div>\n      ${notResponded.map(name=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:12px;gap:6px">\n        <span style="color:rgba(255,255,255,0.45);flex:1">${name}</span>\n        <select id="mgr-add-sel-${day}-${name.replace(/\\s/g,\'_\')}" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:6px;padding:2px 4px;font-size:12px"><option value="">— время —</option>${timeOpts}</select>\n        <button onclick="mgrAddReq(\'${name}\',${day},document.getElementById(\'mgr-add-sel-${day}-${name.replace(/\\s/g,\'_\')}\').value,activeMgrPeriod)" style="background:rgba(80,200,120,0.2);border:1px solid rgba(80,200,120,0.4);color:#4CAF50;border-radius:6px;padding:2px 8px;font-size:12px;cursor:pointer">+</button>\n      </div>`).join(\'\')}</div>`;\n  }\n  return html;\n}\n\nlet activeMgrPeriod=null;\n\nasync function mgrAddReq(staffName,day,time,period){\n  if(!time){showToast(\'Выберите время\');return;}\n  if(!period) return;\n  await sf(`schedule_requests?period=eq.${encodeURIComponent(period)}&staff_name=eq.${encodeURIComponent(staffName)}&day=eq.${day}`,\'DELETE\');\n  await sf(\'schedule_requests\',\'POST\',{period,staff_name:staffName,day:String(day),preference:time});\n  showToast(`✓ Добавлено ${staffName}`);\n  openMgrSchedView();\n}\n\nasync function mgrUpdateReq(staffName,day,time,period){\n  if(!period) return;\n  await sf(`schedule_requests?period=eq.${encodeURIComponent(period)}&staff_name=eq.${encodeURIComponent(staffName)}&day=eq.${day}`,\'DELETE\');\n  await sf(\'schedule_requests\',\'POST\',{period,staff_name:staffName,day:String(day),preference:time});\n  showToast(\'✓ Сохранено\');\n}\n\nasync function mgrDeleteReq(staffName,day,period){\n  if(!period) return;\n  await sf(`schedule_requests?period=eq.${encodeURIComponent(period)}&staff_name=eq.${encodeURIComponent(staffName)}&day=eq.${day}`,\'DELETE\');\n  showToast(\'✓ Удалено\');\n  openMgrSchedView();\n}'
+              if old6 in content:
+                  content = content.replace(old6, new6, 1)
+                  changes.append('Added editable entries + mgr functions')
+              else:
+                  print('WARNING: entries.map pattern not found, searching...')
+                  idx = content.find('entries.map(e=>`<div')
+                  if idx >= 0:
+                      print('Found at', idx, repr(content[idx:idx+80]))
+
+          # 7. Add Aleksey Shch to 2nd manager dropdown
+          old7 = 'value="Алена"${a.manager===\'Алена\'?\' selected\':\'\'}'>Алена</option>\n          </select>'
+          new7 = 'value="Алена"${a.manager===\'Алена\'?\' selected\':\'\'}'>Алена</option>\n            <option value="Алексей Щ"${a.manager===\'Алексей щ\'?\' selected\':\'\'}'>Алексей Щ</option>\n          </select>'
+          if old7 in content:
+              content = content.replace(old7, new7, 1)
+              changes.append('Added Aleksey Shch to 2nd dropdown')
+
+          # 8. Add sales leaderboard JS before openNewspaper
+          if 'openSalesLeaderboard' not in content:
+              sales_js = '\n// ===== SALES LEADERBOARD =====\nconst SALES_NON_WAITERS=[\'Игорь\',\'Алена\',\'Алексей щ\',\'Аня\',\'Карина\'];\nconst salesWaiters=allStaff.filter(n=>!SALES_NON_WAITERS.includes(n));\nlet salesData={}, salesDirty=false, salesCurrentMonth=\'\';\n\nasync function openSalesLeaderboard(){\n  const screen=document.getElementById(\'salesScreen\');\n  screen.classList.add(\'active\');\n  document.body.style.overflow=\'hidden\';\n  const now=new Date();\n  salesCurrentMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,\'0\')}`;\n  const label=[\'Январь\',\'Февраль\',\'Март\',\'Апрель\',\'Май\',\'Июнь\',\'Июль\',\'Август\',\'Сентябрь\',\'Октябрь\',\'Ноябрь\',\'Декабрь\'][now.getMonth()]+(\' \')+now.getFullYear();\n  document.getElementById(\'salesMonthLabel\').textContent=label;\n  salesDirty=false;\n  document.getElementById(\'salesSaveBtn\').style.display=\'none\';\n  await _loadSalesData();\n}\n\nfunction closeSalesLeaderboard(){\n  const screen=document.getElementById(\'salesScreen\');\n  screen.classList.remove(\'active\');\n  document.body.style.overflow=\'\';\n}\n\nasync function _loadSalesData(){\n  const rows=await sf(`sales_records?month=eq.${encodeURIComponent(salesCurrentMonth)}&select=*`);\n  salesData={};\n  if(Array.isArray(rows)) rows.forEach(r=>{salesData[r.staff_name]={amount:r.amount,updated_at:r.updated_at,updated_by:r.updated_by};});\n  _renderSalesList();\n}\n\nfunction _renderSalesList(){\n  const list=document.getElementById(\'salesList\');\n  const medals=[\'\U0001f947\',\'\U0001f948\',\'\U0001f949\'];\n  const sorted=[...salesWaiters].sort((a,b)=>(salesData[b]?.amount||0)-(salesData[a]?.amount||0));\n  list.innerHTML=sorted.map((name,i)=>{\n    const amount=salesData[name]?.amount||0;\n    const medal=i<3?medals[i]:\'\';\n    return`<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 12px">\n      <span style="font-size:18px;width:28px;text-align:center">${medal||String(i+1)}</span>\n      <span style="flex:1;font-size:14px;color:rgba(255,255,255,0.85)">${name}</span>\n      <input type="number" min="0" value="${amount}" oninput="_salesEdit(\'${name}\',this.value)" style="width:90px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:8px;padding:6px 8px;font-size:14px;text-align:right">\n      <span style="font-size:12px;color:rgba(255,255,255,0.4)">₽</span>\n    </div>`;\n  }).join(\'\');\n  const allUpdated=Object.values(salesData).filter(d=>d.updated_at);\n  if(allUpdated.length>0){\n    const latest=allUpdated.sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))[0];\n    const d=new Date(latest.updated_at);\n    const fmt=`${d.getDate()}.${String(d.getMonth()+1).padStart(2,\'0\')} ${String(d.getHours()).padStart(2,\'0\')}:${String(d.getMinutes()).padStart(2,\'0\')}`;\n    document.getElementById(\'salesUpdatedAt\').textContent=`Обновлено: ${fmt}${latest.updated_by?\' · \'+latest.updated_by:\'\'}`;\n  } else {\n    document.getElementById(\'salesUpdatedAt\').textContent=\'\';\n  }\n}\n\nfunction _salesEdit(name,val){\n  if(!salesData[name]) salesData[name]={};\n  salesData[name].amount=parseInt(val)||0;\n  salesDirty=true;\n  document.getElementById(\'salesSaveBtn\').style.display=\'block\';\n}\n\nasync function saveSalesLeaderboard(){\n  const btn=document.getElementById(\'salesSaveBtn\');\n  btn.textContent=\'Сохранение...\';\n  btn.disabled=true;\n  for(const name of salesWaiters){\n    const amount=salesData[name]?.amount||0;\n    await sf(`sales_records?staff_name=eq.${encodeURIComponent(name)}&month=eq.${encodeURIComponent(salesCurrentMonth)}`,\'DELETE\');\n    await sf(\'sales_records\',\'POST\',{staff_name:name,month:salesCurrentMonth,amount,updated_by:myName||\'\'}); \n  }\n  salesDirty=false;\n  btn.style.display=\'none\';\n  btn.textContent=\'\U0001f4be Сохранить\';\n  btn.disabled=false;\n  showToast(\'✓ Сохранено\');\n  await _loadSalesData();\n}\n\n'
+              if 'function openNewspaper(){' in content:
+                  content = content.replace('function openNewspaper(){', sales_js + 'function openNewspaper(){', 1)
+                  changes.append('Added sales leaderboard JS')
+
+          open('app.html', 'w', encoding='utf-8').write(content)
+          print('Changes applied:', changes)
+          PYEOF
+
+      - name: Verify all features present
+        run: |
+          echo "=== Verification ==="
+          for kw in hashPassword staff_sessions openSalesLeaderboard mgrAddReq salesScreen salesBtn; do
+            count=$(grep -c "$kw" app.html 2>/dev/null || echo 0)
+            echo "$kw: $count"
+          done
+          echo "Lines: $(wc -l < app.html)"
+          echo "Conflicts: $(grep -c '<<<<<<<' app.html || echo 0)"
+
+      - name: Commit and push
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Actions"
+          git add app.html
+          git diff --cached --stat
+          git commit -m "feat: Restore passwords/PIN + add 4 features (sales leaderboard, Eva, mgr editing)"
+          git push origin main
