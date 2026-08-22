@@ -3,6 +3,9 @@ name: Apply patch to app.html
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   patch:
     runs-on: ubuntu-latest
@@ -15,6 +18,7 @@ jobs:
       - name: Apply existing patch (hunks 1-8 and 10)
         run: |
           patch --fuzz=3 -p1 -i app.patch app.html || true
+          rm -f app.html.orig
           echo "Patch step done"
 
       - name: Fix hunk 9 manually (second manager dropdown - Aleksey Shch option)
@@ -23,34 +27,29 @@ jobs:
           with open('app.html', encoding='utf-8') as f:
               c = f.read()
 
-          # The second manager dropdown uses template literal syntax with single quotes
-          # First dropdown (already fixed by patch) uses plain options without ${}
-          # Second dropdown has: value="Алена"${a.manager==='Алена'?...}
           target = "             <option value=\"Алена\"${a.manager==='Алена'?' selected':''}>Алена</option>"
           insert = "             <option value=\"Алексей Щ\"${a.manager==='Алексей Щ'?' selected':''}>Алексей Щ</option>"
 
-          if 'Алексей Щ' in c and c.count('Алексей Щ') >= 2:
-              print('Hunk 9 already applied (Aleksey Shch appears twice)')
+          count = c.count('Алексей Щ')
+          if count >= 2:
+              print(f'Hunk 9 already applied ({count} occurrences)')
           elif target in c:
               c = c.replace(target, target + '\n' + insert, 1)
               print('Hunk 9 fixed successfully')
               with open('app.html', 'w', encoding='utf-8') as f:
                   f.write(c)
           else:
-              print('WARNING: Could not find hunk 9 context - checking file...')
-              import subprocess
-              result = subprocess.run(['grep', '-n', 'Алена', 'app.html'], capture_output=True, text=True)
-              print(result.stdout[:2000])
+              print('WARNING: Could not find hunk 9 context')
           PYEOF
 
-      - name: Remove patch file and commit
+      - name: Commit and push
         run: |
           git config user.email "action@github.com"
           git config user.name "GitHub Actions"
-          rm -f app.patch app.patch.b64
-          git add app.html
           git rm --cached app.patch 2>/dev/null || true
           git rm --cached app.patch.b64 2>/dev/null || true
+          rm -f app.patch app.patch.b64 app.html.orig
+          git add app.html
           git add -A
           git status
           git diff --cached --stat
