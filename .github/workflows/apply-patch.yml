@@ -1,0 +1,26 @@
+name: Apply feature patch
+on:
+  workflow_dispatch:
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/staff-newspaper-feature-is7606
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Apply patch
+        run: patch -p1 -i app.patch app.html
+      - name: Cleanup temp files
+        run: |
+          rm -f app.patch
+          rm -f .github/workflows/apply-patch.yml
+      - name: Commit and push
+        run: |
+          git config user.name "Claude Bot"
+          git config user.email "noreply@anthropic.com"
+          git add -A
+          git commit -m "feat: sales leaderboard, add Ева, Алексей Щ dropdown, manager schedule editing"
+          git push
