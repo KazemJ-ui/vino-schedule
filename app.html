@@ -2792,6 +2792,78 @@ async function addEditRow(day, zone){
 // ── NEWSPAPER ──
 let newsOpen=false, newsInterval=null, newsSelectedImage=null;
 
+// ===== SALES LEADERBOARD =====
+const SALES_NON_WAITERS=['Игорь','Алена','Алексей Щ','Аня','Карина'];
+let salesWaiters=[];
+let salesData={}, salesCurrentMonth='';
+
+async function openSalesLeaderboard(){
+  if(salesWaiters.length===0) salesWaiters=allStaff.filter(n=>!SALES_NON_WAITERS.includes(n));
+  const screen=document.getElementById('salesScreen');
+  screen.classList.add('active');
+  document.body.style.overflow='hidden';
+  const now=new Date();
+  salesCurrentMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const months=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  document.getElementById('salesMonthLabel').textContent=months[now.getMonth()]+' '+now.getFullYear();
+  document.getElementById('salesSaveBtn').style.display='none';
+  await _loadSalesData();
+}
+
+function closeSalesLeaderboard(){
+  document.getElementById('salesScreen').classList.remove('active');
+  document.body.style.overflow='';
+}
+
+async function _loadSalesData(){
+  const rows=await sf(`sales_records?month=eq.${encodeURIComponent(salesCurrentMonth)}&select=*`);
+  salesData={};
+  if(Array.isArray(rows)) rows.forEach(r=>{salesData[r.staff_name]={amount:r.amount,updated_at:r.updated_at,updated_by:r.updated_by};});
+  _renderSalesList();
+}
+
+function _renderSalesList(){
+  const list=document.getElementById('salesList');
+  const medals=['🥇','🥈','🥉'];
+  const sorted=[...salesWaiters].sort((a,b)=>(salesData[b]?.amount||0)-(salesData[a]?.amount||0));
+  list.innerHTML=sorted.map((name,i)=>{
+    const amount=salesData[name]?.amount||0;
+    return`<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 12px">
+      <span style="font-size:18px;width:28px;text-align:center">${i<3?medals[i]:String(i+1)}</span>
+      <span style="flex:1;font-size:14px;color:rgba(255,255,255,0.85)">${name}</span>
+      <input type="number" min="0" value="${amount}" oninput="_salesEdit('${name}',this.value)" style="width:90px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:8px;padding:6px 8px;font-size:14px;text-align:right">
+      <span style="font-size:12px;color:rgba(255,255,255,0.4)">₽</span>
+    </div>`;
+  }).join('');
+  const allUpdated=Object.values(salesData).filter(d=>d.updated_at);
+  if(allUpdated.length>0){
+    const latest=allUpdated.sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))[0];
+    const d=new Date(latest.updated_at);
+    document.getElementById('salesUpdatedAt').textContent=`Обновлено: ${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}${latest.updated_by?' · '+latest.updated_by:''}`;
+  } else {
+    document.getElementById('salesUpdatedAt').textContent='';
+  }
+}
+
+function _salesEdit(name,val){
+  if(!salesData[name]) salesData[name]={};
+  salesData[name].amount=parseInt(val)||0;
+  document.getElementById('salesSaveBtn').style.display='block';
+}
+
+async function saveSalesLeaderboard(){
+  const btn=document.getElementById('salesSaveBtn');
+  btn.textContent='Сохранение...';btn.disabled=true;
+  for(const name of salesWaiters){
+    const amount=salesData[name]?.amount||0;
+    await sf(`sales_records?staff_name=eq.${encodeURIComponent(name)}&month=eq.${encodeURIComponent(salesCurrentMonth)}`,'DELETE');
+    await sf('sales_records','POST',{staff_name:name,month:salesCurrentMonth,amount,updated_by:myName||''});
+  }
+  btn.style.display='none';btn.textContent='💾 Сохранить';btn.disabled=false;
+  showToast('✓ Сохранено');
+  await _loadSalesData();
+}
+
 function openNewspaper(){
   newsOpen=true;
   _newsMarkSeen();
