@@ -1,26 +1,16 @@
-name: Apply feature patch
+name: Apply patch to app.html
+
 on:
   workflow_dispatch:
+
 jobs:
-  apply:
+  patch:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
           ref: claude/staff-newspaper-feature-is7606
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Apply patch
-        run: patch -p1 -i app.patch app.html
-      - name: Cleanup temp files
+      - name: Apply patch via base64
         run: |
-          rm -f app.patch
-          rm -f .github/workflows/apply-patch.yml
-      - name: Commit and push
-        run: |
-          git config user.name "Claude Bot"
-          git config user.email "noreply@anthropic.com"
-          git add -A
-          git commit -m "feat: sales leaderboard, add Ева, Алексей Щ dropdown, manager schedule editing"
-          git push
+          echo "LS0tIGEvYXBwLmh0bWwJMjAyNi0wOC0yMiAxNzo1OToyNy44NzUxNzQyMzYgKzAwMDAKKysrIGIvYXBwLmh0bWwJMjAyNi0wOC0yMiAxNzoyNTo0MC40NDk3MDI3MDMgKzAwMDAKQEAgLTQ0NSw2ICs0NDUsNyBAQAogICAgICAgICAgICAgICAgPGJ1dHRvbiBjbGFzcz0idGhlbWUtYnRuIiBpZD0ibmV3c0JhZGdlQnRuIiBvbmNsaWNrPSJvcGVuU3RhZmZOZXdzcGFwZXIoKSIgdGl0bGU9IkfQsNC30LXRgtCwIj7wn5KwPC9idXR0b24+CisgICAgICAgICAgICAgICAgPGJ1dHRvbiBjbGFzcz0idGhlbWUtYnRuIiBpZD0ic2FsZXNCdG4iIG9uY2xpY2s9Im9wZW5TYWxlc0xlYWRlcmJvYXJkKCkiIHRpdGxlPSLQm9C40LTQtdGA0LHQvtGA0LQg0L/RgNC+0LTQsNC2Ij7wn4+6PC9idXR0b24+CiAgICAgICAgICAgICAgICAgPGJ1dHRvbiBjbGFzcz0idGhlbWUtYnRuIiBvbmNsaWNrPSJ0b2dnbGVUaGVtZSgpIiB0aXRsZT0i0KLQtdC80L3QsNGPIj7wn5GCPC9idXR0b24+CiAgICAgICAgICAgICAgICAgPGJ1dHRvbiBjbGFzcz0idGhlbWUtYnRuIiBvbmNsaWNrPSJvcGVuU2V0dGluZ3MoKSIgdGl0bGU9ItCd0LDRgdGC0YDQvtC50LrQuCI+4oqZ77iPPC9idXR0b24+CiAgICAgICAgICAgICAgICAgPHNwYW4gaWQ9ImNvbm5lY3Rpb25JbmRpY2F0b3IiPjwvc3Bhbj4KQEAgLTQ5Nyw3ICs0OTgsMjIgQEAKICAgICAgICAgICA8ZGl2IGlkPSJuZXdzcGFwZXJPdmVybGF5IiBvbmNsaWNrPSJpZihldmVudC50YXJnZXQ9PT10aGlzKWNsb3NlU3RhZmZOZXdzcGFwZXIoKSIgc3R5bGU9ImRpc3BsYXk6bm9uZSI+CiAgICAgICAgICAgICA8ZGl2IGlkPSJuZXdzcGFwZXJNb2RhbCI+CiAgICAgICAgICAgICAgIDxidXR0b24gb25jbGljaz0iY2xvc2VTdGFmZk5ld3NwYXBlcigpIiBzdHlsZT0icG9zaXRpb246YWJzb2x1dGU7dG9wOjhweDtyaWdodDo4cHg7Ij7igJk8L2J1dHRvbj4KICAgICAgICAgICAgICA8ZGl2IGlkPSJuZXdzcGFwZXJDb250ZW50Ij48L2Rpdj4KICAgICAgICAgICAgPC9kaXY+CisgICAgICAgICAgIDwvZGl2PgorICAgICAgICAgICA8ZGl2IGlkPSJzYWxlc1NjcmVlbiIgc3R5bGU9ImRpc3BsYXk6bm9uZTtwb3NpdGlvbjpmaXhlZDt0b3A6MDtsZWZ0OjA7cmlnaHQ6MDtib3R0b206MDtiYWNrZ3JvdW5kOnJnYmEoMCwwLDAsMC44KTt6LWluZGV4Ojk5OTk7b3ZlcmZsb3cteToKYXV0byIgb25jbGljaz0iaWYoZXZlbnQudGFyZ2V0PT09dGhpcyljbG9zZVNhbGVzTGVhZGVyYm9hcmQoKSI+CisgICAgICAgICAgICAgPGRpdiBpZD0ic2FsZXNNb2RhbCIgc3R5bGU9ImJhY2tncm91bmQ6dmFyKC0tY2FyZC1iZyk7Ym9yZGVyLXJhZGl1czoxa
