@@ -2942,18 +2942,16 @@ function _renderSalesList(){
     const n=sorted.length;
     const isLast=i===n-1, isLast2=i===n-2, isLast3=i===n-3&&n>3;
     const loserClass=isLast?'sales-last':isLast2?'sales-last2':isLast3?'sales-last3':'';
-    const loserIcon=isLast?'💀':isLast2?'😬':isLast3?'😐':'';
+    const loserIcon='';
     const bgTop3=['','rgba(180,180,180,0.1)','rgba(180,110,50,0.1)'];
     const bg=i<3?bgTop3[i]:'rgba(255,255,255,0.04)';
     const nameColor=isLast?'rgba(255,255,255,0.35)':isLast2?'rgba(255,255,255,0.5)':'rgba(255,255,255,0.85)';
     const medal=i<3?medals[i]:(loserIcon||String(i+1));
-    const medalEl=isLast?`<span class="sales-cry" style="font-size:20px;width:32px;text-align:center">${medal}</span>`
-      :`<span style="font-size:20px;width:32px;text-align:center">${medal}</span>`;
+    const medalEl=`<span style="font-size:20px;width:32px;text-align:center">${medal}</span>`;
     return`<div class="sales-card-anim ${loserClass}" style="display:flex;align-items:center;gap:12px;background:${bg};border-radius:14px;padding:10px 14px;animation-delay:${i*0.05}s">
       ${medalEl}
       <span style="flex:1;font-size:14px;color:${nameColor};font-weight:${i<3?'600':'400'}">${name}</span>
       <span style="font-size:14px;color:${i===1?'rgba(200,200,220,0.9)':i===2?'rgba(205,140,80,0.9)':isLast?'rgba(255,80,80,0.6)':'rgba(255,255,255,0.45)'};font-weight:${i<3?'600':'400'}">${fmt}</span>
-      ${isLast?'<span style="font-size:16px">😭</span>':isLast2?'<span style="font-size:14px;opacity:0.6">📉</span>':''}
     </div>`;
   }).join('');
   const allUpdated=Object.values(salesData).filter(d=>d.updated_at);
