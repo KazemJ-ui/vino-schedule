@@ -439,6 +439,11 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
 .skel-line{height:10px;border-radius:5px}
 .skel-block{height:80px;border-radius:10px;margin-bottom:10px}
 
+/* Hide number input spinners */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+
 /* Toast notifications */
 @keyframes toastIn{from{opacity:0;transform:translateY(80px) scale(0.9)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes toastOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(20px) scale(0.95)}}
@@ -522,7 +527,7 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
       <button class="news-back" onclick="closeSalesLeaderboard()">←</button>
       <div class="news-masthead">
         <div class="news-masthead-title">🏆 Лидерборд продаж</div>
-        <div class="news-masthead-sub" id="salesMonthLabel" style="color:rgba(0,0,0,0.5)"></div>
+        <div id="salesMonthLabel" style="font-size:13px;color:#888;margin-top:2px;font-family:'Nunito',sans-serif"></div>
       </div>
     </div>
   </div>
@@ -532,7 +537,7 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
     </div>
     <div id="salesList" style="display:flex;flex-direction:column;gap:10px"></div>
     <div id="salesUpdatedAt" style="margin-top:14px;font-size:11px;color:rgba(255,255,255,0.3);text-align:center"></div>
-    <button id="salesSaveBtn" onclick="saveSalesLeaderboard()" style="display:none;width:100%;margin-top:16px;padding:14px;background:linear-gradient(135deg,#c9963a,#e8b84b);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:0.5px">💾 Сохранить</button>
+    <div id="salesSaveBtn" style="display:none"></div>
   </div>
 </div>
 
@@ -2803,7 +2808,7 @@ let salesWaiters=[];
 let salesData={}, salesCurrentMonth='';
 
 async function openSalesLeaderboard(){
-  if(salesWaiters.length===0) salesWaiters=allStaff.filter(n=>!SALES_NON_WAITERS.includes(n));
+  salesWaiters=allStaff.filter(n=>!SALES_NON_WAITERS.includes(n));
   const screen=document.getElementById('salesScreen');
   screen.classList.add('active');
   document.body.style.overflow='hidden';
@@ -2829,14 +2834,19 @@ async function _loadSalesData(){
 
 let _salesEditMode=false;
 
-function _salesToggleEdit(){
-  _salesEditMode=!_salesEditMode;
+async function _salesToggleEdit(){
+  if(_salesEditMode){
+    // Сохраняем при нажатии "Готово"
+    await saveSalesLeaderboard();
+    return;
+  }
+  _salesEditMode=true;
   const btn=document.getElementById('salesEditBtn');
-  btn.textContent=_salesEditMode?'✅ Готово':'✏️ Редактировать';
-  btn.style.background=_salesEditMode?'rgba(80,200,120,0.2)':'rgba(255,255,255,0.1)';
-  btn.style.borderColor=_salesEditMode?'rgba(80,200,120,0.5)':'rgba(255,255,255,0.2)';
-  btn.style.color=_salesEditMode?'#4CAF50':'rgba(255,255,255,0.7)';
-  document.getElementById('salesSaveBtn').style.display=_salesEditMode?'block':'none';
+  btn.textContent='✅ Готово';
+  btn.style.background='rgba(80,200,120,0.2)';
+  btn.style.borderColor='rgba(80,200,120,0.5)';
+  btn.style.color='#4CAF50';
+  document.getElementById('salesSaveBtn').style.display='none';
   _renderSalesList();
 }
 
