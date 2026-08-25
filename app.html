@@ -853,7 +853,7 @@ const zonesDef=[
 ];
 const weekends=["Сб","Вс"];
 const allStaff=["Арсений","Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Алексей","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Аня","Игорь","Алексей Щ","Ева"];
-const NEWS_HIDDEN_FOR=["Игорь","Алена","Алексей Щ"];
+const NEWS_HIDDEN_FOR=[];
 
 let currentDay=null,myName=null,swapRequests={},swapModalDay=null;
 const _cache={msgs:null};
@@ -3233,8 +3233,10 @@ function _newsRealAuthor(author){
 }
 function _newsFooter(post){
   const isAnon=post.author==='Аноним'||(post.author&&post.author.startsWith('Аноним·'));
+  const isMgr=['Игорь','Алена','Алексей Щ'].includes(myName);
   const isOwn=!isAnon&&_newsRealAuthor(post.author)===myName;
-  const del=isOwn?`<button class="na-delete-btn" onclick="deleteNewsPost('${post.id}','${escapeHtml(post.author)}')">✕ удалить</button>`:'<span></span>';
+  const canDel=isOwn||isMgr;
+  const del=canDel?`<button class="na-delete-btn" onclick="deleteNewsPost('${post.id}','${escapeHtml(post.author)}')">✕ удалить</button>`:'<span></span>';
   return `<div class="na-footer">${del}<span>Редакция «Вино &amp; Хинкали»</span></div>`;
 }
 function _newsCommentBlock(id){
