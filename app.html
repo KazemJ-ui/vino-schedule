@@ -3194,7 +3194,7 @@ async function submitNewsPost(){
   }catch(e){}
   btn.textContent='⏳ Публикуем...';
   const anon=document.getElementById('newsAnonCheck').checked;
-  const payload={author:anon?'Аноним·'+myName:myName,text,headline};
+  const payload={author:anon?'Аноним':myName,text,headline};
   if(_newsRawImg) payload.image=await _newsGetCroppedImage();
   const res=await sf('newspaper_posts','POST',payload);
   btn.disabled=false;btn.textContent='📰 Опубликовать';
@@ -3232,7 +3232,8 @@ function _newsRealAuthor(author){
   return author;
 }
 function _newsFooter(post){
-  const isOwn=_newsRealAuthor(post.author)===myName;
+  const isAnon=post.author==='Аноним'||(post.author&&post.author.startsWith('Аноним·'));
+  const isOwn=!isAnon&&_newsRealAuthor(post.author)===myName;
   const del=isOwn?`<button class="na-delete-btn" onclick="deleteNewsPost('${post.id}','${escapeHtml(post.author)}')">✕ удалить</button>`:'<span></span>';
   return `<div class="na-footer">${del}<span>Редакция «Вино &amp; Хинкали»</span></div>`;
 }
