@@ -731,7 +731,7 @@ const zonesDef=[
   {key:"Оранжевые",label:"Оранжевые",icon:"🍊",cls:"zor"}
 ];
 const weekends=["Сб","Вс"];
-const allStaff=["Арсений","Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Алексей","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Аня","Игорь","Алексей Щ","Ева"];
+const allStaff=["Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Джеймс Калиста","Игорь","Алексей Щ","Ева","Серикова Татьяна"];
 const NEWS_HIDDEN_FOR=["Игорь","Алена","Алексей Щ"];
 
 let currentDay=null,myName=null,swapRequests={},swapModalDay=null;
@@ -1377,7 +1377,7 @@ async function openMgrSchedView(){
           <select id="bar-select-${day}" onchange="saveAssignment(${day},'bartender',this.value)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
             <option value="">— не назначен —</option>
             <option value="Арсений">Арсений</option>
-            <option value="Алексей">Алексей</option>
+            <option value="Дмитрий">Дмитрий</option>
           </select>
         </div>
       </div>
@@ -2125,8 +2125,8 @@ async function publishSchedule(){
 
   // Автоназначение менеджер/хостес/бармен
   const managers=['Игорь','Алена'];
-  const hostesses=['Карина','Аня'];
-  const bartenders=['Арсений','Алексей'];
+  const hostesses=['Карина','Джеймс Калиста'];
+  const bartenders=['Арсений','Дмитрий'];
 
   // Загружаем ручные назначения менеджера
   const existingAssignments=await sf(`day_assignments?period=eq.${encodeURIComponent(period)}&select=*`);
@@ -2493,7 +2493,7 @@ async function openMgrEditView(){
           <select class="edit-role-sel" onchange="saveAssignment(${day},'bartender',this.value)">
             <option value="">— не назначен —</option>
             <option value="Арсений"${a.bartender==='Арсений'?' selected':''}>Арсений</option>
-            <option value="Алексей"${a.bartender==='Алексей'?' selected':''}>Алексей</option>
+            <option value="Дмитрий"${a.bartender==='Дмитрий'?' selected':''}>Дмитрий</option>
           </select>
         </div>
       </div>
