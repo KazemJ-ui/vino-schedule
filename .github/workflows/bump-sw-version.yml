@@ -1,0 +1,29 @@
+name: Bump SW cache version
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  bump:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bump SW version to current timestamp
+        run: |
+          TS=$(date +%s)
+          sed -i "s/const CACHE = 'vino-v[^']*'/const CACHE = 'vino-v$TS'/" sw.js
+          sed -i "s/sw\.js?v=[0-9]*/sw.js?v=$TS/g" app.html
+          echo "Bumped to version $TS"
+
+      - name: Commit version bump
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git add sw.js app.html
+          git diff --staged --quiet || git commit -m "chore: bump SW version to bust cache [skip ci]"
+          git push
