@@ -2684,11 +2684,11 @@ if('serviceWorker' in navigator){
       const regs=await navigator.serviceWorker.getRegistrations();
       for(const reg of regs){
         const sw=reg.active||reg.waiting||reg.installing;
-        if(sw&&!sw.scriptURL.includes('sw.js?v=8')){
+        if(sw&&!sw.scriptURL.includes('sw.js?v=1788200293')){
           await reg.unregister();
         }
       }
-      const reg=await navigator.serviceWorker.register('./sw.js?v=15');
+      const reg=await navigator.serviceWorker.register('./sw.js?v=1788200293');
       await reg.update();
       if(myName&&'Notification' in window&&Notification.permission==='granted'){
         subscribeToPush(myName);
