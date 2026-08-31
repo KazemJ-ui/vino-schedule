@@ -1389,9 +1389,8 @@ async function saveAssignment(day, field, value){
   if(!period){showToast('❌ Период не найден');return;}
 
   // Проверяем есть ли запись
-  const existing=await sf(`day_assignments?period=eq.${encodeURIComponent(period)}&day=eq.${day}&select=id,manager,hostess`);
+  const existing=await sf(`day_assignments?period=eq.${encodeURIComponent(period)}&day=eq.${day}&select=id,manager,hostess,bartender`);
   if(Array.isArray(existing)&&existing.length>0){
-    // Обновляем только нужное поле, сохраняя остальное
     const update={};
     update[field]=value;
     await sf(`day_assignments?period=eq.${encodeURIComponent(period)}&day=eq.${day}`,'PATCH',update);
@@ -1400,7 +1399,8 @@ async function saveAssignment(day, field, value){
       period,
       day:+day,
       manager:field==='manager'?value:null,
-      hostess:field==='hostess'?value:null
+      hostess:field==='hostess'?value:null,
+      bartender:field==='bartender'?value:null
     });
   }
   showToast('✅ Сохранено');
