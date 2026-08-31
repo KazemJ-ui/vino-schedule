@@ -852,7 +852,7 @@ const zonesDef=[
   {key:"Оранжевые",label:"Оранжевые",icon:"🍊",cls:"zor"}
 ];
 const weekends=["Сб","Вс"];
-const allStaff=["Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Джеймс Калиста","Игорь","Алексей Щ","Ева","Серикова Татьяна"];
+const allStaff=["Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Калиста","Игорь","Алексей Щ","Ева","Серикова Татьяна"];
 const NEWS_HIDDEN_FOR=[];
 
 let currentDay=null,myName=null,swapRequests={},swapModalDay=null;
@@ -1489,7 +1489,7 @@ async function openMgrSchedView(){
           <select id="hos-select-${day}" onchange="saveAssignment(${day},'hostess',this.value)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
             <option value="">— не назначен —</option>
             <option value="Карина">Карина</option>
-            <option value="Джеймс Калиста">Джеймс Калиста</option>
+            <option value="Калиста">Калиста</option>
           </select>
         </div>
         <div style="flex:1;min-width:120px">
@@ -2240,7 +2240,7 @@ if(getCookie('theme')==='dark'){document.body.classList.add('dark');document.get
 function showNameScreen(){
   const grid=document.getElementById('nameGrid');
   const MANAGERS=['Игорь','Алена','Алексей Щ'];
-  const HOSTESS=['Карина','Джеймс Калиста'];
+  const HOSTESS=['Карина','Калиста'];
   const ALUMNI=['Арсений','Вероника','Сперанская Виктория','Карина'];
   const groups=[
     {label:'👔 Менеджер',names:MANAGERS},
@@ -2429,7 +2429,7 @@ async function publishSchedule(){
 
   // Автоназначение менеджер/хостес/бармен
   const managers=['Игорь','Алена'];
-  const hostesses=['Карина','Джеймс Калиста'];
+  const hostesses=['Карина','Калиста'];
   const bartenders=['Арсений','Солтан','Дмитрий'];
 
   // Загружаем ручные назначения менеджера
@@ -2790,7 +2790,7 @@ async function openMgrEditView(){
           <select class="edit-role-sel" onchange="saveAssignment(${day},'hostess',this.value)">
             <option value="">— не назначен —</option>
             <option value="Карина"${a.hostess==='Карина'?' selected':''}>Карина</option>
-            <option value="Джеймс Калиста"${a.hostess==='Джеймс Калиста'?' selected':''}>Джеймс Калиста</option>
+            <option value="Калиста"${a.hostess==='Калиста'?' selected':''}>Калиста</option>
           </select>
         </div>
         <div style="flex:1">
