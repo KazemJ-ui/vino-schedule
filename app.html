@@ -1481,7 +1481,6 @@ async function openMgrSchedView(){
           <select id="mgr-select-${day}" onchange="saveAssignment(${day},'manager',this.value)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
             <option value="">— не назначен —</option>
             <option value="Игорь">Игорь</option>
-            <option value="Алена">Алена</option>
             <option value="Алексей Щ">Алексей Щ</option>
           </select>
         </div>
@@ -1497,7 +1496,6 @@ async function openMgrSchedView(){
           <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">БАРМЕН</div>
           <select id="bar-select-${day}" onchange="saveAssignment(${day},'bartender',this.value)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
             <option value="">— не назначен —</option>
-            <option value="Арсений">Арсений</option>
             <option value="Солтан">Солтан</option>
             <option value="Дмитрий">Дмитрий</option>
           </select>
@@ -2784,7 +2782,6 @@ async function openMgrEditView(){
           <select class="edit-role-sel" onchange="saveAssignment(${day},'manager',this.value)">
             <option value="">— не назначен —</option>
             <option value="Игорь"${a.manager==='Игорь'?' selected':''}>Игорь</option>
-            <option value="Алена"${a.manager==='Алена'?' selected':''}>Алена</option>
             <option value="Алексей Щ"${a.manager==='Алексей Щ'?' selected':''}>Алексей Щ</option>
           </select>
         </div>
@@ -2800,7 +2797,6 @@ async function openMgrEditView(){
           <div style="font-size:9px;color:rgba(255,255,255,0.4);margin-bottom:3px">БАРМЕН</div>
           <select class="edit-role-sel" onchange="saveAssignment(${day},'bartender',this.value)">
             <option value="">— не назначен —</option>
-            <option value="Арсений"${a.bartender==='Арсений'?' selected':''}>Арсений</option>
             <option value="Солтан"${a.bartender==='Солтан'?' selected':''}>Солтан</option>
             <option value="Дмитрий"${a.bartender==='Дмитрий'?' selected':''}>Дмитрий</option>
           </select>
