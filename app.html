@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="app-version" content="8">
+<meta name="app-version" content="9">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
@@ -84,9 +84,10 @@ header{background:var(--wine-dark);padding:12px 16px;position:sticky;top:0;z-ind
 .hero-count{background:rgba(255,255,255,0.18);color:#fff;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;white-space:nowrap;margin-top:4px}
 .info-row{margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,0.15);display:flex;gap:7px;flex-wrap:wrap;align-items:center}
 .info-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.45);font-weight:700}
-.chip{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700;padding:5px 12px;border-radius:20px}
+.chip{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700;padding:5px 12px;border-radius:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .manager-chip{background:var(--gold);color:var(--wine-dark)}
 .host-chip{background:rgba(123,63,160,0.85);color:#fff}
+.is-me-chip{outline:2px solid rgba(255,255,255,0.9)!important;box-shadow:0 0 10px rgba(255,255,255,0.5)!important}
 .bartender-chip{background:rgba(26,79,122,0.85);color:#fff}
 .nohost-chip{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);font-size:11px}
 .change-name-btn{background:none;border:none;color:rgba(255,255,255,0.35);font-size:11px;font-family:'Nunito',sans-serif;cursor:pointer;padding:0;text-decoration:underline;margin-left:auto}
@@ -183,6 +184,8 @@ body.dark .sched-other-input{background:rgba(255,255,255,0.08);border-color:rgba
 .name-screen h2{font-family:'Playfair Display',serif;font-size:20px;color:#fff;font-weight:700;text-align:center;margin-bottom:6px}
 .name-screen-hint{font-size:13px;color:rgba(255,255,255,0.45);text-align:center;margin-bottom:20px}
 .name-grid{display:flex;flex-direction:column;gap:9px;width:100%;max-width:340px}
+.name-group-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.4);font-weight:700;margin-top:10px;margin-bottom:2px;padding-left:4px}
+.name-group{display:flex;flex-direction:column;gap:7px}
 .name-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px 18px;color:#fff;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px}
 .name-btn:active{background:rgba(201,150,58,0.25);border-color:var(--gold)}
 .name-btn-avatar{width:34px;height:34px;border-radius:9px;background:var(--wine);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--gold);flex-shrink:0}
@@ -218,11 +221,25 @@ body.dark footer{color:#444}
 .mgr-screen.active{display:flex}
 .mgr-logo{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold);font-weight:900;margin-bottom:4px}
 .mgr-sub{font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:3px;text-transform:uppercase;margin-bottom:28px}
-.mgr-login{width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px}
-.mgr-login h2{font-family:'Playfair Display',serif;font-size:20px;color:#fff;font-weight:700;text-align:center}
-.mgr-input{padding:13px 16px;border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;background:rgba(255,255,255,0.08);color:#fff;font-family:'Nunito',sans-serif;font-size:16px;outline:none;width:100%;box-sizing:border-box;text-align:center;letter-spacing:4px}
+.mgr-login{width:100%;max-width:280px;display:flex;flex-direction:column;align-items:center;gap:28px}
+.mgr-input{font-size:16px!important;width:100%;padding:14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;color:#fff;font-family:'Nunito',sans-serif;text-align:center;letter-spacing:6px;box-sizing:border-box}
 .mgr-btn{padding:14px;background:var(--gold);color:var(--wine-dark);border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer}
 .mgr-back{background:transparent;border:none;color:rgba(255,255,255,0.4);font-family:'Nunito',sans-serif;font-size:13px;cursor:pointer;margin-top:8px}
+.pin-dots{display:flex;gap:16px;margin:16px 0}
+.pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);transition:all .15s}
+.pin-dot.filled{background:var(--gold);border-color:var(--gold)}
+.pin-dot.error{background:#e74c3c;border-color:#e74c3c}
+.pin-grid{display:grid;grid-template-columns:repeat(3,84px);grid-template-rows:repeat(4,84px);gap:14px;margin-top:8px;justify-content:center}
+.pin-key{width:84px;height:84px;min-width:84px;min-height:84px;border-radius:50%;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.12);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:28px;font-family:'Nunito',sans-serif;font-weight:500;cursor:pointer;transition:all .12s;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;box-sizing:border-box;box-shadow:0 2px 8px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.2);flex-shrink:0}
+.pin-key:active{background:rgba(255,255,255,0.28);transform:scale(0.93)}
+.pin-key.del{background:transparent;border-color:transparent;box-shadow:none}
+.pin-key.del:active{background:rgba(255,255,255,0.1);transform:scale(0.93)}
+.pin-key.empty{background:transparent;border-color:transparent;box-shadow:none;pointer-events:none}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%}
+.pin-key{height:64px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#fff;font-family:'Nunito',sans-serif;font-size:22px;font-weight:700;cursor:pointer;transition:background .1s,transform .08s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.pin-key:active{background:rgba(255,255,255,0.18);transform:scale(.93)}
+.pin-key-back{font-size:16px;color:rgba(255,255,255,0.4);border-color:transparent;background:transparent}
+.pin-key-del{font-size:18px}
 .mgr-panel{width:100%;max-width:420px}
 .mgr-panel-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);font-weight:700;margin-bottom:16px;text-align:center}
 .mgr-section-title{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.5);font-weight:700;margin:20px 0 10px}
@@ -422,6 +439,74 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
 .skel-line{height:10px;border-radius:5px}
 .skel-block{height:80px;border-radius:10px;margin-bottom:10px}
 
+/* Sales leaderboard animations */
+@keyframes salesFireGlow{
+  0%,100%{box-shadow:0 0 12px rgba(255,160,0,0.5),0 0 24px rgba(255,80,0,0.3),inset 0 0 20px rgba(201,150,58,0.1)}
+  50%{box-shadow:0 0 24px rgba(255,180,0,0.8),0 0 48px rgba(255,80,0,0.5),inset 0 0 30px rgba(201,150,58,0.2)}
+}
+@keyframes salesFireBorder{
+  0%,100%{border-color:rgba(255,160,0,0.5)}
+  50%{border-color:rgba(255,200,0,1)}
+}
+@keyframes salesFireEmoji{
+  0%,100%{transform:scale(1) rotate(-5deg)}
+  25%{transform:scale(1.2) rotate(5deg)}
+  75%{transform:scale(0.9) rotate(-3deg)}
+}
+@keyframes salesSlideIn{
+  from{opacity:0;transform:translateY(16px) scale(0.95)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes salesShimmer{
+  0%{background-position:-200% center}
+  100%{background-position:200% center}
+}
+.sales-card-1{
+  animation:salesFireGlow 2s ease-in-out infinite, salesFireBorder 2s ease-in-out infinite;
+}
+.sales-card-anim{animation:salesSlideIn 0.35s ease both}
+.sales-fire-emoji{display:inline-block;animation:salesFireEmoji 0.8s ease-in-out infinite}
+.sales-name-1{
+  background:linear-gradient(90deg,#fff 0%,#ffd700 40%,#ffaa00 60%,#fff 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:salesShimmer 2.5s linear infinite;
+}
+
+/* Loser animations */
+@keyframes salesShake{
+  0%,100%{transform:translateX(0) rotate(0deg)}
+  15%{transform:translateX(-4px) rotate(-1deg)}
+  30%{transform:translateX(4px) rotate(1deg)}
+  45%{transform:translateX(-3px) rotate(-0.5deg)}
+  60%{transform:translateX(3px) rotate(0.5deg)}
+  75%{transform:translateX(-2px)}
+}
+@keyframes salesSink{
+  0%,100%{transform:rotate(-0.8deg) translateY(0px)}
+  50%{transform:rotate(0.8deg) translateY(2px)}
+}
+@keyframes salesWobble{
+  0%,100%{transform:rotate(0deg)}
+  33%{transform:rotate(0.5deg)}
+  66%{transform:rotate(-0.5deg)}
+}
+@keyframes salesCry{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.15) translateY(-2px)}
+}
+.sales-last{animation:salesShake 1.2s ease-in-out infinite;background:rgba(255,60,60,0.06)!important;border:1px solid rgba(255,60,60,0.2)!important}
+.sales-last2{animation:salesSink 2s ease-in-out infinite;background:rgba(255,120,0,0.05)!important}
+.sales-last3{animation:salesWobble 2.5s ease-in-out infinite}
+.sales-cry{display:inline-block;animation:salesCry 1.2s ease-in-out infinite}
+
+/* Hide number input spinners */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+
 /* Toast notifications */
 @keyframes toastIn{from{opacity:0;transform:translateY(80px) scale(0.9)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes toastOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(20px) scale(0.95)}}
@@ -499,20 +584,25 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
 </div>
 
 <!-- SALES LEADERBOARD SCREEN -->
-<div class="news-screen" id="salesScreen">
+<div class="news-screen" id="salesScreen" style="background:#1a0a10;color:#fff">
   <div class="news-header">
     <div class="news-header-top">
-      <button class="news-back" onclick="closeSalesLeaderboard()">←</button>
+      <button class="news-back" onclick="closeSalesLeaderboard()" style="color:rgba(255,255,255,0.7)">←</button>
       <div class="news-masthead">
-        <div class="news-masthead-title">🏆 Лидерборд продаж</div>
-        <div class="news-masthead-sub" id="salesMonthLabel"></div>
+        <div class="news-masthead-title" style="color:#fff">🏆 Лидерборд продаж</div>
+        <div id="salesMonthLabel" style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:2px;font-family:'Nunito',sans-serif"></div>
       </div>
     </div>
   </div>
-  <div style="padding:16px;max-width:480px;margin:0 auto">
-    <div id="salesList" style="display:flex;flex-direction:column;gap:8px"></div>
-    <div id="salesUpdatedAt" style="margin-top:12px;font-size:11px;color:rgba(255,255,255,0.35);text-align:center"></div>
-    <button id="salesSaveBtn" onclick="saveSalesLeaderboard()" style="display:none;width:100%;margin-top:16px;padding:12px;background:var(--wine-dark);border:none;border-radius:12px;color:#fff;font-size:15px;cursor:pointer">💾 Сохранить</button>
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch">
+    <div style="padding:16px;max-width:480px;margin:0 auto;padding-bottom:40px">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+        <button id="salesEditBtn" onclick="_salesToggleEdit()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);border-radius:20px;padding:6px 16px;font-size:13px;cursor:pointer">✏️ Редактировать</button>
+      </div>
+      <div id="salesList" style="display:flex;flex-direction:column;gap:10px"></div>
+      <div id="salesUpdatedAt" style="margin-top:14px;font-size:11px;color:rgba(255,255,255,0.3);text-align:center"></div>
+      <div id="salesSaveBtn" style="display:none"></div>
+    </div>
   </div>
 </div>
 
@@ -585,6 +675,33 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
 </div>
 <div class="tabs-wrap"><div class="tabs" id="tabs"></div></div>
 <div class="content" id="content"></div>
+<!-- Password screens -->
+<div class="name-screen" id="passwordCreateScreen" style="display:none">
+  <div class="name-screen-logo">Вино &amp; Хинкали</div>
+  <div class="name-screen-sub">Зональный график</div>
+  <h2 id="pwdCreateTitle">🔒 Придумайте пароль</h2>
+  <div style="font-size:15px;color:var(--gold);font-weight:700;margin-bottom:2px" id="pwdCreateName"></div>
+  <div class="name-screen-hint" id="pwdCreateHint">Введите 4 цифры</div>
+  <div class="pin-dots" id="pinCreateDots">
+    <div class="pin-dot" id="pcd0"></div><div class="pin-dot" id="pcd1"></div>
+    <div class="pin-dot" id="pcd2"></div><div class="pin-dot" id="pcd3"></div>
+  </div>
+  <div class="pin-grid" id="pinCreateGrid"></div>
+  <button class="mgr-back" style="margin-top:16px" onclick="backToNameScreen()">← Выбрать другое имя</button>
+</div>
+<div class="name-screen" id="passwordEnterScreen" style="display:none">
+  <div class="name-screen-logo">Вино &amp; Хинкали</div>
+  <div class="name-screen-sub">Зональный график</div>
+  <h2 id="pwdEnterTitle">🔑 Введите пароль</h2>
+  <div class="name-screen-hint">Забыли пароль? Обратитесь к менеджеру</div>
+  <div class="pin-dots" id="pinEnterDots">
+    <div class="pin-dot" id="ped0"></div><div class="pin-dot" id="ped1"></div>
+    <div class="pin-dot" id="ped2"></div><div class="pin-dot" id="ped3"></div>
+  </div>
+  <div class="pin-grid" id="pinEnterGrid"></div>
+  <button class="mgr-back" style="margin-top:16px" onclick="backToNameScreen()">← Выбрать другое имя</button>
+</div>
+
 <div class="name-screen" id="nameScreen">
   <div class="name-screen-logo">Вино &amp; Хинкали</div>
   <div class="name-screen-sub">Зональный график</div>
@@ -609,10 +726,12 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
   <div class="mgr-sub">Панель менеджера</div>
   <div id="mgrLogin" class="mgr-login">
     <h2>🔐 Вход</h2>
-    <input class="mgr-input" id="mgrPassword" type="password" placeholder="••••" maxlength="10"
-      onkeydown="if(event.key==='Enter')checkMgrPassword()"/>
-    <button class="mgr-btn" onclick="checkMgrPassword()">Войти</button>
-    <button class="mgr-back" onclick="closeMgrScreen()">← Назад</button>
+    <div class="pin-dots" style="margin:8px 0 16px">
+      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-grid" id="mgrPinGrid"></div>
+    <button class="mgr-back" style="margin-top:16px" onclick="closeMgrScreen()">← Назад</button>
   </div>
   <div id="mgrPanel" class="mgr-panel" style="display:none">
     <div class="mgr-panel-title">👔 Панель менеджера</div>
@@ -650,6 +769,8 @@ body.dark .news-post-textarea{background:#1a1a1a;border-color:#444;color:#eee}
     <div id="mgrPending"><div class="mgr-empty">⏳ Загрузка...</div></div>
     <div class="mgr-section-title">История обменов</div>
     <div id="mgrHistory"><div class="mgr-empty">⏳ Загрузка...</div></div>
+    <div class="mgr-section-title">Пароли сотрудников</div>
+    <div id="mgrPasswords"><div class="mgr-empty">⏳ Загрузка...</div></div>
     </div><!-- /mgrMainSection -->
 
     <!-- Редактор графика -->
@@ -732,7 +853,7 @@ const zonesDef=[
 ];
 const weekends=["Сб","Вс"];
 const allStaff=["Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Джеймс Калиста","Игорь","Алексей Щ","Ева","Серикова Татьяна"];
-const NEWS_HIDDEN_FOR=["Игорь","Алена","Алексей Щ"];
+const NEWS_HIDDEN_FOR=[];
 
 let currentDay=null,myName=null,swapRequests={},swapModalDay=null;
 const _cache={msgs:null};
@@ -1309,7 +1430,7 @@ async function openMgrSchedView(){
   const periodRows=await sf('schedule_periods?is_open=eq.true&select=*&limit=1');
   const activePeriod=(Array.isArray(periodRows)&&periodRows.length>0)?periodRows[0]:currentPeriod;
   if(!activePeriod){document.getElementById('mgrSchedDays').innerHTML='<div class="mgr-empty">Нет открытого периода</div>';return;}
-  // Парсим месяц и год из периода
+  // Парсим месяц из периода по стему (работает с любым падежом)
   const MONTH_STEMS=['январ','феврал','март','апрел','май','июн','июл','август','сентябр','октябр','ноябр','декабр'];
   const MONTH_NAMES_NOM=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   const pstrLower=activePeriod.period.toLowerCase();
@@ -1377,25 +1498,25 @@ async function openMgrSchedView(){
           <select id="bar-select-${day}" onchange="saveAssignment(${day},'bartender',this.value)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
             <option value="">— не назначен —</option>
             <option value="Арсений">Арсений</option>
+            <option value="Солтан">Солтан</option>
             <option value="Дмитрий">Дмитрий</option>
           </select>
         </div>
       </div>
-        <div id="mgr-day-entries-${day}">
-        ${_mgrDayEntriesHtml(day,entries,allWaiters)}
+      <div id="mgr-day-entries-${day}">
+      ${_mgrDayEntriesHtml(day,entries,allWaiters)}
       </div>
     </div>`;
   }).join('');
-  // Days with no entries yet — show them too so manager can add
   const missingDays=[];
   for(let d=1;d<=31;d++){
-    const dt=new Date(periodYear,periodMonth,d);
-    if(dt.getMonth()!==periodMonth) break;
+    const dt=new Date(periodYear,periodMonthNum,d);
+    if(dt.getMonth()!==periodMonthNum) break;
     if(!byDay[String(d)]) missingDays.push(String(d));
   }
   if(missingDays.length>0){
     document.getElementById('mgrSchedDays').innerHTML+=missingDays.map(day=>{
-      const dow=new Date(periodYear,periodMonth,+day).getDay();
+      const dow=new Date(periodYear,periodMonthNum,+day).getDay();
       return`<div class="mgr-card" style="margin-bottom:8px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
           <div class="mgr-card-title">⚪ ${day} ${periodMonthName} · ${DAY_NAMES[dow]}</div>
@@ -1417,8 +1538,7 @@ function _mgrDayEntriesHtml(day,entries,allWaiters){
   let html=entries.map(e=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-top:1px solid rgba(255,255,255,0.08);font-size:12px;gap:6px">
     <span style="color:rgba(255,255,255,0.8);flex:1">${e.staff_name}</span>
     <select onchange="mgrUpdateReq('${e.staff_name}',${day},this.value,activeMgrPeriod)" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:2px 4px;font-size:12px">
-      ${TIMES.map(t=>`<option value="${t}"${t===e.preference?' selected':''}>${t}</option>`).join('')}
-    </select>
+      ${TIMES.map(t=>`<option value="${t}"${t===e.preference?' selected':''} >${t}</option>`).join('')}</select>
     <button onclick="mgrDeleteReq('${e.staff_name}',${day},activeMgrPeriod)" style="background:none;border:none;color:#e07070;font-size:16px;cursor:pointer;padding:0 2px">✕</button>
   </div>`).join('');
   if(notResponded.length>0){
@@ -1426,13 +1546,9 @@ function _mgrDayEntriesHtml(day,entries,allWaiters){
       <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Не ответили:</div>
       ${notResponded.map(name=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:12px;gap:6px">
         <span style="color:rgba(255,255,255,0.45);flex:1">${name}</span>
-        <select id="mgr-add-sel-${day}-${name.replace(/\s/g,'_')}" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:6px;padding:2px 4px;font-size:12px">
-          <option value="">— время —</option>
-          ${timeOpts}
-        </select>
+        <select id="mgr-add-sel-${day}-${name.replace(/\s/g,'_')}" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:6px;padding:2px 4px;font-size:12px"><option value="">— время —</option>${timeOpts}</select>
         <button onclick="mgrAddReq('${name}',${day},document.getElementById('mgr-add-sel-${day}-${name.replace(/\s/g,'_')}').value,activeMgrPeriod)" style="background:rgba(80,200,120,0.2);border:1px solid rgba(80,200,120,0.4);color:#4CAF50;border-radius:6px;padding:2px 8px;font-size:12px;cursor:pointer">+</button>
-      </div>`).join('')}
-    </div>`;
+      </div>`).join('')}</div>`;
   }
   return html;
 }
@@ -1452,13 +1568,13 @@ async function mgrUpdateReq(staffName,day,time,period){
   if(!period) return;
   await sf(`schedule_requests?period=eq.${encodeURIComponent(period)}&staff_name=eq.${encodeURIComponent(staffName)}&day=eq.${day}`,'DELETE');
   await sf('schedule_requests','POST',{period,staff_name:staffName,day:String(day),preference:time});
-  showToast(`✓ Сохранено`);
+  showToast('✓ Сохранено');
 }
 
 async function mgrDeleteReq(staffName,day,period){
   if(!period) return;
   await sf(`schedule_requests?period=eq.${encodeURIComponent(period)}&staff_name=eq.${encodeURIComponent(staffName)}&day=eq.${day}`,'DELETE');
-  showToast(`✓ Удалено`);
+  showToast('✓ Удалено');
   openMgrSchedView();
 }
 
@@ -1498,32 +1614,51 @@ async function loadMgrSchedStatus(){
 }
 
 // ── MANAGER PANEL ──
-const MGR_PASSWORD='1234';
+const MGR_PASSWORD='1423';
 const dayNames={1:'Пт',2:'Сб',3:'Вс',4:'Пн',5:'Вт',6:'Ср',7:'Чт',8:'Пт',9:'Сб',10:'Вс',11:'Пн',12:'Вт',13:'Ср',14:'Чт',15:'Пт'};
 
+let pinValue='';
+function _mgrPinUpdateDots(){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById('pd'+i);
+    d.className='pin-dot'+(i<pinValue.length?' filled':'');
+  }
+}
+function mgrPinKey(d){
+  if(pinValue.length>=4) return;
+  pinValue+=d;
+  _mgrPinUpdateDots();
+  if(pinValue.length===4) setTimeout(checkMgrPassword,200);
+}
+function mgrPinDel(){
+  pinValue=pinValue.slice(0,-1);
+  _mgrPinUpdateDots();
+}
 function openMgrScreen(){
+  pinValue='';
+  _mgrPinUpdateDots();
+  _pinRenderGrid('mgrPinGrid','mgrPinKey','mgrPinDel');
   document.getElementById('mgrScreen').classList.add('active');
   document.getElementById('mgrLogin').style.display='flex';
   document.getElementById('mgrPanel').style.display='none';
-  document.getElementById('mgrPassword').value='';
-  setTimeout(()=>document.getElementById('mgrPassword').focus(),300);
 }
 function closeMgrScreen(){
   document.getElementById('mgrScreen').classList.remove('active');
 }
 async function checkMgrPassword(){
-  const val=document.getElementById('mgrPassword').value;
-  if(val===MGR_PASSWORD){
+  if(pinValue===MGR_PASSWORD){
     document.getElementById('mgrLogin').style.display='none';
     document.getElementById('mgrPanel').style.display='block';
+    pinValue='';
     await loadMgrData();
   } else {
-    showToast('❌ Неверный пароль');
-    document.getElementById('mgrPassword').value='';
+    for(let i=0;i<4;i++){const d=document.getElementById('pd'+i);if(d)d.className='pin-dot error';}
+    setTimeout(()=>{pinValue='';_mgrPinUpdateDots();},700);
   }
 }
 
 async function loadMgrData(){
+  loadMgrPasswords();
   // Все три запроса параллельно — втрое быстрее
   const [schedStatus, pending, history] = await Promise.all([
     sf('schedule_periods?is_open=eq.true&select=*&limit=1'),
@@ -1834,15 +1969,15 @@ function buildPanel(d){
     <div class="info-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08)">
       <div style="display:flex;flex-direction:column;gap:4px">
         <span class="info-label">МЕНЕДЖЕР</span>
-        ${info.manager?`<span class="chip manager-chip" style="border-radius:10px;width:100%;justify-content:flex-start">👔 ${info.manager}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
+        ${info.manager&&info.manager!=='не назначен'?`<span class="chip manager-chip${myName&&info.manager===myName?' is-me-chip':''}" style="border-radius:10px;width:100%;justify-content:flex-start">👔 ${info.manager}${myName&&info.manager===myName?' 👈':''}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <span class="info-label">ХОСТЕС</span>
-        ${info.hostess?`<span class="chip host-chip" style="border-radius:10px;width:100%;justify-content:flex-start">🎀 ${info.hostess}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
+        ${info.hostess&&info.hostess!=='не назначен'?`<span class="chip host-chip${myName&&info.hostess===myName?' is-me-chip':''}" style="border-radius:10px;width:100%;justify-content:flex-start">🎀 ${info.hostess}${myName&&info.hostess===myName?' 👈':''}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <span class="info-label">БАРМЕН</span>
-        ${info.bartender?`<span class="chip bartender-chip" style="border-radius:10px;width:100%;justify-content:flex-start">🍹 ${info.bartender}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
+        ${info.bartender&&info.bartender!=='не назначен'?`<span class="chip bartender-chip" style="border-radius:10px;width:100%;justify-content:flex-start">🍹 ${info.bartender}</span>`:`<span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>`}
       </div>
     </div>
     <div style="text-align:right;margin-top:4px">
@@ -1860,20 +1995,184 @@ const contentEl=document.getElementById('content');
 
 // Читаем имя ДО построения панелей
 const savedName=getCookie('myName');
-if(savedName!==null){
-  myName=savedName||null;
+const savedToken=getCookie('vinoSessionToken');
+let _pwdPendingName=null; // имя, для которого ждём ввода пароля
+
+async function hashPassword(pwd){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pwd));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function genToken(){
+  return Array.from(crypto.getRandomValues(new Uint8Array(24))).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function finishLogin(name){
+  myName=name;
+  setCookie('myName',name||'',365);
   document.getElementById('nameScreen').style.display='none';
-  document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(myName)?'none':'';
-  // Если имя уже известно — запрашиваем разрешение на уведомления
-  if(myName && 'Notification' in window && Notification.permission === 'default'){
-    Notification.requestPermission().then(permission=>{
-      if(permission==='granted') subscribeToPush(myName);
-    });
-  } else if(myName && 'Notification' in window && Notification.permission === 'granted'){
-    // Уже разрешено — просто подписываемся
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.ready.then(()=>subscribeToPush(myName));
+  document.getElementById('passwordCreateScreen').style.display='none';
+  document.getElementById('passwordEnterScreen').style.display='none';
+  document.getElementById('newsBadgeBtn').style.display=(name===null||NEWS_HIDDEN_FOR.includes(name))?'none':'';
+  if(name && 'Notification' in window && Notification.permission==='default'){
+    Notification.requestPermission().then(p=>{if(p==='granted')subscribeToPush(name);});
+  } else if(name && 'Notification' in window && Notification.permission==='granted'){
+    if('serviceWorker' in navigator) navigator.serviceWorker.ready.then(()=>subscribeToPush(name));
+  }
+  if(Object.keys(schedule).length>0){
+    Object.keys(schedule).forEach(d=>{const p=document.getElementById('panel-'+d);if(p)p.innerHTML=buildPanel(+d);});
+  }
+  loadSwaps();
+  loadMgrPasswords();
+}
+// ── PIN PAD ──
+let _pinCreateVal='', _pinCreateStep=0; // step 0=first entry, 1=confirm
+let _pinCreateFirst='';
+let _pinEnterVal='';
+
+function _pinRenderGrid(gridId, onDigit, onDel){
+  const grid=document.getElementById(gridId);
+  const keys=[1,2,3,4,5,6,7,8,9,'','0','⌫'];
+  grid.innerHTML=keys.map(k=>{
+    if(k==='') return '<button class="pin-key empty"></button>';
+    if(k==='⌫') return `<button class="pin-key del" onclick="${onDel}()"><svg width="32" height="24" viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2H29C30.1 2 31 2.9 31 4V20C31 21.1 30.1 22 29 22H12L2 12L12 2Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><line x1="13" y1="9" x2="25" y2="17" stroke="white" stroke-width="1.8" stroke-linecap="round"/><line x1="25" y1="9" x2="13" y2="17" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg></button>`;
+    return `<button class="pin-key" onclick="${onDigit}(${k})">${k}</button>`;
+  }).join('');
+}
+function _pinUpdateDots(prefix, val){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById(prefix+i);
+    if(d) d.className='pin-dot'+(i<val.length?' filled':'');
+  }
+}
+function pinCreateDigit(d){
+  if(_pinCreateVal.length>=4) return;
+  _pinCreateVal+=d;
+  _pinUpdateDots('pcd',_pinCreateVal);
+  if(_pinCreateVal.length===4) setTimeout(_pinCreateNext,200);
+}
+function pinCreateDel(){
+  _pinCreateVal=_pinCreateVal.slice(0,-1);
+  _pinUpdateDots('pcd',_pinCreateVal);
+}
+async function _pinCreateNext(){
+  if(_pinCreateStep===0){
+    _pinCreateFirst=_pinCreateVal;
+    _pinCreateVal='';
+    _pinUpdateDots('pcd',_pinCreateVal);
+    document.getElementById('pwdCreateTitle').textContent='🔒 Повторите пароль';
+    document.getElementById('pwdCreateHint').textContent='Введите те же 4 цифры';
+    _pinCreateStep=1;
+  } else {
+    if(_pinCreateVal!==_pinCreateFirst){
+      // Не совпало — подсветить ошибку и начать заново
+      for(let i=0;i<4;i++){const d=document.getElementById('pcd'+i);if(d)d.className='pin-dot error';}
+      setTimeout(()=>{
+        _pinCreateVal='';_pinCreateFirst='';_pinCreateStep=0;
+        _pinUpdateDots('pcd','');
+        document.getElementById('pwdCreateTitle').textContent='🔒 Придумайте пароль';
+        document.getElementById('pwdCreateHint').textContent='Пароли не совпали. Попробуйте снова';
+      },700);
+      return;
     }
+    const hash=await hashPassword(_pinCreateVal);
+    const token=genToken();
+    await sf('staff_sessions','POST',{staff_name:_pwdPendingName,password_hash:hash,session_token:token});
+    setCookie('vinoSessionToken',token,365);
+    finishLogin(_pwdPendingName);
+  }
+}
+function pinEnterDigit(d){
+  if(_pinEnterVal.length>=4) return;
+  _pinEnterVal+=d;
+  _pinUpdateDots('ped',_pinEnterVal);
+  if(_pinEnterVal.length===4) setTimeout(_pinEnterCheck,200);
+}
+function pinEnterDel(){
+  _pinEnterVal=_pinEnterVal.slice(0,-1);
+  _pinUpdateDots('ped',_pinEnterVal);
+}
+async function _pinEnterCheck(){
+  const hash=await hashPassword(_pinEnterVal);
+  const rows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(_pwdPendingName)}&password_hash=eq.${encodeURIComponent(hash)}&select=staff_name`);
+  if(!Array.isArray(rows)||rows.length===0){
+    for(let i=0;i<4;i++){const d=document.getElementById('ped'+i);if(d)d.className='pin-dot error';}
+    setTimeout(()=>{_pinEnterVal='';_pinUpdateDots('ped','');},700);
+    return;
+  }
+  const token=genToken();
+  await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(_pwdPendingName)}`,'PATCH',{session_token:token});
+  setCookie('vinoSessionToken',token,365);
+  finishLogin(_pwdPendingName);
+}
+function _showPinCreate(){
+  _pinCreateVal='';_pinCreateFirst='';_pinCreateStep=0;
+  _pinUpdateDots('pcd','');
+  document.getElementById('pwdCreateTitle').textContent='🔒 Придумайте пароль';
+  document.getElementById('pwdCreateName').textContent=_pwdPendingName||'';
+  document.getElementById('pwdCreateHint').textContent='Введите 4 цифры';
+  _pinRenderGrid('pinCreateGrid','pinCreateDigit','pinCreateDel');
+  document.getElementById('nameScreen').style.display='none';
+  document.getElementById('passwordCreateScreen').style.display='flex';
+}
+function _showPinEnter(){
+  _pinEnterVal='';
+  _pinUpdateDots('ped','');
+  _pinRenderGrid('pinEnterGrid','pinEnterDigit','pinEnterDel');
+  document.getElementById('nameScreen').style.display='none';
+  document.getElementById('passwordEnterScreen').style.display='flex';
+}
+function backToNameScreen(){
+  document.getElementById('passwordEnterScreen').style.display='none';
+  document.getElementById('passwordCreateScreen').style.display='none';
+  document.getElementById('nameScreen').style.display='flex';
+  _pwdPendingName=null;
+}
+async function startPasswordFlow(name){
+  _pwdPendingName=name;
+  const curToken=getCookie('vinoSessionToken');
+  // Если есть токен — сначала проверяем его
+  if(curToken){
+    const tokenRows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}&session_token=eq.${encodeURIComponent(curToken)}&select=staff_name`);
+    if(Array.isArray(tokenRows)&&tokenRows.length>0){
+      finishLogin(name);
+      return;
+    }
+  }
+  const rows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}&select=staff_name`);
+  if(!Array.isArray(rows)||rows.length===0){
+    _showPinCreate();
+  } else {
+    document.getElementById('pwdEnterTitle').textContent=`🔑 Привет, ${name}!`;
+    _showPinEnter();
+  }
+}
+
+if(savedName!==null){
+  if(savedName&&savedToken){
+    // Проверяем токен в базе
+    sf(`staff_sessions?staff_name=eq.${encodeURIComponent(savedName)}&session_token=eq.${encodeURIComponent(savedToken)}&select=staff_name`).then(rows=>{
+      if(Array.isArray(rows)&&rows.length>0){
+        // Токен валиден — авто-логин
+        myName=savedName;
+        document.getElementById('nameScreen').style.display='none';
+        document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(savedName)?'none':'';
+        if('Notification' in window && Notification.permission==='default'){
+          Notification.requestPermission().then(p=>{if(p==='granted')subscribeToPush(savedName);});
+        } else if('Notification' in window && Notification.permission==='granted'){
+          if('serviceWorker' in navigator) navigator.serviceWorker.ready.then(()=>subscribeToPush(savedName));
+        }
+      } else {
+        // Токен устарел — запросить пароль
+        document.getElementById('nameScreen').style.display='none';
+        startPasswordFlow(savedName);
+      }
+    });
+  } else if(savedName){
+    // Имя есть но токена нет — запросить пароль
+    startPasswordFlow(savedName);
+  } else {
+    // null имя (менеджер без имени)
+    myName=null;
+    document.getElementById('nameScreen').style.display='none';
   }
 }
 
@@ -1942,31 +2241,54 @@ if(getCookie('theme')==='dark'){document.body.classList.add('dark');document.get
 // ── NAME SCREEN ──
 function showNameScreen(){
   const grid=document.getElementById('nameGrid');
-  grid.innerHTML=allStaff.map(name=>`<button class="name-btn" onclick="selectName('${name}')"><div class="name-btn-avatar">${initials(name)}</div>${name}</button>`).join('');
+  const MANAGERS=['Игорь','Алена','Алексей Щ'];
+  const HOSTESS=['Аня'];
+  const ALUMNI=['Арсений','Вероника','Сперанская Виктория','Карина'];
+  const groups=[
+    {label:'👔 Менеджер',names:MANAGERS},
+    {label:'🌸 Хостес',names:HOSTESS},
+    {label:'🍽️ Официант',names:allStaff.filter(n=>!MANAGERS.includes(n)&&!HOSTESS.includes(n)&&!ALUMNI.includes(n))},
+    {label:'🎓 Старички',names:ALUMNI}
+  ];
+  grid.innerHTML=groups.map(g=>`
+    <div class="name-group-label">${g.label}</div>
+    <div class="name-group">${g.names.map(name=>`<button class="name-btn" onclick="selectName('${name}')"><div class="name-btn-avatar">${initials(name)}</div>${name}</button>`).join('')}</div>
+  `).join('');
   document.getElementById('nameScreen').style.display='flex';
 }
 function selectName(name){
-  myName=name;
-  localStorage.setItem('vinoMyName',name);setCookie('myName',name||'',365);
-  document.getElementById('nameScreen').style.display='none';
-  document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(name)?'none':'';
-  // Перестраиваем панели с подсветкой имени (schedule уже загружен из БД)
-  if(Object.keys(schedule).length>0){
-    Object.keys(schedule).forEach(d=>{const p=document.getElementById('panel-'+d);if(p)p.innerHTML=buildPanel(+d);});
+  if(!name){
+    // Менеджер без имени — сразу
+    finishLogin(null);
+    return;
   }
-  loadSwaps();
-  // Запрашиваем разрешение на уведомления
-  if(name && 'Notification' in window){
-    Notification.requestPermission().then(permission=>{
-      if(permission==='granted') subscribeToPush(name);
-    });
-  }
+  startPasswordFlow(name);
 }
 if(savedName===null){showNameScreen();}
 
 // Переход на текущий день — обрабатывается в loadPublishedSchedule
 
 // Свапы и история загружаются в фоне — график уже показан
+
+async function loadMgrPasswords(){
+  const el=document.getElementById('mgrPasswords');
+  if(!el) return;
+  const rows=await sf('staff_sessions?select=staff_name');
+  const withPwd=new Set(Array.isArray(rows)?rows.map(r=>r.staff_name):[]);
+  const everyone=[...allStaff,'Аня','Игорь','Алена','Алексей Щ'];
+  const unique=[...new Set(everyone)];
+  el.innerHTML=unique.map(name=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.07)">
+      <span style="font-size:14px">${name} ${withPwd.has(name)?'🔒':'<span style="opacity:0.4;font-size:12px">нет пароля</span>'}</span>
+      ${withPwd.has(name)?`<button class="mgr-reject-btn" style="padding:4px 10px;font-size:12px" onclick="resetStaffPassword('${name}')">Сбросить</button>`:'<span></span>'}
+    </div>`).join('');
+}
+async function resetStaffPassword(name){
+  if(!confirm(`Сбросить пароль для ${name}? При следующем входе им потребуется создать новый.`)) return;
+  await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}`,'DELETE');
+  showToast(`✅ Пароль ${name} сброшен`);
+  loadMgrPasswords();
+}
 
 async function publishSchedule(){
   console.log('publishSchedule called');
@@ -2006,51 +2328,17 @@ async function publishSchedule(){
 
   const sortedDays=Object.keys(byDay).sort((a,b)=>+a-+b);
 
-  // ── ГЛОБАЛЬНОЕ ПЛАНИРОВАНИЕ ЗОН ──
-  // 1. Для каждого человека строим личный цикл зон
-  // 2. Назначаем зоны на весь период сразу
-  // 3. Разрешаем конфликты свопами
-
-  // Собираем рабочие дни каждого человека
-  const personDays={};
-  sortedDays.forEach(day=>{
-    byDay[day].forEach(w=>{
-      if(!personDays[w.staff_name]) personDays[w.staff_name]=[];
-      personDays[w.staff_name].push(String(day));
-    });
-  });
-
-  // Строим личный цикл зон для каждого (случайный старт)
-  const personZoneCycle={};
-  Object.keys(personDays).forEach(name=>{
-    const hash=name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-    const shift=hash%ZONES.length;
-    personZoneCycle[name]=[...ZONES.slice(shift),...ZONES.slice(0,shift)];
-  });
-
-  // Предварительное назначение — каждый по своему циклу
-  // globalPlan[day][staffName] = zone
-  const globalPlan={};
-  sortedDays.forEach(day=>globalPlan[day]={});
-  
-  Object.keys(personDays).forEach(name=>{
-    const cycle=personZoneCycle[name];
-    let lastZone=null;
-    personDays[name].forEach((day,i)=>{
-      let zone=cycle[i%cycle.length];
-      // Если зона совпадает с вчерашней — берём следующую в цикле
-      if(zone===lastZone){
-        zone=cycle[(i+1)%cycle.length];
-      }
-      globalPlan[day][name]=zone;
-      lastZone=zone;
-    });
-  });
+  // ── ЖАДНОЕ РАСПРЕДЕЛЕНИЕ ЗОН ──
+  // Для каждого дня сортируем сотрудников по наименьшему числу смен,
+  // затем каждому назначаем зону которую он посещал реже всего (и != вчерашней).
+  const lastZoneForPerson={};
 
   // Разрешаем конфликты — если в день слотов не хватает, меняем с кем-то
   // Удаляем старый график (текущий период и все другие периоды)
   await sf(`published_schedule?period=eq.${encodeURIComponent(period)}`,'DELETE');
   await sf(`zone_history?period=eq.${encodeURIComponent(period)}`,'DELETE');
+  // Сбрасываем счётчики — начинаем с нуля, старые данные уже удалены
+  Object.keys(zoneCount).forEach(k=>delete zoneCount[k]);
   const oldRows=await sf('published_schedule?select=period');
   if(Array.isArray(oldRows)){
     const oldPeriods=[...new Set(oldRows.map(r=>r.period))].filter(p=>p!==period);
@@ -2066,52 +2354,69 @@ async function publishSchedule(){
     const workers=byDay[day];
     const count=workers.length;
     
-    // Считаем слоты по правилу:
-    // 4 чел → 1-1-1-1
-    // 5 чел → 2 на 1-16, по 1 на остальные  
-    // 6 чел → 2 на 1-16, 2 на Оранжевые, по 1 на Центр и Кальянку
+    // Слоты по правилу:
+    // ≤3 → по 1 на первые N зон
+    // 4  → 1-1-1-1
+    // 5  → 2-1-1-1 (двое на 1-16)
+    // 6  → 2-1-1-2 (двое на 1-16 и двое на Оранжевые)
+    // 7  → 2-2-1-2 (двое на 1-16, двое на Центр, двое на Оранжевые)
+    // 8+ → 2-2-2-2 и extra по кругу
     let slots={};
     if(count<=3){
       ZONES.slice(0,count).forEach(z=>slots[z]=1);
       ZONES.slice(count).forEach(z=>slots[z]=0);
     } else if(count===4){
-      ZONES.forEach(z=>slots[z]=1);
+      slots={'1-16':1,'Центр':1,'Кальянка':1,'Оранжевые':1};
     } else if(count===5){
       slots={'1-16':2,'Центр':1,'Кальянка':1,'Оранжевые':1};
-    } else {
+    } else if(count===6){
       slots={'1-16':2,'Центр':1,'Кальянка':1,'Оранжевые':2};
-      let extra=count-6;
+    } else if(count===7){
+      slots={'1-16':2,'Центр':2,'Кальянка':1,'Оранжевые':2};
+    } else {
+      slots={'1-16':2,'Центр':2,'Кальянка':2,'Оранжевые':2};
+      let extra=count-8;
       const extraZones=['1-16','Оранжевые','Центр','Кальянка'];
       for(let ei=0;extra>0;extra--,ei++) slots[extraZones[ei%4]]++;
     }
 
-    // Назначаем из глобального плана — но строго в рамках слотов
+    // Оптимальное назначение: перебираем все варианты, выбираем минимальный дисбаланс
+    const slotList=[];
+    ZONES.forEach(z=>{for(let i=0;i<(slots[z]||0);i++) slotList.push(z);});
+
+    // Перемешиваем сотрудников через день как сид — чтобы при равных score
+    // каждый день побеждала разная перестановка (иначе всегда первая из базы)
+    const shuffled=[...workers];
+    for(let si=shuffled.length-1;si>0;si--){
+      const sj=Math.abs((+day*(si+1)*2654435761)|0)%(si+1);
+      [shuffled[si],shuffled[sj]]=[shuffled[sj],shuffled[si]];
+    }
+
+    // Генератор перестановок (алгоритм Хипа)
+    function*perms(arr){
+      const a=[...arr],c=new Array(a.length).fill(0);
+      yield [...a];let i=0;
+      while(i<a.length){
+        if(c[i]<i){const j=i%2===0?0:c[i];[a[i],a[j]]=[a[j],a[i]];yield [...a];c[i]++;i=0;}
+        else{c[i]=0;i++;}
+      }
+    }
+
+    let bestScore=Infinity,bestPerm=null;
+    for(const perm of perms(shuffled)){
+      let score=0;
+      perm.forEach((w,idx)=>{
+        const z=slotList[idx];
+        const after=(zoneCount[w.staff_name]?.[z]||0)+1;
+        score+=after*after;
+        if(z===lastZoneForPerson[w.staff_name]) score+=10;
+      });
+      if(score<bestScore){bestScore=score;bestPerm=[...perm];}
+    }
+
     const assigned={};
     ZONES.forEach(z=>assigned[z]=[]);
-    const unassigned=[...workers];
-
-    // Сначала по плану если слот свободен
-    unassigned.slice().forEach(w=>{
-      const pz=globalPlan[String(day)]&&globalPlan[String(day)][w.staff_name];
-      if(pz&&(slots[pz]||0)>assigned[pz].length){
-        assigned[pz].push(w);
-        unassigned.splice(unassigned.indexOf(w),1);
-      }
-    });
-
-    // Остальных — в зону с наименьшим числом посещений среди СВОБОДНЫХ слотов
-    [...unassigned].forEach(w=>{
-      const freeZones=ZONES.filter(z=>(slots[z]||0)>assigned[z].length);
-      if(!freeZones.length) return;
-      const myHistory=toInsert.filter(r=>r.staff_name===w.staff_name).map(r=>r.zone);
-      freeZones.sort((a,b)=>{
-        const ca=myHistory.filter(z=>z===a).length;
-        const cb=myHistory.filter(z=>z===b).length;
-        return ca-cb;
-      });
-      assigned[freeZones[0]].push(w);
-      unassigned.splice(unassigned.indexOf(w),1);
-    });
+    bestPerm.forEach((w,idx)=>assigned[slotList[idx]].push(w));
 
     ZONES.forEach(zone=>{
       assigned[zone].forEach(w=>{
@@ -2119,6 +2424,7 @@ async function publishSchedule(){
         zoneHistInsert.push({period,staff_name:w.staff_name,zone,day:+day});
         if(!zoneCount[w.staff_name]) zoneCount[w.staff_name]={};
         zoneCount[w.staff_name][zone]=(zoneCount[w.staff_name][zone]||0)+1;
+        lastZoneForPerson[w.staff_name]=zone;
       });
     });
   });
@@ -2126,7 +2432,7 @@ async function publishSchedule(){
   // Автоназначение менеджер/хостес/бармен
   const managers=['Игорь','Алена'];
   const hostesses=['Карина','Джеймс Калиста'];
-  const bartenders=['Арсений','Дмитрий'];
+  const bartenders=['Арсений','Солтан','Дмитрий'];
 
   // Загружаем ручные назначения менеджера
   const existingAssignments=await sf(`day_assignments?period=eq.${encodeURIComponent(period)}&select=*`);
@@ -2201,7 +2507,7 @@ async function loadPublishedSchedule(fromCache=false){
   const [rows, hist, assignments] = await Promise.all([
     sf(`published_schedule?period=eq.${encodeURIComponent(latestPeriodName)}&select=*&order=day`),
     sf(`swap_history?period=eq.${encodeURIComponent(latestPeriodName)}&select=*`),
-    sf('day_assignments?select=*')
+    sf(`day_assignments?period=eq.${encodeURIComponent(latestPeriodName)}&select=*`)
   ]);
 
   if(!Array.isArray(rows)||rows.length===0) return;
@@ -2223,9 +2529,10 @@ function applyScheduleData(rows, hist, assignments){
   const DAY_NAMES=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
   rows.forEach(r=>{
     if(!schedule[r.day]){
-      const periodMonthName2=rows[0]?.period?.match(/[а-яё]+/i)?.[0]?.toLowerCase();
-      const RU_MONTHS2={'января':0,'февраля':1,'марта':2,'апреля':3,'мая':4,'июня':5,'июля':6,'августа':7,'сентября':8,'октября':9,'ноября':10,'декабря':11};
-      const periodMonth2=periodMonthName2?(RU_MONTHS2[periodMonthName2]??4):4;
+      const MONTH_STEMS2=['январ','феврал','март','апрел','май','июн','июл','август','сентябр','октябр','ноябр','декабр'];
+      const p2str=(rows[0]?.period||'').toLowerCase();
+      const periodMonth2idx=MONTH_STEMS2.findIndex(s=>p2str.includes(s));
+      const periodMonth2=periodMonth2idx>=0?periodMonth2idx:new Date().getMonth();
       const periodYear2=new Date().getFullYear();
       const dow=new Date(periodYear2,periodMonth2,+r.day).getDay();
       schedule[r.day]={name:DAY_NAMES[dow],manager:'',hostess:null,bartender:null,staff:{}};
@@ -2400,11 +2707,12 @@ async function openMgrEditView(){
   const container=document.getElementById('mgrEditDays');
   container.innerHTML='<div class="mgr-empty">⏳ Загрузка...</div>';
 
-  const [schedRows, assignments, periodRows] = await Promise.all([
+  const [schedRows, periodRows] = await Promise.all([
     sf('published_schedule?select=*&order=day,zone'),
-    sf('day_assignments?select=*'),
     sf('schedule_periods?is_open=eq.true&select=*&limit=1')
   ]);
+  const editorPeriodName=Array.isArray(periodRows)&&periodRows[0]?periodRows[0].period:(schedRows[0]?.period||'');
+  const assignments=editorPeriodName?await sf(`day_assignments?period=eq.${encodeURIComponent(editorPeriodName)}&select=*`):[];
 
   if(!Array.isArray(schedRows)||schedRows.length===0){
     container.innerHTML='<div class="mgr-empty">График не опубликован</div>';
@@ -2477,7 +2785,7 @@ async function openMgrEditView(){
             <option value="">— не назначен —</option>
             <option value="Игорь"${a.manager==='Игорь'?' selected':''}>Игорь</option>
             <option value="Алена"${a.manager==='Алена'?' selected':''}>Алена</option>
-            <option value="Алексей Щ"${a.manager==="Алексей Щ"?' selected':''}>Алексей Щ</option>
+            <option value="Алексей Щ"${a.manager==='Алексей Щ'?' selected':''}>Алексей Щ</option>
           </select>
         </div>
         <div style="flex:1">
@@ -2493,6 +2801,7 @@ async function openMgrEditView(){
           <select class="edit-role-sel" onchange="saveAssignment(${day},'bartender',this.value)">
             <option value="">— не назначен —</option>
             <option value="Арсений"${a.bartender==='Арсений'?' selected':''}>Арсений</option>
+            <option value="Солтан"${a.bartender==='Солтан'?' selected':''}>Солтан</option>
             <option value="Дмитрий"${a.bartender==='Дмитрий'?' selected':''}>Дмитрий</option>
           </select>
         </div>
@@ -2559,26 +2868,25 @@ async function addEditRow(day, zone){
 let newsOpen=false, newsInterval=null, newsSelectedImage=null;
 
 // ===== SALES LEADERBOARD =====
-const SALES_NON_WAITERS=['Игорь','Алена','Алексей Щ','Аня','Карина'];
-const salesWaiters=allStaff.filter(n=>!SALES_NON_WAITERS.includes(n));
-let salesData={}, salesDirty=false, salesCurrentMonth='';
+const SALES_NON_WAITERS=['Игорь','Алена','Алексей Щ','Аня','Карина','Арсений','Вероника','Сперанская Виктория'];
+let salesWaiters=[];
+let salesData={}, salesCurrentMonth='';
 
 async function openSalesLeaderboard(){
+  salesWaiters=allStaff.filter(n=>!SALES_NON_WAITERS.includes(n));
   const screen=document.getElementById('salesScreen');
   screen.classList.add('active');
   document.body.style.overflow='hidden';
   const now=new Date();
-  salesCurrentMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'00')}`;
-  const label=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][now.getMonth()]+' '+now.getFullYear();
-  document.getElementById('salesMonthLabel').textContent=label;
-  salesDirty=false;
+  salesCurrentMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const months=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  document.getElementById('salesMonthLabel').textContent=months[now.getMonth()]+' '+now.getFullYear();
   document.getElementById('salesSaveBtn').style.display='none';
   await _loadSalesData();
 }
 
 function closeSalesLeaderboard(){
-  const screen=document.getElementById('salesScreen');
-  screen.classList.remove('active');
+  document.getElementById('salesScreen').classList.remove('active');
   document.body.style.overflow='';
 }
 
@@ -2589,52 +2897,94 @@ async function _loadSalesData(){
   _renderSalesList();
 }
 
+let _salesEditMode=false;
+
+async function _salesToggleEdit(){
+  if(_salesEditMode){
+    const btn=document.getElementById('salesEditBtn');
+    btn.textContent='⏳ Сохраняю...';
+    btn.disabled=true;
+    await saveSalesLeaderboard();
+    return;
+  }
+  _salesEditMode=true;
+  const btn=document.getElementById('salesEditBtn');
+  btn.textContent='✅ Готово';
+  btn.style.background='rgba(80,200,120,0.2)';
+  btn.style.borderColor='rgba(80,200,120,0.5)';
+  btn.style.color='#4CAF50';
+  _renderSalesList();
+}
+
 function _renderSalesList(){
   const list=document.getElementById('salesList');
   const medals=['🥇','🥈','🥉'];
   const sorted=[...salesWaiters].sort((a,b)=>(salesData[b]?.amount||0)-(salesData[a]?.amount||0));
   list.innerHTML=sorted.map((name,i)=>{
     const amount=salesData[name]?.amount||0;
-    const medal=i<3?medals[i]:'';
-    return`<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 12px">
-      <span style="font-size:18px;width:28px;text-align:center">${medal||String(i+1)}</span>
-      <span style="flex:1;font-size:14px;color:rgba(255,255,255,0.85)">${name}</span>
-      <input type="number" min="0" value="${amount}" oninput="_salesEdit('${name}',this.value)" style="width:90px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:8px;padding:6px 8px;font-size:14px;text-align:right">
-      <span style="font-size:12px;color:rgba(255,255,255,0.4)">₽</span>
+    const fmt=amount>0?amount.toLocaleString('ru-RU')+' ₽':'—';
+    if(_salesEditMode){
+      return`<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 14px">
+        <span style="font-size:18px;width:28px;text-align:center">${i<3?medals[i]:String(i+1)}</span>
+        <span style="flex:1;font-size:14px;color:rgba(255,255,255,0.85)">${name}</span>
+        <input type="number" min="0" value="${amount||''}" placeholder="0" oninput="_salesEditVal('${name}',this.value)" style="width:100px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:8px;padding:6px 10px;font-size:14px;text-align:right">
+        <span style="font-size:12px;color:rgba(255,255,255,0.4)">₽</span>
+      </div>`;
+    }
+    if(i===0){
+      return`<div class="sales-card-anim sales-card-1" style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(201,150,58,0.25),rgba(255,120,0,0.15));border:1px solid rgba(255,160,0,0.5);border-radius:16px;padding:16px;animation-delay:0s">
+        <span class="sales-fire-emoji" style="font-size:30px;width:36px;text-align:center">🥇</span>
+        <span class="sales-name-1" style="flex:1;font-size:17px;font-weight:700">${name}</span>
+        <span style="font-size:17px;color:#ffd700;font-weight:800">${fmt}</span>
+        <span style="font-size:20px">🔥</span>
+      </div>`;
+    }
+    const n=sorted.length;
+    const isLast=i===n-1, isLast2=i===n-2, isLast3=i===n-3&&n>3;
+    const loserClass=isLast?'sales-last':isLast2?'sales-last2':isLast3?'sales-last3':'';
+    const loserIcon='';
+    const bgTop3=['','rgba(180,180,180,0.1)','rgba(180,110,50,0.1)'];
+    const bg=i<3?bgTop3[i]:'rgba(255,255,255,0.04)';
+    const nameColor=isLast?'rgba(255,255,255,0.35)':isLast2?'rgba(255,255,255,0.5)':'rgba(255,255,255,0.85)';
+    const medal=i<3?medals[i]:(loserIcon||String(i+1));
+    const medalEl=`<span style="font-size:20px;width:32px;text-align:center">${medal}</span>`;
+    return`<div class="sales-card-anim ${loserClass}" style="display:flex;align-items:center;gap:12px;background:${bg};border-radius:14px;padding:10px 14px;animation-delay:${i*0.05}s">
+      ${medalEl}
+      <span style="flex:1;font-size:14px;color:${nameColor};font-weight:${i<3?'600':'400'}">${name}</span>
+      <span style="font-size:14px;color:${i===1?'rgba(200,200,220,0.9)':i===2?'rgba(205,140,80,0.9)':isLast?'rgba(255,80,80,0.6)':'rgba(255,255,255,0.45)'};font-weight:${i<3?'600':'400'}">${fmt}</span>
     </div>`;
   }).join('');
-  // Updated timestamp
   const allUpdated=Object.values(salesData).filter(d=>d.updated_at);
   if(allUpdated.length>0){
     const latest=allUpdated.sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))[0];
     const d=new Date(latest.updated_at);
-    const fmt=`${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    document.getElementById('salesUpdatedAt').textContent=`Обновлено: ${fmt}${latest.updated_by?' · '+latest.updated_by:''}`;
+    document.getElementById('salesUpdatedAt').textContent=`Обновлено: ${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}${latest.updated_by?' · '+latest.updated_by:''}`;
   } else {
     document.getElementById('salesUpdatedAt').textContent='';
   }
 }
 
-function _salesEdit(name,val){
+function _salesEditVal(name,val){
   if(!salesData[name]) salesData[name]={};
   salesData[name].amount=parseInt(val)||0;
-  salesDirty=true;
   document.getElementById('salesSaveBtn').style.display='block';
 }
 
 async function saveSalesLeaderboard(){
   const btn=document.getElementById('salesSaveBtn');
-  btn.textContent='Сохранение...';
-  btn.disabled=true;
+  btn.textContent='Сохранение...';btn.disabled=true;
   for(const name of salesWaiters){
     const amount=salesData[name]?.amount||0;
     await sf(`sales_records?staff_name=eq.${encodeURIComponent(name)}&month=eq.${encodeURIComponent(salesCurrentMonth)}`,'DELETE');
     await sf('sales_records','POST',{staff_name:name,month:salesCurrentMonth,amount,updated_by:myName||''});
   }
-  salesDirty=false;
-  btn.style.display='none';
-  btn.textContent='💾 Сохранить';
-  btn.disabled=false;
+  _salesEditMode=false;
+  const editBtn=document.getElementById('salesEditBtn');
+  editBtn.textContent='✏️ Редактировать';
+  editBtn.style.background='rgba(255,255,255,0.1)';
+  editBtn.style.borderColor='rgba(255,255,255,0.2)';
+  editBtn.style.color='rgba(255,255,255,0.7)';
+  editBtn.disabled=false;
   showToast('✓ Сохранено');
   await _loadSalesData();
 }
@@ -2883,8 +3233,10 @@ function _newsRealAuthor(author){
 }
 function _newsFooter(post){
   const isAnon=post.author==='Аноним'||(post.author&&post.author.startsWith('Аноним·'));
+  const isMgr=['Игорь','Алена','Алексей Щ'].includes(myName);
   const isOwn=!isAnon&&_newsRealAuthor(post.author)===myName;
-  const del=isOwn?`<button class="na-delete-btn" onclick="deleteNewsPost('${post.id}','${escapeHtml(post.author)}')">✕ удалить</button>`:'<span></span>';
+  const canDel=isOwn||isMgr;
+  const del=canDel?`<button class="na-delete-btn" onclick="deleteNewsPost('${post.id}','${escapeHtml(post.author)}')">✕ удалить</button>`:'<span></span>';
   return `<div class="na-footer">${del}<span>Редакция «Вино &amp; Хинкали»</span></div>`;
 }
 function _newsCommentBlock(id){
@@ -3008,7 +3360,8 @@ function toggleNewsComments(postId,toggleEl){
 }
 
 async function deleteNewsPost(id,author){
-  if(_newsRealAuthor(author)!==myName){showToast('⚠️ Можно удалять только свои статьи');return;}
+  const isMgr=['Игорь','Алена','Алексей Щ'].includes(myName);
+  if(!isMgr&&_newsRealAuthor(author)!==myName){showToast('⚠️ Можно удалять только свои статьи');return;}
   if(!confirm('Удалить эту статью?')) return;
   const res=await fetch(`https://api.vino-hinkali.online/api/newspaper_posts/${id}`,{method:'DELETE'});
   if(res.ok||res.status===200||res.status===204){
