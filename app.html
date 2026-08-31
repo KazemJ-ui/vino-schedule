@@ -1490,7 +1490,7 @@ async function openMgrSchedView(){
           <select id="hos-select-${day}" onchange="saveAssignment(${day},'hostess',this.value)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
             <option value="">— не назначен —</option>
             <option value="Карина">Карина</option>
-            <option value="Аня">Аня</option>
+            <option value="Джеймс Калиста">Джеймс Калиста</option>
           </select>
         </div>
         <div style="flex:1;min-width:120px">
@@ -2242,7 +2242,7 @@ if(getCookie('theme')==='dark'){document.body.classList.add('dark');document.get
 function showNameScreen(){
   const grid=document.getElementById('nameGrid');
   const MANAGERS=['Игорь','Алена','Алексей Щ'];
-  const HOSTESS=['Аня'];
+  const HOSTESS=['Карина','Джеймс Калиста'];
   const ALUMNI=['Арсений','Вероника','Сперанская Виктория','Карина'];
   const groups=[
     {label:'👔 Менеджер',names:MANAGERS},
@@ -2793,7 +2793,7 @@ async function openMgrEditView(){
           <select class="edit-role-sel" onchange="saveAssignment(${day},'hostess',this.value)">
             <option value="">— не назначен —</option>
             <option value="Карина"${a.hostess==='Карина'?' selected':''}>Карина</option>
-            <option value="Аня"${a.hostess==='Аня'?' selected':''}>Аня</option>
+            <option value="Джеймс Калиста"${a.hostess==='Джеймс Калиста'?' selected':''}>Джеймс Калиста</option>
           </select>
         </div>
         <div style="flex:1">
