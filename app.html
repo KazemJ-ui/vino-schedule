@@ -1498,6 +1498,7 @@ async function openMgrSchedView(){
             <option value="">— не назначен —</option>
             <option value="Солтан">Солтан</option>
             <option value="Дмитрий">Дмитрий</option>
+            <option value="Олег">Олег</option>
           </select>
         </div>
       </div>
@@ -2430,7 +2431,7 @@ async function publishSchedule(){
   // Автоназначение менеджер/хостес/бармен
   const managers=['Игорь','Алена'];
   const hostesses=['Карина','Калиста'];
-  const bartenders=['Арсений','Солтан','Дмитрий'];
+  const bartenders=['Арсений','Солтан','Дмитрий','Олег'];
 
   // Загружаем ручные назначения менеджера
   const existingAssignments=await sf(`day_assignments?period=eq.${encodeURIComponent(period)}&select=*`);
@@ -2799,6 +2800,7 @@ async function openMgrEditView(){
             <option value="">— не назначен —</option>
             <option value="Солтан"${a.bartender==='Солтан'?' selected':''}>Солтан</option>
             <option value="Дмитрий"${a.bartender==='Дмитрий'?' selected':''}>Дмитрий</option>
+            <option value="Олег"${a.bartender==='Олег'?' selected':''}>Олег</option>
           </select>
         </div>
       </div>
