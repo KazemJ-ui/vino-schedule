@@ -2138,7 +2138,8 @@ async function startPasswordFlow(name){
     }
   }
   const rows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}&select=staff_name`);
-  if(!Array.isArray(rows)||rows.length===0){
+  // null = сетевая ошибка, показываем ввод пароля (запись скорее всего есть)
+  if(Array.isArray(rows)&&rows.length===0){
     _showPinCreate();
   } else {
     document.getElementById('pwdEnterTitle').textContent=`🔑 Привет, ${name}!`;
@@ -2150,6 +2151,13 @@ if(savedName!==null){
   if(savedName&&savedToken){
     // Проверяем токен в базе
     sf(`staff_sessions?staff_name=eq.${encodeURIComponent(savedName)}&session_token=eq.${encodeURIComponent(savedToken)}&select=staff_name`).then(rows=>{
+      if(rows===null){
+        // Сеть недоступна — доверяем куке и логинимся
+        myName=savedName;
+        document.getElementById('nameScreen').style.display='none';
+        document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(savedName)?'none':'';
+        return;
+      }
       if(Array.isArray(rows)&&rows.length>0){
         // Токен валиден — авто-логин
         myName=savedName;
