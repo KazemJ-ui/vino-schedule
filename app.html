@@ -824,8 +824,8 @@ function showToast(msg){
 
 // ── РОССИЙСКИЙ СЕРВЕР HTTPS (работает без VPN) ──
 const SU='https://api.vino-hinkali.online/api';
-async function sf(path,method='GET',body=null,extraHeaders={}){
-  const o={method,headers:{'Content-Type':'application/json','Prefer':'return=representation','Cache-Control':'no-store',...extraHeaders},cache:'no-store'};
+async function sf(path,method='GET',body=null){
+  const o={method,headers:{'Content-Type':'application/json','Prefer':'return=representation'}};
   if(body)o.body=JSON.stringify(body);
   try{const r=await fetch(SU+'/'+path,o);return await r.json();}catch(e){return null;}
 }
@@ -2075,7 +2075,7 @@ async function _pinCreateNext(){
     }
     const hash=await hashPassword(_pinCreateVal);
     const token=genToken();
-    try{localStorage.setItem('pwd_'+_pwdPendingName,hash);localStorage.setItem('stok_'+_pwdPendingName,token);}catch(e){}
+    await sf('staff_sessions','POST',{staff_name:_pwdPendingName,password_hash:hash,session_token:token});
     setCookie('vinoSessionToken',token,365);
     finishLogin(_pwdPendingName);
   }
@@ -2092,14 +2092,14 @@ function pinEnterDel(){
 }
 async function _pinEnterCheck(){
   const hash=await hashPassword(_pinEnterVal);
-  let stored=null;try{stored=localStorage.getItem('pwd_'+_pwdPendingName);}catch(e){}
-  if(!stored||stored!==hash){
+  const rows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(_pwdPendingName)}&password_hash=eq.${encodeURIComponent(hash)}&select=staff_name`);
+  if(!Array.isArray(rows)||rows.length===0){
     for(let i=0;i<4;i++){const d=document.getElementById('ped'+i);if(d)d.className='pin-dot error';}
     setTimeout(()=>{_pinEnterVal='';_pinUpdateDots('ped','');},700);
     return;
   }
   const token=genToken();
-  try{localStorage.setItem('stok_'+_pwdPendingName,token);}catch(e){}
+  await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(_pwdPendingName)}`,'PATCH',{session_token:token});
   setCookie('vinoSessionToken',token,365);
   finishLogin(_pwdPendingName);
 }
@@ -2126,10 +2126,19 @@ function backToNameScreen(){
   document.getElementById('nameScreen').style.display='flex';
   _pwdPendingName=null;
 }
-function startPasswordFlow(name){
+async function startPasswordFlow(name){
   _pwdPendingName=name;
-  let storedHash=null;try{storedHash=localStorage.getItem('pwd_'+name);}catch(e){}
-  if(!storedHash){
+  const curToken=getCookie('vinoSessionToken');
+  // Если есть токен — сначала проверяем его
+  if(curToken){
+    const tokenRows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}&session_token=eq.${encodeURIComponent(curToken)}&select=staff_name`);
+    if(Array.isArray(tokenRows)&&tokenRows.length>0){
+      finishLogin(name);
+      return;
+    }
+  }
+  const rows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}&select=staff_name`);
+  if(!Array.isArray(rows)||rows.length===0){
     _showPinCreate();
   } else {
     document.getElementById('pwdEnterTitle').textContent=`🔑 Привет, ${name}!`;
@@ -2139,26 +2148,26 @@ function startPasswordFlow(name){
 
 if(savedName!==null){
   if(savedName&&savedToken){
-    // Проверяем токен в localStorage
-    let lsToken=null;try{lsToken=localStorage.getItem('stok_'+savedName);}catch(e){}
-    if(lsToken&&lsToken===savedToken){
-      // Токен совпадает — авто-логин
-      myName=savedName;
-      document.getElementById('nameScreen').style.display='none';
-      document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(savedName)?'none':'';
-      if('Notification' in window && Notification.permission==='default'){
-        Notification.requestPermission().then(p=>{if(p==='granted')subscribeToPush(savedName);});
-      } else if('Notification' in window && Notification.permission==='granted'){
-        if('serviceWorker' in navigator) navigator.serviceWorker.ready.then(()=>subscribeToPush(savedName));
+    // Проверяем токен в базе
+    sf(`staff_sessions?staff_name=eq.${encodeURIComponent(savedName)}&session_token=eq.${encodeURIComponent(savedToken)}&select=staff_name`).then(rows=>{
+      if(Array.isArray(rows)&&rows.length>0){
+        // Токен валиден — авто-логин
+        myName=savedName;
+        document.getElementById('nameScreen').style.display='none';
+        document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(savedName)?'none':'';
+        if('Notification' in window && Notification.permission==='default'){
+          Notification.requestPermission().then(p=>{if(p==='granted')subscribeToPush(savedName);});
+        } else if('Notification' in window && Notification.permission==='granted'){
+          if('serviceWorker' in navigator) navigator.serviceWorker.ready.then(()=>subscribeToPush(savedName));
+        }
+      } else {
+        // Токен устарел — запросить пароль
+        document.getElementById('nameScreen').style.display='none';
+        startPasswordFlow(savedName);
       }
-    } else {
-      // Токен не совпал — запросить пароль
-      document.getElementById('nameScreen').style.display='none';
-      startPasswordFlow(savedName);
-    }
+    });
   } else if(savedName){
     // Имя есть но токена нет — запросить пароль
-    document.getElementById('nameScreen').style.display='none';
     startPasswordFlow(savedName);
   } else {
     // null имя (менеджер без имени)
@@ -2453,7 +2462,7 @@ async function publishSchedule(){
   }
 
   showToast('✅ График опубликован!');
-  localStorage.removeItem('vino_schedule_cache_v3');
+  localStorage.removeItem('vino_schedule_cache_v2');
   await sf('schedule_periods?is_open=eq.true','PATCH',{is_open:false});
   document.getElementById('schedBanner').classList.remove('show');
   document.querySelector('.tabs-wrap').style.top='78px';
@@ -2477,44 +2486,23 @@ async function loadPublishedSchedule(fromCache=false){
       <div class="skel skel-block"></div>
     </div>`;
   }
-  // Загружаем свежие данные с сервера — получаем все периоды и выбираем последний
-  const allPeriodRows=await sf('published_schedule?select=period');
-  const latestPeriodName=(()=>{
-    if(!Array.isArray(allPeriodRows)||!allPeriodRows.length) return null;
-    const unique=[...new Set(allPeriodRows.map(r=>r.period))];
-    if(unique.length===1) return unique[0];
-    const MO=['январ','феврал','март','апрел','май','июн','июл','август','сентябр','октябр','ноябр','декабр'];
-    unique.sort((a,b)=>{
-      const ai=MO.findIndex(m=>a.toLowerCase().includes(m));
-      const bi=MO.findIndex(m=>b.toLowerCase().includes(m));
-      return ai-bi;
-    });
-    return unique[unique.length-1];
-  })();
-
-  if(!latestPeriodName){
-    // API недоступен — показываем кэш если есть
-    try{
-      const cached=localStorage.getItem('vino_schedule_cache_v3');
-      if(cached){
-        const data=JSON.parse(cached);
-        if(data.rows&&data.rows.length){ applyScheduleData(data.rows,data.hist,data.assignments); buildScheduleUI(); }
-      }
-    }catch(e){}
-    return;
-  }
-
-  // Показываем кэш только если период совпадает
+  // Показываем кэш мгновенно (без видимого мигания)
   try{
-    const cached=localStorage.getItem('vino_schedule_cache_v3');
+    const cached=localStorage.getItem('vino_schedule_cache_v2');
     if(cached){
       const data=JSON.parse(cached);
-      if(data.period===latestPeriodName&&data.rows&&data.rows.length){
-        applyScheduleData(data.rows,data.hist,data.assignments);
+      if(data.rows&&data.rows.length){
+        applyScheduleData(data.rows, data.hist, data.assignments);
         buildScheduleUI();
       }
     }
   }catch(e){}
+
+  // В фоне всегда грузим свежие данные с сервера
+  // Определяем последний опубликованный период
+  const latestPeriod=await sf('published_schedule?select=period&order=created_at.desc&limit=1');
+  const latestPeriodName=(Array.isArray(latestPeriod)&&latestPeriod.length>0)?latestPeriod[0].period:null;
+  if(!latestPeriodName) return;
 
   const [rows, hist, assignments] = await Promise.all([
     sf(`published_schedule?period=eq.${encodeURIComponent(latestPeriodName)}&select=*&order=day`),
@@ -2524,9 +2512,9 @@ async function loadPublishedSchedule(fromCache=false){
 
   if(!Array.isArray(rows)||rows.length===0) return;
 
-  // Сохраняем в кэш с именем периода
+  // Сохраняем в кэш
   try{
-    localStorage.setItem('vino_schedule_cache_v3', JSON.stringify({rows,hist,assignments,period:latestPeriodName,ts:Date.now()}));
+    localStorage.setItem('vino_schedule_cache_v2', JSON.stringify({rows,hist,assignments,ts:Date.now()}));
   }catch(e){}
 
   applyScheduleData(rows, hist, assignments);
@@ -2696,11 +2684,11 @@ if('serviceWorker' in navigator){
       const regs=await navigator.serviceWorker.getRegistrations();
       for(const reg of regs){
         const sw=reg.active||reg.waiting||reg.installing;
-        if(sw&&!sw.scriptURL.includes('sw.js?v=1793875068')){
+        if(sw&&!sw.scriptURL.includes('sw.js?v=1789513972')){
           await reg.unregister();
         }
       }
-      const reg=await navigator.serviceWorker.register('./sw.js?v=1793875068');
+      const reg=await navigator.serviceWorker.register('./sw.js?v=1789513972');
       await reg.update();
       if(myName&&'Notification' in window&&Notification.permission==='granted'){
         subscribeToPush(myName);
@@ -2711,15 +2699,6 @@ if('serviceWorker' in navigator){
     }catch(e){console.log('SW error:',e);}
   });
 }
-
-// Установленное PWA не перезагружается при «закрытии» — обновляемся при возврате
-let _hiddenAt=0;
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='hidden'){_hiddenAt=Date.now();return;}
-  if(_hiddenAt&&Date.now()-_hiddenAt>5*60*1000){window.location.reload();return;}
-  if('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.update()));
-  loadPublishedSchedule();
-});
 
 // ── РЕДАКТОР ГРАФИКА ──
 async function openMgrEditView(){
