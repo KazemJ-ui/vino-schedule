@@ -824,8 +824,8 @@ function showToast(msg){
 
 // ── РОССИЙСКИЙ СЕРВЕР HTTPS (работает без VPN) ──
 const SU='https://api.vino-hinkali.online/api';
-async function sf(path,method='GET',body=null){
-  const o={method,headers:{'Content-Type':'application/json','Prefer':'return=representation'}};
+async function sf(path,method='GET',body=null,prefer='return=representation'){
+  const o={method,headers:{'Content-Type':'application/json','Prefer':prefer}};
   if(body)o.body=JSON.stringify(body);
   try{const r=await fetch(SU+'/'+path,o);return await r.json();}catch(e){return null;}
 }
@@ -2075,7 +2075,7 @@ async function _pinCreateNext(){
     }
     const hash=await hashPassword(_pinCreateVal);
     const token=genToken();
-    await sf('staff_sessions','POST',{staff_name:_pwdPendingName,password_hash:hash,session_token:token});
+    await sf('staff_sessions?on_conflict=staff_name','POST',{staff_name:_pwdPendingName,password_hash:hash,session_token:token},'resolution=merge-duplicates,return=representation');
     setCookie('vinoSessionToken',token,365);
     finishLogin(_pwdPendingName);
   }
@@ -2138,7 +2138,7 @@ async function startPasswordFlow(name){
     }
   }
   const rows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}&select=staff_name`);
-  if(!Array.isArray(rows)||rows.length===0){
+  if(Array.isArray(rows)&&rows.length===0){
     _showPinCreate();
   } else {
     document.getElementById('pwdEnterTitle').textContent=`🔑 Привет, ${name}!`;
@@ -2150,8 +2150,8 @@ if(savedName!==null){
   if(savedName&&savedToken){
     // Проверяем токен в базе
     sf(`staff_sessions?staff_name=eq.${encodeURIComponent(savedName)}&session_token=eq.${encodeURIComponent(savedToken)}&select=staff_name`).then(rows=>{
-      if(Array.isArray(rows)&&rows.length>0){
-        // Токен валиден — авто-логин
+      // Сервер недоступен (не массив) — доверяем куке
+      if(!Array.isArray(rows)||rows.length>0){
         myName=savedName;
         document.getElementById('nameScreen').style.display='none';
         document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(savedName)?'none':'';
