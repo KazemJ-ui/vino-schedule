@@ -2075,7 +2075,7 @@ async function _pinCreateNext(){
     }
     const hash=await hashPassword(_pinCreateVal);
     const token=genToken();
-    await sf('staff_sessions','POST',{staff_name:_pwdPendingName,password_hash:hash,session_token:token},{'Prefer':'resolution=merge-duplicates,return=representation'});
+    try{localStorage.setItem('pwd_'+_pwdPendingName,hash);localStorage.setItem('stok_'+_pwdPendingName,token);}catch(e){}
     setCookie('vinoSessionToken',token,365);
     finishLogin(_pwdPendingName);
   }
@@ -2092,14 +2092,14 @@ function pinEnterDel(){
 }
 async function _pinEnterCheck(){
   const hash=await hashPassword(_pinEnterVal);
-  const rows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(_pwdPendingName)}&password_hash=eq.${encodeURIComponent(hash)}&select=staff_name`);
-  if(!Array.isArray(rows)||rows.length===0){
+  let stored=null;try{stored=localStorage.getItem('pwd_'+_pwdPendingName);}catch(e){}
+  if(!stored||stored!==hash){
     for(let i=0;i<4;i++){const d=document.getElementById('ped'+i);if(d)d.className='pin-dot error';}
     setTimeout(()=>{_pinEnterVal='';_pinUpdateDots('ped','');},700);
     return;
   }
   const token=genToken();
-  await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(_pwdPendingName)}`,'PATCH',{session_token:token});
+  try{localStorage.setItem('stok_'+_pwdPendingName,token);}catch(e){}
   setCookie('vinoSessionToken',token,365);
   finishLogin(_pwdPendingName);
 }
@@ -2126,20 +2126,10 @@ function backToNameScreen(){
   document.getElementById('nameScreen').style.display='flex';
   _pwdPendingName=null;
 }
-async function startPasswordFlow(name){
+function startPasswordFlow(name){
   _pwdPendingName=name;
-  const curToken=getCookie('vinoSessionToken');
-  // Если есть токен — сначала проверяем его
-  if(curToken){
-    const tokenRows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}&session_token=eq.${encodeURIComponent(curToken)}&select=staff_name`);
-    if(Array.isArray(tokenRows)&&tokenRows.length>0){
-      finishLogin(name);
-      return;
-    }
-  }
-  const rows=await sf(`staff_sessions?staff_name=eq.${encodeURIComponent(name)}&select=staff_name`);
-  // null = сетевая ошибка, показываем ввод пароля (запись скорее всего есть)
-  if(Array.isArray(rows)&&rows.length===0){
+  let storedHash=null;try{storedHash=localStorage.getItem('pwd_'+name);}catch(e){}
+  if(!storedHash){
     _showPinCreate();
   } else {
     document.getElementById('pwdEnterTitle').textContent=`🔑 Привет, ${name}!`;
@@ -2149,33 +2139,26 @@ async function startPasswordFlow(name){
 
 if(savedName!==null){
   if(savedName&&savedToken){
-    // Проверяем токен в базе
-    sf(`staff_sessions?staff_name=eq.${encodeURIComponent(savedName)}&session_token=eq.${encodeURIComponent(savedToken)}&select=staff_name`).then(rows=>{
-      if(rows===null){
-        // Сеть недоступна — доверяем куке и логинимся
-        myName=savedName;
-        document.getElementById('nameScreen').style.display='none';
-        document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(savedName)?'none':'';
-        return;
+    // Проверяем токен в localStorage
+    let lsToken=null;try{lsToken=localStorage.getItem('stok_'+savedName);}catch(e){}
+    if(lsToken&&lsToken===savedToken){
+      // Токен совпадает — авто-логин
+      myName=savedName;
+      document.getElementById('nameScreen').style.display='none';
+      document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(savedName)?'none':'';
+      if('Notification' in window && Notification.permission==='default'){
+        Notification.requestPermission().then(p=>{if(p==='granted')subscribeToPush(savedName);});
+      } else if('Notification' in window && Notification.permission==='granted'){
+        if('serviceWorker' in navigator) navigator.serviceWorker.ready.then(()=>subscribeToPush(savedName));
       }
-      if(Array.isArray(rows)&&rows.length>0){
-        // Токен валиден — авто-логин
-        myName=savedName;
-        document.getElementById('nameScreen').style.display='none';
-        document.getElementById('newsBadgeBtn').style.display=NEWS_HIDDEN_FOR.includes(savedName)?'none':'';
-        if('Notification' in window && Notification.permission==='default'){
-          Notification.requestPermission().then(p=>{if(p==='granted')subscribeToPush(savedName);});
-        } else if('Notification' in window && Notification.permission==='granted'){
-          if('serviceWorker' in navigator) navigator.serviceWorker.ready.then(()=>subscribeToPush(savedName));
-        }
-      } else {
-        // Токен устарел — запросить пароль
-        document.getElementById('nameScreen').style.display='none';
-        startPasswordFlow(savedName);
-      }
-    });
+    } else {
+      // Токен не совпал — запросить пароль
+      document.getElementById('nameScreen').style.display='none';
+      startPasswordFlow(savedName);
+    }
   } else if(savedName){
     // Имя есть но токена нет — запросить пароль
+    document.getElementById('nameScreen').style.display='none';
     startPasswordFlow(savedName);
   } else {
     // null имя (менеджер без имени)
