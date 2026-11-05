@@ -2712,6 +2712,15 @@ if('serviceWorker' in navigator){
   });
 }
 
+// Установленное PWA не перезагружается при «закрытии» — обновляемся при возврате
+let _hiddenAt=0;
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'){_hiddenAt=Date.now();return;}
+  if(_hiddenAt&&Date.now()-_hiddenAt>5*60*1000){window.location.reload();return;}
+  if('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.update()));
+  loadPublishedSchedule();
+});
+
 // ── РЕДАКТОР ГРАФИКА ──
 async function openMgrEditView(){
   document.getElementById('mgrMainSection').style.display='none';
