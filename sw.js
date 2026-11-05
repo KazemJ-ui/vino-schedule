@@ -1,4 +1,4 @@
-const CACHE = 'vino-v1793875068';
+const CACHE = 'vino-v1793904826';
 
 self.addEventListener('install', e => {
   self.skipWaiting();
