@@ -858,7 +858,7 @@ const zonesDef=[
   {key:"Оранжевые",label:"Оранжевые",icon:"🍊",cls:"zor"}
 ];
 const weekends=["Сб","Вс"];
-const allStaff=["Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Калиста","София","Игорь","Алексей Щ","Ева","Серикова Татьяна","Алиса","Алеся","Максим"];
+const allStaff=["Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Калиста","София","Игорь","Алексей Щ","Ева","Серикова Татьяна","Алиса","Алеся","Максим","Альбина"];
 const NEWS_HIDDEN_FOR=[];
 
 let currentDay=null,myName=null,swapRequests={},swapModalDay=null;
@@ -1450,7 +1450,7 @@ async function openMgrSchedView(){
   const periodYear=new Date().getFullYear();
   const periodMonthName=MONTH_NAMES_NOM[periodMonthNum];
   activeMgrPeriod=activePeriod.period;
-  const NON_WAITERS=['Игорь','Алена','Алексей Щ','Аня','Карина',...FORMER_STAFF];
+  const NON_WAITERS=['Игорь','Алена','Алексей Щ','Аня','Карина','София','Альбина',...FORMER_STAFF];
   const allWaiters=allStaff.filter(n=>!NON_WAITERS.includes(n));
   const rows=await sf(`schedule_requests?period=eq.${encodeURIComponent(activePeriod.period)}&select=*`);
   const byDay={};
@@ -1500,6 +1500,7 @@ async function openMgrSchedView(){
           <select id="hos-select-${day}" onchange="saveAssignment(${day},'hostess',this.value,activeMgrPeriod)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
             <option value="">— не назначен —</option>
             <option value="София">София</option>
+            <option value="Альбина">Альбина</option>
           </select>
         </div>
         <div style="flex:1;min-width:120px">
@@ -2259,7 +2260,7 @@ if(getCookie('theme')==='dark'){document.body.classList.add('dark');document.get
 function showNameScreen(){
   const grid=document.getElementById('nameGrid');
   const MANAGERS=['Игорь','Алена','Алексей Щ'];
-  const HOSTESS=['София'];
+  const HOSTESS=['София','Альбина'];
   const ALUMNI=['Арсений','Вероника','Сперанская Виктория','Карина','Калиста','Серикова Татьяна'];
   const groups=[
     {label:'👔 Менеджер',names:MANAGERS},
@@ -2449,7 +2450,7 @@ async function publishSchedule(){
 
   // Автоназначение менеджер/хостес/бармен
   const managers=['Игорь','Алена'];
-  const hostesses=['София'];
+  const hostesses=['София','Альбина'];
   const bartenders=['Дмитрий','Артур'];
 
   // Загружаем ручные назначения менеджера
@@ -2810,6 +2811,7 @@ async function openMgrEditView(){
           <select class="edit-role-sel" onchange="saveAssignment(${day},'hostess',this.value)">
             <option value="">— не назначен —</option>
             <option value="София"${a.hostess==='София'?' selected':''}>София</option>
+            <option value="Альбина"${a.hostess==='Альбина'?' selected':''}>Альбина</option>
           </select>
         </div>
         <div style="flex:1">
