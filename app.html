@@ -1498,8 +1498,6 @@ async function openMgrSchedView(){
           <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">ХОСТЕС</div>
           <select id="hos-select-${day}" onchange="saveAssignment(${day},'hostess',this.value)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
             <option value="">— не назначен —</option>
-            <option value="Карина">Карина</option>
-            <option value="Калиста">Калиста</option>
             <option value="София">София</option>
           </select>
         </div>
@@ -1507,9 +1505,7 @@ async function openMgrSchedView(){
           <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">БАРМЕН</div>
           <select id="bar-select-${day}" onchange="saveAssignment(${day},'bartender',this.value)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
             <option value="">— не назначен —</option>
-            <option value="Солтан">Солтан</option>
             <option value="Дмитрий">Дмитрий</option>
-            <option value="Олег">Олег</option>
             <option value="Артур">Артур</option>
           </select>
         </div>
@@ -2262,8 +2258,8 @@ if(getCookie('theme')==='dark'){document.body.classList.add('dark');document.get
 function showNameScreen(){
   const grid=document.getElementById('nameGrid');
   const MANAGERS=['Игорь','Алена','Алексей Щ'];
-  const HOSTESS=['Карина','Калиста','София'];
-  const ALUMNI=['Арсений','Вероника','Сперанская Виктория','Карина'];
+  const HOSTESS=['София'];
+  const ALUMNI=['Арсений','Вероника','Сперанская Виктория','Карина','Калиста','Серикова Татьяна'];
   const groups=[
     {label:'👔 Менеджер',names:MANAGERS},
     {label:'🌸 Хостес',names:HOSTESS},
@@ -2452,8 +2448,8 @@ async function publishSchedule(){
 
   // Автоназначение менеджер/хостес/бармен
   const managers=['Игорь','Алена'];
-  const hostesses=['Карина','Калиста','София'];
-  const bartenders=['Арсений','Солтан','Дмитрий','Олег','Артур'];
+  const hostesses=['София'];
+  const bartenders=['Дмитрий','Артур'];
 
   // Загружаем ручные назначения менеджера
   const existingAssignments=await sf(`day_assignments?period=eq.${encodeURIComponent(period)}&select=*`);
@@ -2812,8 +2808,6 @@ async function openMgrEditView(){
           <div style="font-size:9px;color:rgba(255,255,255,0.4);margin-bottom:3px">ХОСТЕС</div>
           <select class="edit-role-sel" onchange="saveAssignment(${day},'hostess',this.value)">
             <option value="">— не назначен —</option>
-            <option value="Карина"${a.hostess==='Карина'?' selected':''}>Карина</option>
-            <option value="Калиста"${a.hostess==='Калиста'?' selected':''}>Калиста</option>
             <option value="София"${a.hostess==='София'?' selected':''}>София</option>
           </select>
         </div>
@@ -2821,9 +2815,7 @@ async function openMgrEditView(){
           <div style="font-size:9px;color:rgba(255,255,255,0.4);margin-bottom:3px">БАРМЕН</div>
           <select class="edit-role-sel" onchange="saveAssignment(${day},'bartender',this.value)">
             <option value="">— не назначен —</option>
-            <option value="Солтан"${a.bartender==='Солтан'?' selected':''}>Солтан</option>
             <option value="Дмитрий"${a.bartender==='Дмитрий'?' selected':''}>Дмитрий</option>
-            <option value="Олег"${a.bartender==='Олег'?' selected':''}>Олег</option>
             <option value="Артур"${a.bartender==='Артур'?' selected':''}>Артур</option>
           </select>
         </div>
