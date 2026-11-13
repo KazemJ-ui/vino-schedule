@@ -1388,10 +1388,12 @@ async function savePref(day,preference){
 }
 
 
-async function saveAssignment(day, field, value){
-  // Используем период из опубликованного графика или из currentPeriod
-  const periodRow=await sf('published_schedule?select=period&limit=1');
-  const period=(Array.isArray(periodRow)&&periodRow.length>0)?periodRow[0].period:(currentPeriod?currentPeriod.period:null);
+async function saveAssignment(day, field, value, forPeriod){
+  let period=forPeriod;
+  if(!period){
+    const periodRow=await sf('published_schedule?select=period&limit=1');
+    period=(Array.isArray(periodRow)&&periodRow.length>0)?periodRow[0].period:(currentPeriod?currentPeriod.period:null);
+  }
   if(!period){showToast('❌ Период не найден');return;}
 
   // Проверяем есть ли запись
@@ -1414,8 +1416,7 @@ async function saveAssignment(day, field, value){
 }
 
 async function loadAssignments(){
-  const periodRow=await sf('published_schedule?select=period&limit=1');
-  const period=(Array.isArray(periodRow)&&periodRow.length>0)?periodRow[0].period:(currentPeriod?currentPeriod.period:null);
+  const period=activeMgrPeriod;
   if(!period) return;
   const rows=await sf(`day_assignments?period=eq.${encodeURIComponent(period)}&select=*`);
   if(!Array.isArray(rows)) return;
@@ -1488,7 +1489,7 @@ async function openMgrSchedView(){
       <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
         <div style="flex:1;min-width:120px">
           <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">МЕНЕДЖЕР</div>
-          <select id="mgr-select-${day}" onchange="saveAssignment(${day},'manager',this.value)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
+          <select id="mgr-select-${day}" onchange="saveAssignment(${day},'manager',this.value,activeMgrPeriod)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
             <option value="">— не назначен —</option>
             <option value="Игорь">Игорь</option>
             <option value="Алексей Щ">Алексей Щ</option>
@@ -1496,14 +1497,14 @@ async function openMgrSchedView(){
         </div>
         <div style="flex:1;min-width:120px">
           <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">ХОСТЕС</div>
-          <select id="hos-select-${day}" onchange="saveAssignment(${day},'hostess',this.value)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
+          <select id="hos-select-${day}" onchange="saveAssignment(${day},'hostess',this.value,activeMgrPeriod)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
             <option value="">— не назначен —</option>
             <option value="София">София</option>
           </select>
         </div>
         <div style="flex:1;min-width:120px">
           <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">БАРМЕН</div>
-          <select id="bar-select-${day}" onchange="saveAssignment(${day},'bartender',this.value)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
+          <select id="bar-select-${day}" onchange="saveAssignment(${day},'bartender',this.value,activeMgrPeriod)" style="width:100%;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px">
             <option value="">— не назначен —</option>
             <option value="Дмитрий">Дмитрий</option>
             <option value="Артур">Артур</option>
