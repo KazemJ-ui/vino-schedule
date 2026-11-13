@@ -621,14 +621,8 @@ if(WINTER){
     <div class="header-btns">
       <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
       <button class="theme-btn" id="notifBtn" onclick="requestPushPermission()" title="Уведомления" style="display:none">🔕</button>
-      <div class="chat-btn-wrap">
-        <button class="theme-btn" onclick="openChat()" title="Чат смены">💬</button>
-        <span class="chat-dot" id="chatDot"></span>
-      </div>
       <button class="theme-btn" id="newsBadgeBtn" onclick="openNewspaper()" title="Газета коллектива">📰<span class="news-badge" id="newsBadge" style="display:none"></span></button>
-      <button class="theme-btn" id="salesBtn" onclick="openSalesLeaderboard()" title="Лидерборд продаж">🏆</button>
-      <button class="theme-btn" id="nameBtn" onclick="showNameScreen()" title="Сменить имя">👤<
-      </button>
+      <button class="theme-btn" id="nameBtn" onclick="showNameScreen()" title="Сменить имя">👤</button>
       <button class="theme-btn" onclick="openMgrScreen()" title="Панель менеджера">👔</button>
     </div>
   </div>
@@ -1046,24 +1040,6 @@ async function sendMessage(){
     await loadMessages();
   }
 }
-
-// ── SWIPE GESTURES ──
-let swipeStartX=0, swipeStartY=0;
-
-// Свайп влево от правого края — открыть чат
-document.addEventListener('touchstart',e=>{
-  swipeStartX=e.touches[0].clientX;
-  swipeStartY=e.touches[0].clientY;
-},{passive:true});
-
-document.addEventListener('touchend',e=>{
-  if(chatOpen) return;
-  const dx=e.changedTouches[0].clientX-swipeStartX;
-  const dy=Math.abs(e.changedTouches[0].clientY-swipeStartY);
-  if(dx<-60&&dy<50&&swipeStartX>window.innerWidth-80){
-    openChat();
-  }
-},{passive:true});
 
 // Свайп вправо в чате — закрыть
 const chatScreenEl=document.getElementById('chatScreen');
@@ -2723,7 +2699,6 @@ async function refreshAll(){
   }
 }
 
-setInterval(()=>{ if(!chatOpen) loadMessages(); },1000);
 setInterval(refreshAll,5000);
 
 // Переход на текущий день — обрабатывается в loadPublishedSchedule
