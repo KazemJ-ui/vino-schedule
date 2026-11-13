@@ -241,6 +241,11 @@ body.dark footer{color:#444}
 .pin-key-back{font-size:16px;color:rgba(255,255,255,0.4);border-color:transparent;background:transparent}
 .pin-key-del{font-size:18px}
 .mgr-panel{width:100%;max-width:420px}
+.mgr-pick-label{font-size:11px;color:rgba(255,255,255,0.45);margin:6px 0}
+.mgr-pick-row{display:flex;flex-wrap:wrap;gap:8px}
+.mgr-pick,.mgr-time{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);color:#fff;border-radius:18px;padding:9px 14px;font-size:14px;cursor:pointer;font-family:inherit}
+.mgr-pick.on{background:rgba(201,168,76,0.25);border-color:var(--gold);color:var(--gold)}
+.mgr-time{border-radius:10px;background:rgba(80,200,120,0.15);border-color:rgba(80,200,120,0.4);color:#7fdc9a}
 .mgr-panel-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);font-weight:700;margin-bottom:16px;text-align:center}
 .mgr-section-title{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.5);font-weight:700;margin:20px 0 10px}
 .mgr-card{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px 16px;margin-bottom:10px}
@@ -1444,7 +1449,7 @@ async function openMgrSchedView(){
   const periodYear=new Date().getFullYear();
   const periodMonthName=MONTH_NAMES_NOM[periodMonthNum];
   activeMgrPeriod=activePeriod.period;
-  const NON_WAITERS=['Игорь','Алена','Алексей Щ','Аня','Карина'];
+  const NON_WAITERS=['Игорь','Алена','Алексей Щ','Аня','Карина',...FORMER_STAFF];
   const allWaiters=allStaff.filter(n=>!NON_WAITERS.includes(n));
   const rows=await sf(`schedule_requests?period=eq.${encodeURIComponent(activePeriod.period)}&select=*`);
   const byDay={};
@@ -1536,6 +1541,15 @@ async function openMgrSchedView(){
   loadAssignments();
 }
 
+const FORMER_STAFF=['Сперанская Виктория','Калиста','Серикова Татьяна','Вероника','Арсений'];
+const MGR_TIMES=['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00'];
+function mgrPickStaff(day,name,btn){
+  document.querySelectorAll(`#mgr-day-entries-${day} .mgr-pick`).forEach(b=>b.classList.toggle('on',b===btn));
+  document.getElementById('mgr-pick-times-'+day).innerHTML=
+    `<div class="mgr-pick-label">Время для ${name}:</div><div class="mgr-pick-row">`+
+    MGR_TIMES.map(t=>`<button class="mgr-time" onclick="mgrAddReq('${name}',${day},'${t}',activeMgrPeriod)">${t}</button>`).join('')+
+    `</div>`;
+}
 function _mgrDayEntriesHtml(day,entries,allWaiters){
   const TIMES=['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','выходной'];
   const responded=new Set(entries.map(e=>e.staff_name));
@@ -1548,13 +1562,10 @@ function _mgrDayEntriesHtml(day,entries,allWaiters){
     <button onclick="mgrDeleteReq('${e.staff_name}',${day},activeMgrPeriod)" style="background:none;border:none;color:#e07070;font-size:16px;cursor:pointer;padding:0 2px">✕</button>
   </div>`).join('');
   if(notResponded.length>0){
-    html+=`<div style="margin-top:6px;border-top:1px solid rgba(255,255,255,0.06);padding-top:6px">
-      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Не ответили:</div>
-      ${notResponded.map(name=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:12px;gap:6px">
-        <span style="color:rgba(255,255,255,0.45);flex:1">${name}</span>
-        <select id="mgr-add-sel-${day}-${name.replace(/\s/g,'_')}" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:6px;padding:2px 4px;font-size:12px"><option value="">— время —</option>${timeOpts}</select>
-        <button onclick="mgrAddReq('${name}',${day},document.getElementById('mgr-add-sel-${day}-${name.replace(/\s/g,'_')}').value,activeMgrPeriod)" style="background:rgba(80,200,120,0.2);border:1px solid rgba(80,200,120,0.4);color:#4CAF50;border-radius:6px;padding:2px 8px;font-size:12px;cursor:pointer">+</button>
-      </div>`).join('')}</div>`;
+    html+=`<div style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.06);padding-top:8px">
+      <div class="mgr-pick-label">Добавить официанта:</div>
+      <div class="mgr-pick-row">${notResponded.map(name=>`<button class="mgr-pick" onclick="mgrPickStaff(${day},'${name}',this)">${name}</button>`).join('')}</div>
+      <div id="mgr-pick-times-${day}"></div></div>`;
   }
   return html;
 }
@@ -1567,7 +1578,9 @@ async function mgrAddReq(staffName,day,time,period){
   await sf(`schedule_requests?period=eq.${encodeURIComponent(period)}&staff_name=eq.${encodeURIComponent(staffName)}&day=eq.${day}`,'DELETE');
   await sf('schedule_requests','POST',{period,staff_name:staffName,day:String(day),preference:time});
   showToast(`✓ Добавлено ${staffName}`);
-  openMgrSchedView();
+  const sc=document.querySelector('.mgr-screen'),y=sc?sc.scrollTop:0;
+  await openMgrSchedView();
+  if(sc) sc.scrollTop=y;
 }
 
 async function mgrUpdateReq(staffName,day,time,period){
