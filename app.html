@@ -858,7 +858,7 @@ const zonesDef=[
   {key:"Оранжевые",label:"Оранжевые",icon:"🍊",cls:"zor"}
 ];
 const weekends=["Сб","Вс"];
-const allStaff=["Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Калиста","София","Игорь","Алексей Щ","Ева","Серикова Татьяна","Алиса","Алеся"];
+const allStaff=["Казем Яра","Шакиров Темур","Сурен","Г. Карина","Карина","Вероника","Сперанская Виктория","Казем Евгений","Бабкина Олеся","Азиза","Александр","Алена","Калиста","София","Игорь","Алексей Щ","Ева","Серикова Татьяна","Алиса","Алеся","Максим"];
 const NEWS_HIDDEN_FOR=[];
 
 let currentDay=null,myName=null,swapRequests={},swapModalDay=null;
@@ -1510,6 +1510,7 @@ async function openMgrSchedView(){
             <option value="Солтан">Солтан</option>
             <option value="Дмитрий">Дмитрий</option>
             <option value="Олег">Олег</option>
+            <option value="Артур">Артур</option>
           </select>
         </div>
       </div>
@@ -2452,7 +2453,7 @@ async function publishSchedule(){
   // Автоназначение менеджер/хостес/бармен
   const managers=['Игорь','Алена'];
   const hostesses=['Карина','Калиста','София'];
-  const bartenders=['Арсений','Солтан','Дмитрий','Олег'];
+  const bartenders=['Арсений','Солтан','Дмитрий','Олег','Артур'];
 
   // Загружаем ручные назначения менеджера
   const existingAssignments=await sf(`day_assignments?period=eq.${encodeURIComponent(period)}&select=*`);
@@ -2823,6 +2824,7 @@ async function openMgrEditView(){
             <option value="Солтан"${a.bartender==='Солтан'?' selected':''}>Солтан</option>
             <option value="Дмитрий"${a.bartender==='Дмитрий'?' selected':''}>Дмитрий</option>
             <option value="Олег"${a.bartender==='Олег'?' selected':''}>Олег</option>
+            <option value="Артур"${a.bartender==='Артур'?' selected':''}>Артур</option>
           </select>
         </div>
       </div>
