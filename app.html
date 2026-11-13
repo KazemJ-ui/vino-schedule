@@ -1424,6 +1424,10 @@ async function loadAssignments(){
   });
 }
 
+function inPeriodRange(label,day){
+  const m=String(label).match(/(\d+)\s*[\u2013\-\u2014]\s*(\d+)/);
+  return !m||(+day>=+m[1]&&+day<=+m[2]);
+}
 async function openMgrSchedView(){
   document.getElementById('mgrSchedSection').style.display='none';
   document.getElementById('mgrSchedView').style.display='block';
@@ -1444,7 +1448,7 @@ async function openMgrSchedView(){
   const allWaiters=allStaff.filter(n=>!NON_WAITERS.includes(n));
   const rows=await sf(`schedule_requests?period=eq.${encodeURIComponent(activePeriod.period)}&select=*`);
   const byDay={};
-  if(Array.isArray(rows)) rows.forEach(r=>{if(!byDay[r.day])byDay[r.day]=[];byDay[r.day].push(r);});
+  if(Array.isArray(rows)) rows.filter(r=>inPeriodRange(activePeriod.period,r.day)).forEach(r=>{if(!byDay[r.day])byDay[r.day]=[];byDay[r.day].push(r);});
   const sortedDays=Object.keys(byDay).sort((a,b)=>+a-+b);
   const DAY_NAMES=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
   document.getElementById('mgrSchedDays').innerHTML=sortedDays.map(day=>{
@@ -2322,6 +2326,7 @@ async function publishSchedule(){
   // Группируем по дням
   const byDay={};
   rows.forEach(r=>{
+    if(!inPeriodRange(period,r.day)) return;
     if(r.preference==='выходной') return;
     if(!byDay[r.day]) byDay[r.day]=[];
     byDay[r.day].push(r);
@@ -3419,6 +3424,7 @@ async function downloadSchedulePDF(){
 
   const byDay={};
   rows.forEach(r=>{
+    if(!inPeriodRange(period,r.day)) return;
     if(r.preference==='выходной') return;
     if(!byDay[r.day]) byDay[r.day]=[];
     byDay[r.day].push(r);
