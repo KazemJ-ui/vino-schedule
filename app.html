@@ -823,9 +823,10 @@ function showToast(msg){
 }
 
 // ── РОССИЙСКИЙ СЕРВЕР HTTPS (работает без VPN) ──
-const SU='https://api.vino-hinkali.online/api';
+const SU='https://wclecqamkuplcsjmgjis.supabase.co/rest/v1';
+const SUPA_KEY='__SUPA_KEY__';
 async function sf(path,method='GET',body=null,prefer='return=representation'){
-  const o={method,headers:{'Content-Type':'application/json','Prefer':prefer}};
+  const o={method,headers:{'Content-Type':'application/json','Prefer':prefer,'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}};
   if(body)o.body=JSON.stringify(body);
   try{const r=await fetch(SU+'/'+path,o);return await r.json();}catch(e){return null;}
 }
@@ -3264,10 +3265,7 @@ async function loadReactions(postId){
 async function toggleReaction(postId,emoji,btn){
   btn.style.transform='scale(1.3)';
   setTimeout(()=>btn.style.transform='',200);
-  await fetch(`https://api.vino-hinkali.online/reactions/toggle`,{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({post_id:postId,author:myName,emoji})
-  });
+  await sf('rpc/toggle_reaction','POST',{p_post_id:postId,p_author:myName,p_emoji:emoji});
   loadReactions(postId);
 }
 function _newsArticleHTML(post,num){
@@ -3363,8 +3361,8 @@ async function deleteNewsPost(id,author){
   const isMgr=['Игорь','Алена','Алексей Щ'].includes(myName);
   if(!isMgr&&_newsRealAuthor(author)!==myName){showToast('⚠️ Можно удалять только свои статьи');return;}
   if(!confirm('Удалить эту статью?')) return;
-  const res=await fetch(`https://api.vino-hinkali.online/api/newspaper_posts/${id}`,{method:'DELETE'});
-  if(res.ok||res.status===200||res.status===204){
+  const res=await sf(`newspaper_posts?id=eq.${id}`,'DELETE');
+  if(Array.isArray(res)){
     document.getElementById('article-'+id)?.remove();
     showToast('🗑 Статья удалена');
     _newsLastId=null;
