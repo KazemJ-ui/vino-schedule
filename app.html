@@ -614,6 +614,60 @@ if(WINTER){
     });
     draw();
   })();
+  // Снеговик: кидает снежок туда, куда тапнули
+  (function(){
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const sm=document.createElement('div');
+    sm.id='snowman';
+    sm.innerHTML=`<svg viewBox="0 0 60 80" width="48" height="64" aria-hidden="true">
+      <ellipse cx="30" cy="77" rx="20" ry="3" fill="rgba(0,0,0,0.18)"/>
+      <circle cx="30" cy="60" r="17" fill="#fdfdff" stroke="#c9dbf2" stroke-width="1.2"/>
+      <circle cx="30" cy="35" r="12" fill="#fdfdff" stroke="#c9dbf2" stroke-width="1.2"/>
+      <circle cx="30" cy="55" r="1.6" fill="#333"/><circle cx="30" cy="62" r="1.6" fill="#333"/>
+      <circle cx="30" cy="16" r="9" fill="#fdfdff" stroke="#c9dbf2" stroke-width="1.2"/>
+      <circle cx="26.5" cy="14.5" r="1.3" fill="#222"/><circle cx="33.5" cy="14.5" r="1.3" fill="#222"/>
+      <path d="M30 17 L39 19 L30 19.5 Z" fill="#f08a2a"/>
+      <path d="M26 20.5 Q30 23 34 20.5" fill="none" stroke="#333" stroke-width="1" stroke-linecap="round"/>
+      <path d="M20 24 Q30 29 40 24 L40 27 Q30 32 20 27 Z" fill="#c0263c"/>
+      <rect x="35" y="26" width="4" height="10" rx="1.5" fill="#c0263c"/>
+      <rect x="21" y="2" width="18" height="7" rx="1.5" fill="#3E0D1C"/>
+      <rect x="18" y="8.5" width="24" height="2.5" rx="1.2" fill="#3E0D1C"/>
+      <rect x="21" y="6" width="18" height="1.6" fill="#C9963A"/>
+      <path d="M18 36 L6 30" stroke="#6b4a2b" stroke-width="2" stroke-linecap="round"/>
+      <g id="smArm"><path d="M42 36 L54 28 M50 30.5 L53 33.5" stroke="#6b4a2b" stroke-width="2" stroke-linecap="round" fill="none"/></g>
+    </svg>`;
+    const st=document.createElement('style');
+    st.textContent=`#snowman{position:fixed;left:2px;bottom:calc(2px + env(safe-area-inset-bottom));z-index:500;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))}
+      #smArm{transform-origin:42px 36px;transform-box:view-box}
+      #smArm.throw{animation:smThrow .35s ease-out}
+      @keyframes smThrow{0%{transform:rotate(40deg)}40%{transform:rotate(-55deg)}100%{transform:rotate(0)}}
+      .snowball{position:fixed;left:0;top:0;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;z-index:9001;pointer-events:none;
+        background:radial-gradient(circle at 35% 35%,#fff 0 40%,#dfeaf8 75%,#b9cde6);box-shadow:0 1px 3px rgba(0,0,0,0.25)}
+      .snowbit{position:fixed;left:0;top:0;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:#fff;border:1px solid #a9c6ec;z-index:9001;pointer-events:none;box-shadow:0 0 3px rgba(160,200,255,.9)}`;
+    document.head.appendChild(st);
+    addEventListener('DOMContentLoaded',()=>document.body.appendChild(sm));
+    document.addEventListener('pointerdown',e=>{
+      if(!sm.isConnected||getComputedStyle(sm).display==='none') return;
+      const r=sm.getBoundingClientRect();
+      const x0=r.left+r.width*0.9,y0=r.top+r.height*0.35,x1=e.clientX,y1=e.clientY;
+      const arm=sm.querySelector('#smArm');arm.classList.remove('throw');void arm.offsetWidth;arm.classList.add('throw');
+      const ball=document.createElement('div');ball.className='snowball';document.body.appendChild(ball);
+      const lift=Math.max(60,Math.abs(x1-x0)*0.35),frames=[];
+      for(let i=0;i<=12;i++){const t=i/12;
+        frames.push({transform:`translate(${x0+(x1-x0)*t}px,${y0+(y1-y0)*t-lift*4*t*(1-t)}px) scale(${1-0.25*t})`});}
+      const dur=Math.min(650,320+Math.hypot(x1-x0,y1-y0)*0.5);
+      ball.animate(frames,{duration:dur,easing:'linear'}).onfinish=()=>{
+        ball.remove();
+        for(let i=0;i<10;i++){
+          const b=document.createElement('div');b.className='snowbit';document.body.appendChild(b);
+          const a=Math.PI*2*i/10+Math.random()*0.5,d=14+Math.random()*22;
+          b.animate([{transform:`translate(${x1}px,${y1}px)`,opacity:1},
+                     {transform:`translate(${x1+Math.cos(a)*d}px,${y1+Math.sin(a)*d+8}px) scale(.4)`,opacity:0}],
+                    {duration:420+Math.random()*200,easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish=()=>b.remove();
+        }
+      };
+    },{passive:true});
+  })();
 }
 </script>
 <header>
