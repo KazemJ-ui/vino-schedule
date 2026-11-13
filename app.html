@@ -620,7 +620,7 @@ if(WINTER){
     if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const sm=document.createElement('div');
     sm.id='snowman';
-    sm.innerHTML=`<svg id="smSvg" viewBox="0 0 60 80" width="48" height="64" aria-hidden="true">
+    sm.innerHTML=`<svg id="smSvg" viewBox="0 0 60 80" width="36" height="48" aria-hidden="true">
       <ellipse cx="30" cy="77" rx="20" ry="3" fill="rgba(0,0,0,0.18)"/>
       <circle cx="30" cy="60" r="17" fill="#fdfdff" stroke="#c9dbf2" stroke-width="1.2"/>
       <circle cx="30" cy="35" r="12" fill="#fdfdff" stroke="#c9dbf2" stroke-width="1.2"/>
@@ -638,7 +638,7 @@ if(WINTER){
       <g id="smArm"><path d="M42 36 L54 28 M50 30.5 L53 33.5" stroke="#6b4a2b" stroke-width="2" stroke-linecap="round" fill="none"/><circle id="smHand" cx="55.5" cy="26.5" r="3.4" fill="#fff" stroke="#b9cde6" stroke-width="0.8" opacity="0"/></g>
     </svg>`;
     const st=document.createElement('style');
-    st.textContent=`#snowman{position:fixed;left:50%;top:0;margin-left:-24px;z-index:150;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))}
+    st.textContent=`#snowman{position:fixed;left:50%;top:0;margin-left:-18px;z-index:150;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))}
       #smSvg{display:block;transform-origin:50% 100%;overflow:visible}
       #smArm{transform-origin:42px 36px;transform-box:view-box}
       .snowball{position:fixed;left:0;top:0;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;z-index:9001;pointer-events:none;
