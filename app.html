@@ -824,9 +824,9 @@ function showToast(msg){
 
 // ── РОССИЙСКИЙ СЕРВЕР HTTPS (работает без VPN) ──
 const SU='https://wclecqamkuplcsjmgjis.supabase.co/rest/v1';
-const SUPA_KEY='__SUPA_KEY__';
+const SUPA_KEY='sb_publishable_boQjsY9tXkfAh_FhWaaftg_0zGvA3qX';
 async function sf(path,method='GET',body=null,prefer='return=representation'){
-  const o={method,headers:{'Content-Type':'application/json','Prefer':prefer,'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}};
+  const o={method,headers:{'Content-Type':'application/json','Prefer':prefer,'apikey':SUPA_KEY}};
   if(body)o.body=JSON.stringify(body);
   try{const r=await fetch(SU+'/'+path,o);return await r.json();}catch(e){return null;}
 }
