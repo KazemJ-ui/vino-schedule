@@ -10,7 +10,7 @@
 <meta name="app-version" content="9">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
 <title>Вино&amp;Хинкали · Май 1–15</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -26,6 +26,7 @@
   --zor-bg:#FFF0E0;--zor-txt:#7A3D00;--zor-badge:#C06010;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{touch-action:manipulation}
 body{background:var(--cream);font-family:'Nunito',sans-serif;min-height:100vh;padding-bottom:40px;transition:background 0.3s}
 header{background:var(--wine-dark);padding:12px 16px;position:sticky;top:0;z-index:100;box-shadow:0 3px 16px rgba(0,0,0,0.35)}
 .header-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
@@ -637,7 +638,7 @@ if(WINTER){
       <g id="smArm"><path d="M42 36 L54 28 M50 30.5 L53 33.5" stroke="#6b4a2b" stroke-width="2" stroke-linecap="round" fill="none"/></g>
     </svg>`;
     const st=document.createElement('style');
-    st.textContent=`#snowman{position:fixed;left:2px;bottom:calc(2px + env(safe-area-inset-bottom));z-index:500;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))}
+    st.textContent=`#snowman{position:fixed;left:50%;top:0;margin-left:-24px;z-index:150;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))}
       #smArm{transform-origin:42px 36px;transform-box:view-box}
       #smArm.throw{animation:smThrow .35s ease-out}
       @keyframes smThrow{0%{transform:rotate(40deg)}40%{transform:rotate(-55deg)}100%{transform:rotate(0)}}
@@ -645,7 +646,14 @@ if(WINTER){
         background:radial-gradient(circle at 35% 35%,#fff 0 40%,#dfeaf8 75%,#b9cde6);box-shadow:0 1px 3px rgba(0,0,0,0.25)}
       .snowbit{position:fixed;left:0;top:0;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:#fff;border:1px solid #a9c6ec;z-index:9001;pointer-events:none;box-shadow:0 0 3px rgba(160,200,255,.9)}`;
     document.head.appendChild(st);
-    addEventListener('DOMContentLoaded',()=>document.body.appendChild(sm));
+    function place(){
+      const h=document.querySelector('header');
+      if(h) sm.style.top=(h.getBoundingClientRect().bottom-sm.offsetHeight+3)+'px';
+    }
+    addEventListener('DOMContentLoaded',()=>{document.body.appendChild(sm);place();});
+    addEventListener('resize',place);
+    addEventListener('scroll',place,{passive:true});
+    addEventListener('load',place);
     document.addEventListener('pointerdown',e=>{
       if(!sm.isConnected||getComputedStyle(sm).display==='none') return;
       const r=sm.getBoundingClientRect();
